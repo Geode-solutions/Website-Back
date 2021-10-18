@@ -86,7 +86,7 @@ if __name__ == '__main__':
     # print("coucou")
     app.run(debug=True, host='0.0.0.0', port=5000)#If main run in debug mode
     flask_cors.CORS(app)  # This makes the CORS feature cover all routes in the app
-    ObjectsList = GeodeObjects.ObjectsList()
-    print(ListExtensions(ObjectsList))
+    # ObjectsList = GeodeObjects.ObjectsList()
+    # print(ListExtensions(ObjectsList))
     # print(ListObjects(ObjectsList, "og_brep"))
     # test.testfunction()
