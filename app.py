@@ -13,6 +13,11 @@ flask_cors.CORS(app)
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+@app.route('/')
+def AllowedFiles():
+    return "Coucou !!"
+
+
 @app.route('/allowedfiles', methods=['POST'])
 @flask_cors.cross_origin()
 def AllowedFiles():
