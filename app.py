@@ -14,7 +14,7 @@ UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
-def AllowedFiles():
+def testRoute():
     return "Coucou !!"
 
 
