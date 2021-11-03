@@ -5,6 +5,7 @@ import os
 import opengeode #Importe le package OpenGeode
 import base64
 import GeodeObjects
+import threading
 
 
 app = flask.Flask(__name__)
@@ -13,10 +14,31 @@ flask_cors.CORS(app)
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+is_alive = False
+
 @app.route('/')
 def testRoute():
     return "Coucou !!"
 
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func()
+    t = threading.Timer(sec, func_wrapper)
+    t.start()
+    return t
+
+def killIfNotAlive():
+    global is_alive
+    if not is_alive:
+        exit()
+    else:
+        is_alive = False
+    
+@app.route('/ping', methods=['POST'])
+def Revive():
+    global is_alive
+    is_alive = True
 
 @app.route('/allowedfiles', methods=['POST'])
 @flask_cors.cross_origin()
@@ -92,8 +114,9 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
     
+    set_interval(killIfNotAlive, 30)
+
     app.run(debug=True, host='0.0.0.0', port=5000)#If main run in debug mode
     flask_cors.CORS(app)  # This makes the CORS feature cover all routes in the app
     ObjectsList = GeodeObjects.ObjectsList()
     print(ListExtensions(ObjectsList))
-
