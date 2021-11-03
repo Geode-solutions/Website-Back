@@ -1,12 +1,11 @@
 import flask
 import flask_cors
-# import waitress
 import os
 import opengeode #Importe le package OpenGeode
 import base64
 import GeodeObjects
 import threading
-import sys
+import boto3
 
 
 app = flask.Flask(__name__)
@@ -16,6 +15,7 @@ UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 is_alive = False
+taskArn = ""
 
 @app.route('/')
 def testRoute():
@@ -31,14 +31,18 @@ def set_interval(func, sec):
 
 def killIfNotAlive():
     global is_alive
+    
     if not is_alive:
-        sys.exit("FrontEnd not connected")
+        print("toto")
     else:
         is_alive = False
     
 @app.route('/ping', methods=['POST'])
 def Revive():
     global is_alive
+    global taskArn
+
+    taskArn = flask.request.form['taskArn']
     is_alive = True
 
 @app.route('/allowedfiles', methods=['POST'])
