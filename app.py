@@ -6,6 +6,7 @@ import opengeode #Importe le package OpenGeode
 import base64
 import GeodeObjects
 import threading
+import sys
 
 
 app = flask.Flask(__name__)
@@ -31,7 +32,7 @@ def set_interval(func, sec):
 def killIfNotAlive():
     global is_alive
     if not is_alive:
-        exit()
+        sys.exit("FrontEnd not connected")
     else:
         is_alive = False
     
