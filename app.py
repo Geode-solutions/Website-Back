@@ -8,14 +8,12 @@ import threading
 # from multiprocessing import Process
 
 app = flask.Flask(__name__)
-# server = Process(target=app.run)
 flask_cors.CORS(app)
 
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 is_alive = False
-taskArn = ""
 
 
 @app.route('/')
@@ -46,9 +44,6 @@ def killIfNotAlive():
 @app.route('/ping', methods=['POST'])
 def Revive():
     global is_alive
-    global taskArn
-
-    taskArn = flask.request.form['taskArn']
     is_alive = True
 
 
