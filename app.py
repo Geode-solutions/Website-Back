@@ -5,10 +5,10 @@ import opengeode  # Importe le package OpenGeode
 import base64
 import GeodeObjects
 import threading
-from multiprocessing import Process
+# from multiprocessing import Process
 
 app = flask.Flask(__name__)
-server = Process(target=app.run)
+# server = Process(target=app.run)
 flask_cors.CORS(app)
 
 UPLOAD_FOLDER = './uploads'
@@ -133,7 +133,7 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
-    set_interval(killIfNotAlive, 20)
+    # set_interval(killIfNotAlive, 20)
 
     app.run(debug=True, host='0.0.0.0', port=5000)  # If main run in debug mode
     # This makes the CORS feature cover all routes in the app
