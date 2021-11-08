@@ -41,10 +41,12 @@ def killIfNotAlive():
         is_alive = False
 
 
-@app.route('/ping', methods=['POST'])
+@app.route('/ping')
 def Revive():
     global is_alive
     is_alive = True
+    return {"status": 200}
+    # , methods=['POST']
 
 
 @app.route('/allowedfiles', methods=['POST'])
