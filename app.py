@@ -5,7 +5,6 @@ import opengeode  # Importe le package OpenGeode
 import base64
 import GeodeObjects
 import threading
-# from multiprocessing import Process
 
 app = flask.Flask(__name__)
 flask_cors.CORS(app)
@@ -133,7 +132,4 @@ if __name__ == '__main__':
     set_interval(killIfNotAlive, 60)
 
     app.run(debug=True, host='0.0.0.0', port=5000)  # If main run in debug mode
-    # This makes the CORS feature cover all routes in the app
     # flask_cors.CORS(app)
-    # ObjectsList = GeodeObjects.ObjectsList()
-    # print(ListExtensions(ObjectsList))
