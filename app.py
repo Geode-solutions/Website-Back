@@ -33,7 +33,7 @@ def set_interval(func, sec):
 
 def killIfNotAlive():
     global is_alive
-
+    print("is_alive", is_alive)
     if not is_alive:
         os._exit(0)
     else:
