@@ -40,12 +40,11 @@ def killIfNotAlive():
         is_alive = False
 
 
-@app.route('/ping')
+@app.route('/ping', methods=['POST'])
 def Revive():
     global is_alive
     is_alive = True
     return {"status": 200}
-    # , methods=['POST']
 
 
 @app.route('/allowedfiles', methods=['POST'])
@@ -129,7 +128,7 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
-    set_interval(killIfNotAlive, 60)
+    set_interval(killIfNotAlive, 5 * 60)
 
     app.run(debug=True, host='0.0.0.0', port=5000)  # If main run in debug mode
     # flask_cors.CORS(app)
