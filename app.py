@@ -13,11 +13,14 @@ UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 toto = False
+text = "Empty"
 
 
 def update_toto(value):
     global toto
     toto = value
+    global text
+    text = "Set"
 
 
 @app.route('/')
@@ -38,6 +41,7 @@ def set_interval(func, sec):
 
 def killIfNotAlive():
     print("toto", toto, flush=True)
+    print("text", text, flush=True)
     if not toto:
         os._exit(0)
     else:
