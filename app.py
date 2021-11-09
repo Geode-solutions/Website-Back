@@ -40,23 +40,22 @@ flask_cors.CORS(app)
 
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['toto'] = True
 
 toto = True
 text = "Empty"
 
 
 def update_toto(value):
-    listOfGlobals = globals()
-    listOfGlobals['toto'] = value
-    # global toto
-    # toto = value
+    # listOfGlobals = globals()
+    # listOfGlobals['toto'] = value
+    app.config['toto'] = value
 
 
 def update_text(value):
-    listOfGlobals = globals()
-    listOfGlobals['text'] = value
-    # global text
-    # text = value
+    # listOfGlobals = globals()
+    # listOfGlobals['text'] = value
+    app.config['text'] = value
 
 
 @app.route('/')
@@ -78,9 +77,9 @@ def testRoute():
 def killIfNotAlive():
     # global toto
     # global text
-    print("toto", toto, flush=True)
-    print("text", text, flush=True)
-    if not toto:
+    print("toto", app.config['toto'], flush=True)
+    print("text", app.config['text'], flush=True)
+    if not app.config['toto']:
         os._exit(0)
     else:
         update_toto(False)
@@ -88,12 +87,12 @@ def killIfNotAlive():
 
 @app.route('/ping', methods=['POST'])
 def Revive():
-    print("toto 2", toto, flush=True)
-    print("text 2", text, flush=True)
+    print("toto 2", app.config['toto'], flush=True)
+    print("text 2", app.config['text'], flush=True)
     update_text("Set")
     update_toto(True)
-    print("toto 3", toto, flush=True)
-    print("text 3", text, flush=True)
+    print("toto 3", app.config['toto'], flush=True)
+    print("text 3", app.config['text'], flush=True)
     return {"status": 200}
 
 
