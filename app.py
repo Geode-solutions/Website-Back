@@ -43,7 +43,9 @@ def killIfNotAlive():
 @app.route('/ping', methods=['POST'])
 def Revive():
     global is_alive
+    print("is_alive 2", is_alive, flush=True)
     is_alive = True
+    print("is_alive 3", is_alive, flush=True)
     return {"status": 200}
 
 
