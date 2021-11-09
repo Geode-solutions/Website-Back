@@ -45,6 +45,8 @@ def set_interval(func, sec):
 def killIfNotAlive():
     print("toto", toto, flush=True)
     print("text", text, flush=True)
+    global toto
+    global text
     if not toto:
         os._exit(0)
     else:
