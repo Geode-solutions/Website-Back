@@ -32,11 +32,11 @@ def set_interval(func, sec):
 
 
 def killIfNotAlive():
+    global toto
     print("toto", toto, flush=True)
     if not toto:
         os._exit(0)
     else:
-        global toto
         toto = False
 
 
