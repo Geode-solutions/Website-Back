@@ -15,6 +15,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 toto = False
 
 
+def update_toto(value):
+    global toto
+    toto = value
+
+
 @app.route('/')
 def testRoute():
     return "Coucou !!"
@@ -32,19 +37,17 @@ def set_interval(func, sec):
 
 
 def killIfNotAlive():
-    global toto
     print("toto", toto, flush=True)
     if not toto:
         os._exit(0)
     else:
-        toto = False
+        update_toto(False)
 
 
 @app.route('/ping', methods=['POST'])
 def Revive():
-    global toto
     print("toto 2", toto, flush=True)
-    toto = True
+    update_toto(True)
     print("toto 3", toto, flush=True)
     return {"status": 200}
 
