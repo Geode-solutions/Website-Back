@@ -6,6 +6,20 @@ import base64
 import GeodeObjects
 import threading
 
+import sched
+import time
+s = sched.scheduler(time.time, time.sleep)
+
+time_to_sleep = 20
+
+
+def do_something(sc):
+    print("Doing stuff...")
+    # do your stuff
+    killIfNotAlive()
+    s.enter(time_to_sleep, 1, do_something, (sc,))
+
+
 app = flask.Flask(__name__)
 flask_cors.CORS(app)
 
@@ -149,7 +163,10 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
-    set_interval(killIfNotAlive, 20)
+    # set_interval(killIfNotAlive, 20)
+
+    s.enter(time_to_sleep, 1, do_something, (s,))
+    s.run()
 
     app.run(debug=True, host='0.0.0.0', port=5000)  # If main run in debug mode
     # flask_cors.CORS(app)
