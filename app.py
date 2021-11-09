@@ -17,13 +17,17 @@ text = "Empty"
 
 
 def update_toto(value):
-    global toto
-    toto = value
+    listOfGlobals = globals()
+    listOfGlobals['toto'] = value
+    # global toto
+    # toto = value
 
 
 def update_text(value):
-    global text
-    text = value
+    listOfGlobals = globals()
+    listOfGlobals['text'] = value
+    # global text
+    # text = value
 
 
 @app.route('/')
