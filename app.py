@@ -33,7 +33,7 @@ def set_interval(func, sec):
 
 def killIfNotAlive():
     global is_alive
-    print("is_alive", is_alive)
+    print("is_alive", is_alive, flush=True)
     if not is_alive:
         os._exit(0)
     else:
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
-    # set_interval(killIfNotAlive, 20)
+    set_interval(killIfNotAlive, 20)
 
     app.run(debug=True, host='0.0.0.0', port=5000)  # If main run in debug mode
     # flask_cors.CORS(app)
