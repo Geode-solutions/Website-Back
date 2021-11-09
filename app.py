@@ -19,8 +19,11 @@ text = "Empty"
 def update_toto(value):
     global toto
     toto = value
+
+
+def update_text(value):
     global text
-    text = "Set"
+    text = value
 
 
 @app.route('/')
@@ -51,8 +54,11 @@ def killIfNotAlive():
 @app.route('/ping', methods=['POST'])
 def Revive():
     print("toto 2", toto, flush=True)
+    print("text 2", text, flush=True)
+    update_text("Set")
     update_toto(True)
     print("toto 3", toto, flush=True)
+    print("text 3", text, flush=True)
     return {"status": 200}
 
 
