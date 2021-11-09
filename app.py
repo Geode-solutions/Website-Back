@@ -12,7 +12,7 @@ flask_cors.CORS(app)
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-is_alive = False
+toto = False
 
 
 @app.route('/')
@@ -32,20 +32,20 @@ def set_interval(func, sec):
 
 
 def killIfNotAlive():
-    global is_alive
-    print("is_alive", is_alive, flush=True)
-    if not is_alive:
+    print("toto", toto, flush=True)
+    if not toto:
         os._exit(0)
     else:
-        is_alive = False
+        global toto
+        toto = False
 
 
 @app.route('/ping', methods=['POST'])
 def Revive():
-    global is_alive
-    print("is_alive 2", is_alive, flush=True)
-    is_alive = True
-    print("is_alive 3", is_alive, flush=True)
+    global toto
+    print("toto 2", toto, flush=True)
+    toto = True
+    print("toto 3", toto, flush=True)
     return {"status": 200}
 
 
