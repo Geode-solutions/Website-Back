@@ -12,7 +12,7 @@ flask_cors.CORS(app)
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-toto = False
+toto = True
 text = "Empty"
 
 
