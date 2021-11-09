@@ -21,7 +21,7 @@ def testRoute():
 
 
 def set_interval(func, sec):
-    print("interval")
+    # print("interval")
 
     def func_wrapper():
         set_interval(func, sec)
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
-    set_interval(killIfNotAlive, 20)
+    # set_interval(killIfNotAlive, 20)
 
     app.run(debug=True, host='0.0.0.0', port=5000)  # If main run in debug mode
     # flask_cors.CORS(app)
