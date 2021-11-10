@@ -14,11 +14,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 isAlive = False
 
 
-# manager = M_P.Manager()
-# isAlive = manager.dict()
-# isAlive.append()
-
-
 def update_or_kill(update):
     global isAlive
     print("T", T.get_ident())
