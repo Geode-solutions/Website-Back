@@ -1,41 +1,45 @@
-import flask
-import flask_cors
+import flask as F
+import flask_cors as F_C
 import os
-import opengeode  # Importe le package OpenGeode
-import base64
-import GeodeObjects
-import threading
+import opengeode as O_G  # Importe le package OpenGeode
+import base64 as B64
+import GeodeObjects as G_O
+import threading as T
+import multiprocessing as M_P
 
-app = flask.Flask(__name__)
-flask_cors.CORS(app)
-
+app = F.Flask(__name__)
+F_C.CORS(app)
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 isAlive = False
+
+
+# manager = M_P.Manager()
+# isAlive = manager.dict()
+# isAlive.append()
 
 
 def update_or_kill(update):
     global isAlive
     if update:
-        print("isAlive 1", isAlive, flush=True)
+        # print("isAlive 1", isAlive, flush=True)
         isAlive = True
-        print("isAlive 2", isAlive, flush=True)
+        # print("isAlive 2", isAlive, flush=True)
     else:
         if not isAlive:
-            print("isAlive 6", isAlive, flush=True)
+            # print("isAlive 6", isAlive, flush=True)
             os._exit(0)
         else:
-            print("isAlive 4", isAlive, flush=True)
+            # print("isAlive 4", isAlive, flush=True)
             isAlive = False
-            print("isAlive 5", isAlive, flush=True)
+            # print("isAlive 5", isAlive, flush=True)
 
 
 def set_interval(func, args, sec):
     def func_wrapper():
         set_interval(func, args, sec)
         func(args)
-    t = threading.Timer(sec, func_wrapper)
+    t = T.Timer(sec, func_wrapper)
     t.start()
     return t
 
@@ -52,36 +56,36 @@ def Revive():
 
 
 @app.route('/allowedfiles', methods=['POST'])
-@flask_cors.cross_origin()
+@F_C.cross_origin()
 def AllowedFiles():
-    ObjectsList = GeodeObjects.ObjectsList()
+    ObjectsList = G_O.ObjectsList()
     return {"extensions": ListExtensions(ObjectsList)}
 
 
 @app.route('/allowedObjects', methods=['POST'])
 def AllowedObjects():
-    FileName = flask.request.form['fileName']
+    FileName = F.request.form['fileName']
     (_, file_extension) = os.path.splitext(FileName)
-    ObjectsList = GeodeObjects.ObjectsList()
+    ObjectsList = G_O.ObjectsList()
     return {"objects": ListObjects(ObjectsList, file_extension[1:])}
 
 
 @app.route('/readfile', methods=['POST'])
 def UploadFile():
-    if flask.request.method == 'POST':
-        File = flask.request.form['file']
+    if F.request.method == 'POST':
+        File = F.request.form['file']
         if File == '':  # Si pas de fichier
             return {"status": 500}
         if File:  # Si fichier présent
-            FileDecoded = base64.b64decode(File.split(',')[1])
+            FileDecoded = B64.b64decode(File.split(',')[1])
             filename = os.path.join(
-                app.config['UPLOAD_FOLDER'], flask.request.form['filename'])
+                app.config['UPLOAD_FOLDER'], F.request.form['filename'])
             f = open(filename, "wb")
             f.write(FileDecoded)  # Writes in the file
             f.close()  # Closes
 
             # model = opengeode.load_brep(filename)
-            model = getattr(opengeode, "load_brep")(filename)
+            model = getattr(O_G, "load_brep")(filename)
             return {"status": 200, "nb surfaces": model.nb_surfaces(), "name": model.name()}
 
 
@@ -124,11 +128,11 @@ def ListExtensions(ObjectsList):
 
 
 if __name__ == '__main__':
-
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
     set_interval(update_or_kill, False, 20)
-    app.run(debug=True, host='0.0.0.0', port=5000)  # If main run in debug mode
+    app.run(debug=True, host='0.0.0.0', port=5000,
+            threaded=False)  # If main run in debug mode
 
     # print(globals())
