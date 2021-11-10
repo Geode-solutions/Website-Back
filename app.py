@@ -18,11 +18,17 @@ isAlive = False
 def update_or_kill(update):
     global isAlive
     if update:
+        print("isAlive 1", isAlive, flush=True)
         isAlive = True
+        print("isAlive 2", isAlive, flush=True)
     else:
         if not isAlive:
+            print("isAlive 6", isAlive, flush=True)
             os._exit(0)
-        isAlive = False
+        else:
+            print("isAlive 4", isAlive, flush=True)
+            isAlive = False
+            print("isAlive 5", isAlive, flush=True)
 
 
 def set_interval(func, args, sec):
@@ -42,12 +48,6 @@ def test():
 @app.route('/ping', methods=['POST'])
 def Revive():
     update_or_kill(True)
-    # global isAlive
-    # print("isAlive 2", isAlive, flush=True)
-    # listOfGlobals = globals()
-    # listOfGlobals['isAlive'] = True
-    # isAlive = True
-    # print("isAlive 3", isAlive, flush=True)
     return {"status": 200}
 
 
