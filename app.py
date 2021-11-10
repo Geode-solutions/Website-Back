@@ -16,19 +16,19 @@ isAlive = False
 
 def update_or_kill(update):
     global isAlive
-    print("T", T.get_ident())
+    # print("T", T.get_ident())
     if update:
-        print("isAlive 1", isAlive, flush=True)
+        # print("isAlive 1", isAlive, flush=True)
         isAlive = True
-        print("isAlive 2", isAlive, flush=True)
+        # print("isAlive 2", isAlive, flush=True)
     else:
-        print("isAlive 6", isAlive, flush=True)
+        # print("isAlive 6", isAlive, flush=True)
         if not isAlive:
             os._exit(0)
         else:
-            print("isAlive 4", isAlive, flush=True)
+            # print("isAlive 4", isAlive, flush=True)
             isAlive = False
-            print("isAlive 5", isAlive, flush=True)
+            # print("isAlive 5", isAlive, flush=True)
 
 
 def set_interval(func, args, sec):
