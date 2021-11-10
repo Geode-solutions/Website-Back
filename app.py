@@ -50,6 +50,14 @@ def test():
     return "Coucou"
 
 
+@app.route('/start', methods=['POST'])
+def start():
+    print("isAlive start", isAlive)
+    print("T start", T.get_ident())
+    set_interval(update_or_kill, False, 20)
+    return {"status": 200}
+
+
 @app.route('/ping', methods=['POST'])
 def Revive():
     update_or_kill(True)
@@ -132,7 +140,6 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
-    set_interval(update_or_kill, False, 20)
     app.run(debug=True, host='0.0.0.0', port=5000,
             threaded=False)  # If main run in debug mode
 
