@@ -15,11 +15,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 isAlive = False
 
 
-# def update_toto(value):
-#     listOfGlobals = globals()
-#     listOfGlobals['isAlive'] = value
-
-
 def update_or_kill(update):
     global isAlive
     if update:
@@ -32,22 +27,11 @@ def update_or_kill(update):
 
 def set_interval(func, args, sec):
     def func_wrapper():
-        set_interval(func, sec)
+        set_interval(func, args, sec)
         func(args)
     t = threading.Timer(sec, func_wrapper)
     t.start()
     return t
-
-
-# def killIfNotAlive():
-#     print("isAlive", isAlive, flush=True)
-#     if not isAlive:
-#         os._exit(0)
-#     else:
-#         # global isAlive
-#         # isAlive = False
-#         listOfGlobals = globals()
-#         listOfGlobals['isAlive'] = False
 
 
 @app.route('/')
