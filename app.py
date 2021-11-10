@@ -4,96 +4,66 @@ import os
 import opengeode  # Importe le package OpenGeode
 import base64
 import GeodeObjects
-# import threading
-
-from threading import Timer
-
-
-class RepeatedTimer(object):
-    def __init__(self, interval, function, *args, **kwargs):
-        self._timer = None
-        self.interval = interval
-        self.function = function
-        self.args = args
-        self.kwargs = kwargs
-        self.is_running = False
-        self.start()
-
-    def _run(self):
-        self.is_running = False
-        self.start()
-        self.function(*self.args, **self.kwargs)
-
-    def start(self):
-        if not self.is_running:
-            self._timer = Timer(self.interval, self._run)
-            self._timer.start()
-            self.is_running = True
-
-    def stop(self):
-        self._timer.cancel()
-        self.is_running = False
-
+import threading
 
 app = flask.Flask(__name__)
 flask_cors.CORS(app)
 
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['toto'] = True
-app.config['text'] = "Empty"
 
-toto = True
-text = "Empty"
+isAlive = False
 
 
-def update_toto(value):
-    # listOfGlobals = globals()
-    # listOfGlobals['toto'] = value
-    app.config['toto'] = value
+# def update_toto(value):
+#     listOfGlobals = globals()
+#     listOfGlobals['isAlive'] = value
 
 
-def update_text(value):
-    # listOfGlobals = globals()
-    # listOfGlobals['text'] = value
-    app.config['text'] = value
+def update_or_kill(update):
+    global isAlive
+    if update:
+        isAlive = True
+    else:
+        if not isAlive:
+            os._exit(0)
+        isAlive = False
+
+
+def set_interval(func, args, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func(args)
+    t = threading.Timer(sec, func_wrapper)
+    t.start()
+    return t
+
+
+# def killIfNotAlive():
+#     print("isAlive", isAlive, flush=True)
+#     if not isAlive:
+#         os._exit(0)
+#     else:
+#         # global isAlive
+#         # isAlive = False
+#         listOfGlobals = globals()
+#         listOfGlobals['isAlive'] = False
 
 
 @app.route('/')
-def testRoute():
-    return "Coucou !!"
-
-
-# def set_interval(func, sec):
-#     # print("interval")
-
-#     def func_wrapper():
-#         set_interval(func, sec)
-#         func()
-#     t = threading.Timer(sec, func_wrapper)
-#     t.start()
-#     return t
-
-
-def killIfNotAlive():
-    # global toto
-    # global text
-    print("toto", app.config['toto'], flush=True)
-    print("text", app.config['text'], flush=True)
-    if not app.config['toto']:
-        os._exit(0)
-    else:
-        update_toto(False)
+def test():
+    return "Coucou"
 
 
 @app.route('/ping', methods=['POST'])
 def Revive():
-    print("toto 2", app.config['toto'], flush=True)
-    print("text 2", app.config['text'], flush=True)
-    update_text("Set")
-    update_toto(True)
-    print("toto 3", app.config['toto'], flush=True)
-    print("text 3", app.config['text'], flush=True)
+    update_or_kill(True)
+    # global isAlive
+    # print("isAlive 2", isAlive, flush=True)
+    # listOfGlobals = globals()
+    # listOfGlobals['isAlive'] = True
+    # isAlive = True
+    # print("isAlive 3", isAlive, flush=True)
     return {"status": 200}
 
 
@@ -135,11 +105,9 @@ def ListObjects(ObjectsList, Extension):
     """
     Purpose:
         Function that returns a list of objects that can handle the file, given his extension
-
     Args:
         Extension -- The exention of the file
         ObjectsList -- A list of objects with their InputFactory/OutputFactory/Name
-
     Returns:
         An ordered list of object's names
     """
@@ -156,10 +124,8 @@ def ListExtensions(ObjectsList):
     """
     Purpose:
         Function that returns a list of extensions that can handled by the objects given in parameter
-
     Args:
         ObjectsList -- A list of objects with their InputFactory/OutputFactory/Name
-
     Returns:
         An ordered list of file extensions
     """
@@ -178,12 +144,7 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
-    # set_interval(killIfNotAlive, 20)
-
-    # s.enter(time_to_sleep, 1, do_something, (s,))
-    # s.run()
-
-    rt = RepeatedTimer(20, killIfNotAlive)
-
+    set_interval(update_or_kill, False, 20)
     app.run(debug=True, host='0.0.0.0', port=5000)  # If main run in debug mode
-    # flask_cors.CORS(app)
+
+    # print(globals())
