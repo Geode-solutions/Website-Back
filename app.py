@@ -47,8 +47,8 @@ def test():
 
 @app.route('/start', methods=['POST'])
 def start():
-    print("isAlive start", isAlive)
-    print("T start", T.get_ident())
+    # print("isAlive start", isAlive)
+    # print("T start", T.get_ident())
     set_interval(update_or_kill, False, 20)
     return {"status": 200}
 
@@ -78,9 +78,7 @@ def AllowedObjects():
 def UploadFile():
     if F.request.method == 'POST':
         File = F.request.form['file']
-        if File == '':  # Si pas de fichier
-            return {"status": 500}
-        if File:  # Si fichier présent
+        if File:
             FileDecoded = B64.b64decode(File.split(',')[1])
             filename = os.path.join(
                 app.config['UPLOAD_FOLDER'], F.request.form['filename'])
@@ -88,9 +86,11 @@ def UploadFile():
             f.write(FileDecoded)  # Writes in the file
             f.close()  # Closes
 
-            # model = opengeode.load_brep(filename)
-            model = getattr(O_G, "load_brep")(filename)
+            model = O_G.load_brep(filename)
+            # model = getattr(O_G, "load_brep")(filename)
             return {"status": 200, "nb surfaces": model.nb_surfaces(), "name": model.name()}
+        else:
+            return {"status": 500}
 
 
 def ListObjects(ObjectsList, Extension):
@@ -136,6 +136,5 @@ if __name__ == '__main__':
         os.mkdir("./uploads")
 
     app.run(debug=True, host='0.0.0.0', port=5000,
-            threaded=False)  # If main run in debug mode
-
+            threaded=False, ssl_context='adhoc')  # If main run in debug mode
     # print(globals())
