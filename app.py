@@ -16,19 +16,16 @@ isAlive = False
 
 def update_or_kill(update):
     global isAlive
-    # print("T", T.get_ident())
+    print("T", T.get_ident())
     if update:
-        # print("isAlive 1", isAlive, flush=True)
         isAlive = True
-        # print("isAlive 2", isAlive, flush=True)
     else:
-        # print("isAlive 6", isAlive, flush=True)
         if not isAlive:
             os._exit(0)
         else:
-            # print("isAlive 4", isAlive, flush=True)
+            print("isAlive", isAlive, flush=True)
             isAlive = False
-            # print("isAlive 5", isAlive, flush=True)
+            print("isAlive", isAlive, flush=True)
 
 
 def set_interval(func, args, sec):
@@ -47,19 +44,23 @@ def test():
 
 @app.route('/start', methods=['POST'])
 def start():
-    # print("isAlive start", isAlive)
-    # print("T start", T.get_ident())
+
+    print(isAlive)
     set_interval(update_or_kill, False, 20)
+    print(isAlive)
     return {"status": 200}
 
 
-@app.route('/ping', methods=['POST'])
+@app.route('/ping')  # , methods=['POST']
 def Revive():
+    # print("T", T.get_ident())
+    # print(isAlive)
     update_or_kill(True)
-    # return {"status": 200}
-    response = F.jsonify({'some': 'data'})
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    # print(isAlive)
+    return {"status": 200}
+    # response = F.jsonify({'some': 'data'})
+    # response.headers.add('Access-Control-Allow-Origin', '*')
+    # return response
 
 
 @app.route('/allowedfiles', methods=['POST'])
@@ -138,6 +139,7 @@ if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
 
-    app.run(debug=True, host='0.0.0.0', port=5000,
-            threaded=False, ssl_context='adhoc')  # If main run in debug mode
-    # print(globals())
+    # set_interval(update_or_kill, False, 30)
+
+    app.run(debug=True, host='0.0.0.0', port=443,
+            threaded=False, ssl_context='adhoc')
