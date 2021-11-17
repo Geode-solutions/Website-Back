@@ -56,7 +56,10 @@ def start():
 @app.route('/ping', methods=['POST'])
 def Revive():
     update_or_kill(True)
-    return {"status": 200}
+    # return {"status": 200}
+    response = F.jsonify({'some': 'data'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/allowedfiles', methods=['POST'])
