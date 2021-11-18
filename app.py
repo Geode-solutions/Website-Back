@@ -51,7 +51,7 @@ def start():
     return {"status": 200}
 
 
-@app.route('/ping')  # , methods=['POST']
+@app.route('/ping', methods=['GET', 'POST'])  # , methods=['POST']
 def Revive():
     # print("T", T.get_ident())
     # print(isAlive)
