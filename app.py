@@ -46,7 +46,7 @@ def test():
 def start():
 
     print(isAlive)
-    set_interval(update_or_kill, False, 20)
+    set_interval(update_or_kill, False, 40)
     print(isAlive)
     return {"status": 200}
 
