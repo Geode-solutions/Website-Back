@@ -69,7 +69,7 @@ def Revive():
 
     # Enable Access-Control-Allow-Origin
     response.headers.add("Access-Control-Allow-Origin",
-                         "http://185.146.220.125:3000")
+                         "http://localhost:3000/")
     # response.headers.add('Access-Control-Allow-Origin', '*')
     # response.headers.add('Access-Control-Allow-Headers',
     #                      'Content-Type,Authorization')
