@@ -43,7 +43,7 @@ def test():
     return "Coucou"
 
 
-@app.route('/start', methods=['POST'])
+@app.route('/start', methods=['POST', 'OPTIONS'])
 def start():
 
     print(isAlive)
@@ -52,27 +52,30 @@ def start():
     return {"status": 200}
 
 
-@app.route('/ping', methods=['GET', 'POST'])  # , methods=['POST']
+@app.route('/ping', methods=['GET', 'POST', 'OPTIONS'])  # , methods=['POST']
 @F_C.cross_origin(supports_credentials=True)
-def Revive():
-    # print("T", T.get_ident())
-    # print(isAlive)
+def Revive(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     update_or_kill(True)
     # print(isAlive)
-    return {"status": 200}
+    # return {"status": 200}
+    return response
     # response = F.jsonify({'some': 'data'})
     # response.headers.add('Access-Control-Allow-Origin', '*')
     # return response
 
 
-@app.route('/allowedfiles', methods=['POST'])
+@app.route('/allowedfiles', methods=['POST', 'OPTIONS'])
 @F_C.cross_origin()
 def AllowedFiles():
     ObjectsList = G_O.ObjectsList()
     return {"extensions": ListExtensions(ObjectsList)}
 
 
-@app.route('/allowedObjects', methods=['POST'])
+@app.route('/allowedObjects', methods=['POST', 'OPTIONS'])
 def AllowedObjects():
     FileName = F.request.form['fileName']
     (_, file_extension) = os.path.splitext(FileName)
@@ -80,7 +83,7 @@ def AllowedObjects():
     return {"objects": ListObjects(ObjectsList, file_extension[1:])}
 
 
-@app.route('/readfile', methods=['POST'])
+@app.route('/readfile', methods=['POST', 'OPTIONS'])
 def UploadFile():
     if F.request.method == 'POST':
         File = F.request.form['file']
