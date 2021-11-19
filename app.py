@@ -52,6 +52,15 @@ def start():
     return {"status": 200}
 
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    return response
+
+
 @app.route('/ping', methods=['GET', 'POST', 'OPTIONS'])  # , methods=['POST']
 @F_C.cross_origin(supports_credentials=True)
 def Revive(response):
