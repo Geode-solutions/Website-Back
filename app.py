@@ -64,7 +64,11 @@ def after_request(response):
 
 @app.route('/ping', methods=['GET', 'POST', 'OPTIONS'])  # , methods=['POST']
 @F_C.cross_origin(supports_credentials=True)
-def Revive(response):
+def Revive():
+    response = F.jsonify(message="Simple server is running")
+
+    # Enable Access-Control-Allow-Origin
+    response.headers.add("Access-Control-Allow-Origin", "185.146.220.125")
     # response.headers.add('Access-Control-Allow-Origin', '*')
     # response.headers.add('Access-Control-Allow-Headers',
     #                      'Content-Type,Authorization')
