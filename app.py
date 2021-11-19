@@ -68,7 +68,8 @@ def Revive():
     response = F.jsonify(message="Simple server is running")
 
     # Enable Access-Control-Allow-Origin
-    response.headers.add("Access-Control-Allow-Origin", "185.146.220.125")
+    response.headers.add("Access-Control-Allow-Origin",
+                         "http://185.146.220.125:3000")
     # response.headers.add('Access-Control-Allow-Origin', '*')
     # response.headers.add('Access-Control-Allow-Headers',
     #                      'Content-Type,Authorization')
