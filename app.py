@@ -11,6 +11,7 @@ app = F.Flask(__name__)
 F_C.CORS(app)
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['CORS_HEADERS'] = 'Content-Type'
 isAlive = False
 
 
@@ -52,6 +53,7 @@ def start():
 
 
 @app.route('/ping', methods=['GET', 'POST'])  # , methods=['POST']
+@F_C.cross_origin()
 def Revive():
     # print("T", T.get_ident())
     # print(isAlive)
