@@ -5,10 +5,9 @@ import opengeode as O_G  # Importe le package OpenGeode
 import base64 as B64
 import GeodeObjects as G_O
 import threading as T
-# import multiprocessing as M_P
 
 app = F.Flask(__name__)
-F_C.CORS(app)
+F_C.CORS(app, origins=["http://localhost:3000/"])
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['CORS_HEADERS'] = 'Content-Type'
