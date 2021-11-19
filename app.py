@@ -53,7 +53,7 @@ def start():
 
 
 @app.route('/ping', methods=['GET', 'POST'])  # , methods=['POST']
-@F_C.cross_origin()
+@F_C.cross_origin(supports_credentials=True)
 def Revive():
     # print("T", T.get_ident())
     # print(isAlive)
