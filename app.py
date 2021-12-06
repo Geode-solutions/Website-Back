@@ -147,8 +147,6 @@ def ListExtensions(ObjectsList):
     return List  # Returns the final list
 
 
-443
-
 if __name__ == '__main__':
     if not os.path.exists("./uploads"):
         os.mkdir("./uploads")
