@@ -7,10 +7,10 @@ import GeodeObjects as G_O
 import threading as T
 
 app = F.Flask(__name__)
+F_C.CORS(app)
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['CORS_HEADERS'] = 'Content-Type'
-F_C.CORS(app, origins=["https://test.geode-solutions.com"])
 isAlive = False
 
 
@@ -51,32 +51,25 @@ def start():
     return {"status": 200}
 
 
-# @app.after_request
-# def after_request(response):
-#     # response.headers.add('Access-Control-Allow-Origin', '*')
-#     # response.headers.add('Access-Control-Allow-Headers',
-#     #                      'Content-Type,Authorization')
-#     # response.headers.add('Access-Control-Allow-Methods',
-#     #                      'GET,PUT,POST,DELETE,OPTIONS')
-#     return response
-
-
-# @F_C.cross_origin(supports_credentials=True)
-@app.route('/ping', methods=['GET', 'POST'])  # , methods=['POST']
-def Revive():
-    # response = F.jsonify(message="Simple server is running")
-
-    # Enable Access-Control-Allow-Origin
-    # response.headers.add("Access-Control-Allow-Origin",
-    #                      "http://localhost:3000/")
+@app.after_request
+def after_request(response):
     # response.headers.add('Access-Control-Allow-Origin', '*')
     # response.headers.add('Access-Control-Allow-Headers',
     #                      'Content-Type,Authorization')
-    # response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    # response.headers.add('Access-Control-Allow-Methods',
+    #                      'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
+
+@app.route('/ping', methods=['GET', 'POST', 'OPTIONS'])  # , methods=['POST']
+@F_C.cross_origin(supports_credentials=True)
+def Revive():
+    response = F.jsonify(message="Simple server is running")
+
     update_or_kill(True)
     # print(isAlive)
-    return {"status": 200}
-    # return response
+    # return {"status": 200}
+    return response
     # response = F.jsonify({'some': 'data'})
     # response.headers.add('Access-Control-Allow-Origin', '*')
     # return response
@@ -162,5 +155,5 @@ if __name__ == '__main__':
 
     # set_interval(update_or_kill, False, 30)
 
-    app.run(debug=True, host='0.0.0.0', port=443,
-            threaded=False, ssl_context='adhoc')  # , ssl_context='adhoc'
+    app.run(debug=True, host='0.0.0.0', port=5000,
+            threaded=False)  # , ssl_context='adhoc'
