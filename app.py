@@ -69,7 +69,9 @@ def Revive():
 @F_C.cross_origin()
 def AllowedFiles():
     ObjectsList = G_O.ObjectsList()
-    return {"extensions": ListExtensions(ObjectsList)}
+    response = F.jsonify({"extensions": ListExtensions(ObjectsList)})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/allowedObjects', methods=['GET', 'OPTIONS'])
