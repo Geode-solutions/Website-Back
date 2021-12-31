@@ -65,7 +65,7 @@ def Revive():
     return response
 
 
-@app.route('/allowedfiles', methods=['GET'])
+@app.route('/allowedfiles', methods=['GET', 'OPTIONS'])
 @F_C.cross_origin()
 def AllowedFiles():
     ObjectsList = G_O.ObjectsList()
