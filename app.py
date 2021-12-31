@@ -37,7 +37,7 @@ def set_interval(func, args, sec):
     return t
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def test():
     return "Coucou"
 
@@ -51,16 +51,6 @@ def start():
     return {"status": 200}
 
 
-@app.after_request
-def after_request(response):
-    # response.headers.add('Access-Control-Allow-Origin', '*')
-    # response.headers.add('Access-Control-Allow-Headers',
-    #                      'Content-Type,Authorization')
-    # response.headers.add('Access-Control-Allow-Methods',
-    #                      'GET,PUT,POST,DELETE,OPTIONS')
-    return response
-
-
 @app.route('/ping', methods=['GET'])  # , methods=['POST']
 @F_C.cross_origin(supports_credentials=True)
 def Revive():
@@ -69,10 +59,10 @@ def Revive():
     update_or_kill(True)
     # print(isAlive)
     # return {"status": 200}
-    return response
-    # response = F.jsonify({'some': 'data'})
-    # response.headers.add('Access-Control-Allow-Origin', '*')
     # return response
+    # response = F.jsonify({'some': 'data'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/allowedfiles', methods=['GET'])
