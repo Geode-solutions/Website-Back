@@ -61,7 +61,7 @@ def after_request(response):
     return response
 
 
-@app.route('/ping', methods=['GET', 'POST', 'OPTIONS'])  # , methods=['POST']
+@app.route('/ping', methods=['GET'])  # , methods=['POST']
 @F_C.cross_origin(supports_credentials=True)
 def Revive():
     response = F.jsonify(message="Simple server is running")
@@ -75,14 +75,14 @@ def Revive():
     # return response
 
 
-@app.route('/allowedfiles', methods=['POST', 'OPTIONS'])
+@app.route('/allowedfiles', methods=['GET'])
 @F_C.cross_origin()
 def AllowedFiles():
     ObjectsList = G_O.ObjectsList()
     return {"extensions": ListExtensions(ObjectsList)}
 
 
-@app.route('/allowedObjects', methods=['POST', 'OPTIONS'])
+@app.route('/allowedObjects', methods=['GET'])
 def AllowedObjects():
     FileName = F.request.form['fileName']
     (_, file_extension) = os.path.splitext(FileName)
@@ -90,23 +90,22 @@ def AllowedObjects():
     return {"objects": ListObjects(ObjectsList, file_extension[1:])}
 
 
-@app.route('/readfile', methods=['POST', 'OPTIONS'])
+@app.route('/readfile', methods=['GET'])
 def UploadFile():
-    if F.request.method == 'POST':
-        File = F.request.form['file']
-        if File:
-            FileDecoded = B64.b64decode(File.split(',')[1])
-            filename = os.path.join(
-                app.config['UPLOAD_FOLDER'], F.request.form['filename'])
-            f = open(filename, "wb")
-            f.write(FileDecoded)  # Writes in the file
-            f.close()  # Closes
+    File = F.request.form['file']
+    if File:
+        FileDecoded = B64.b64decode(File.split(',')[1])
+        filename = os.path.join(
+            app.config['UPLOAD_FOLDER'], F.request.form['filename'])
+        f = open(filename, "wb")
+        f.write(FileDecoded)  # Writes in the file
+        f.close()  # Closes
 
-            model = O_G.load_brep(filename)
-            # model = getattr(O_G, "load_brep")(filename)
-            return {"status": 200, "nb surfaces": model.nb_surfaces(), "name": model.name()}
-        else:
-            return {"status": 500}
+        model = O_G.load_brep(filename)
+        # model = getattr(O_G, "load_brep")(filename)
+        return {"status": 200, "nb surfaces": model.nb_surfaces(), "name": model.name()}
+    else:
+        return {"status": 500}
 
 
 def ListObjects(ObjectsList, Extension):
