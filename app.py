@@ -72,7 +72,7 @@ def AllowedFiles():
     return {"extensions": ListExtensions(ObjectsList)}
 
 
-@app.route('/allowedObjects', methods=['GET'])
+@app.route('/allowedObjects', methods=['GET', 'OPTIONS'])
 def AllowedObjects():
     FileName = F.request.form['fileName']
     (_, file_extension) = os.path.splitext(FileName)
