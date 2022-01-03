@@ -15,6 +15,8 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 # app.config['APPLICATION_ROOT'] = ID
 isAlive = False
 
+ID = os.environ['ID']
+
 
 def update_or_kill(update):
     global isAlive
@@ -39,14 +41,14 @@ def set_interval(func, args, sec):
     return t
 
 
-@app.route('/', methods=['GET'])
+@app.route('/' + ID + '/', methods=['GET'])
 def test():
     return "Coucou"
 
 
-@app.route('/f74f170f02a24017bfad1d5f0d075528/start', methods=['POST'])
+@app.route('/' + ID + '/start', methods=['POST'])
 def start():
-
+    print("ID : ", ID)
     print(isAlive)
     set_interval(update_or_kill, False, 40)
     print(isAlive)
