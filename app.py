@@ -41,12 +41,12 @@ def set_interval(func, args, sec):
     return t
 
 
-@app.route('/' + ID + '/', methods=['GET'])
+@app.route('/', methods=['GET'])
 def test():
     return "Coucou"
 
 
-@app.route('/' + ID + '/start', methods=['POST'])
+@app.route('/start', methods=['POST'])
 def start():
     print("ID : ", ID)
     print(isAlive)
