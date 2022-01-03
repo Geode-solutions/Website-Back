@@ -12,6 +12,7 @@ F_C.CORS(app,
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['CORS_HEADERS'] = 'Content-Type'
+# app.config['APPLICATION_ROOT'] = ID
 isAlive = False
 
 
@@ -43,7 +44,7 @@ def test():
     return "Coucou"
 
 
-@app.route('/start', methods=['POST'])
+@app.route('d43d0067d8dc49fba8830cd63120c57b/start', methods=['POST'])
 def start():
 
     print(isAlive)
