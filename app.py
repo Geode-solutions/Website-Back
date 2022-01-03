@@ -7,8 +7,12 @@ import GeodeObjects as G_O
 import threading as T
 
 app = F.Flask(__name__)
-F_C.CORS(app, origins=["http://localhost:3000",
-         "https://test.geode-solutions.com"])
+F_C.CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:3000",
+         "https://test.geode-solutions.com"]
+    }
+})
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['CORS_HEADERS'] = 'Content-Type'
