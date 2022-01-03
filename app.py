@@ -44,7 +44,7 @@ def test():
     return "Coucou"
 
 
-@app.route('/start', methods=['POST'])
+@app.route('967757ae618f487696c377c6b5aa586a/start', methods=['POST'])
 def start():
 
     print(isAlive)
