@@ -12,10 +12,10 @@ F_C.CORS(app,
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['CORS_HEADERS'] = 'Content-Type'
-# app.config['APPLICATION_ROOT'] = ID
 isAlive = False
 
 ID = os.environ['ID']
+app.config["APPLICATION_ROOT"] = "/" + ID
 
 
 def update_or_kill(update):
