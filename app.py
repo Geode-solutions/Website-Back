@@ -7,7 +7,8 @@ import GeodeObjects as G_O
 import threading as T
 
 app = F.Flask(__name__)
-F_C.CORS(app, support_credentials=True)
+F_C.CORS(app, origins=["http://localhost:3000",
+         "https://test.geode-solutions.com"])
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -65,12 +66,11 @@ def Revive():
     return response
 
 
-@app.route('/allowedfiles', methods=['GET', 'OPTIONS'])
+@app.route('/allowedfiles', methods=['GET'])
 @F_C.cross_origin(supports_credentials=True)
 def AllowedFiles():
     ObjectsList = G_O.ObjectsList()
     response = F.jsonify({"extensions": ListExtensions(ObjectsList)})
-    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
