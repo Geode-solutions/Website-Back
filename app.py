@@ -47,7 +47,7 @@ def test():
     return "Coucou"
 
 
-@app.route('/start', methods=['POST', 'OPTIONS'])
+@app.route('/start', methods=['POST'])
 def start():
 
     print(isAlive)
@@ -57,7 +57,6 @@ def start():
 
 
 @app.route('/ping', methods=['GET'])  # , methods=['POST']
-@F_C.cross_origin(supports_credentials=True)
 def Revive():
     response = F.jsonify(message="Simple server is running")
 
@@ -66,12 +65,10 @@ def Revive():
     # return {"status": 200}
     # return response
     # response = F.jsonify({'some': 'data'})
-    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
 @app.route('/allowedfiles', methods=['GET'])
-@F_C.cross_origin(supports_credentials=True)
 def AllowedFiles():
     ObjectsList = G_O.ObjectsList()
     response = F.jsonify({"extensions": ListExtensions(ObjectsList)})
