@@ -145,6 +145,7 @@ if __name__ == '__main__':
         os.mkdir("./uploads")
 
     # set_interval(update_or_kill, False, 30)
+    print(os.environ)
     print(ID)
     app.run(debug=True, host='0.0.0.0', port=5000,
             threaded=False, ssl_context='adhoc')  # , ssl_context='adhoc'
