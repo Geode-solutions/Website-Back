@@ -1,5 +1,5 @@
 import flask
-# import flask_cors
+import flask_cors
 import os
 import opengeode  # Importe le package OpenGeode
 import base64
@@ -7,7 +7,7 @@ import GeodeObjects
 import threading
 
 routes = flask.Blueprint('routes', __name__)
-# flask_cors.CORS(routes)
+flask_cors.CORS(routes)
 isAlive = False
 
 
