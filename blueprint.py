@@ -54,14 +54,14 @@ def ping():
     return response
 
 
-@routes.route('/allowedfiles', methods=['GET'])
+@routes.route('/allowedfiles', methods=['POST'])
 def allowedfiles():
     ObjectsList = GeodeObjects.ObjectsList()
     response = flask.jsonify({"extensions": ListExtensions(ObjectsList)})
     return response
 
 
-@routes.route('/allowedobjects', methods=['GET'])
+@routes.route('/allowedobjects', methods=['POST'])
 def allowedobjects():
     FileName = flask.request.form['fileName']
     (_, file_extension) = os.path.splitext(FileName)
@@ -69,7 +69,7 @@ def allowedobjects():
     return {"objects": ListObjects(ObjectsList, file_extension[1:])}
 
 
-@routes.route('/readfile', methods=['GET'])
+@routes.route('/readfile', methods=['POST'])
 def readfile():
     UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
     File = flask.request.form['file']
