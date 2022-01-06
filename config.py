@@ -9,7 +9,7 @@ if os.path.isfile('./.env'):
 
 class Config(object):
     FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
-    PORT = '5000'
+    PORT = 5000
     CORS_HEADERS = 'Content-Type'
     UPLOAD_FOLDER = './uploads'
 
