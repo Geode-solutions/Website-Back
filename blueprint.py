@@ -47,7 +47,7 @@ def start():
     return {"status": 200}
 
 
-@routes.route('/ping', methods=['GET'])
+@routes.route('/ping', methods=['POST'])
 def ping():
     response = flask.jsonify(message="Simple server is running")
     update_or_kill(True)
