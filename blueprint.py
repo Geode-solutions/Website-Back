@@ -60,7 +60,7 @@ def allowedfiles():
     return response
 
 
-@routes.route('/allowedobjects', methods=['GET'])
+@routes.route('/allowedobjects', methods=['GET', 'OPTIONS'])
 def allowedobjects():
     FileName = flask.request.form['fileName']
     (_, file_extension) = os.path.splitext(FileName)
