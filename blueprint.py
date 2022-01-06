@@ -7,10 +7,8 @@ import GeodeObjects
 import threading
 
 routes = flask.Blueprint('routes', __name__)
+flask_cors.CORS(routes)
 isAlive = False
-
-ORIGINS = flask.current_app.config['ORIGINS']
-flask_cors.CORS(routes, origins=ORIGINS)
 
 
 def update_or_kill(update):
