@@ -32,7 +32,6 @@ else:
     app.register_blueprint(routes, url_prefix="/")
 
 flask_cors.CORS(app, origins=ORIGINS)
-flask_cors.CORS(routes, origins=ORIGINS)
 
 ''' Main '''
 if __name__ == '__main__':
