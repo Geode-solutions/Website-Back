@@ -1,4 +1,5 @@
 import flask
+import flask_cors
 import os
 import opengeode  # Importe le package OpenGeode
 import base64
@@ -6,8 +7,10 @@ import GeodeObjects
 import threading
 
 routes = flask.Blueprint('routes', __name__)
-# UPLOAD_FOLDER = current_app.config['UPLOAD_FOLDER']
 isAlive = False
+
+ORIGINS = flask.current_app.config['ORIGINS']
+flask_cors.CORS(routes, origins=ORIGINS)
 
 
 def update_or_kill(update):
