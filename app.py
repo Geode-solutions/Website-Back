@@ -27,6 +27,7 @@ ORIGINS = app.config.get('ORIGINS')
 
 if ID != None:
     app.register_blueprint(routes, url_prefix="/" + ID)
+    print("ID: ", ID)
 else:
     app.register_blueprint(routes, url_prefix="/")
 
