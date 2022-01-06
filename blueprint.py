@@ -6,7 +6,7 @@ import GeodeObjects
 import threading
 
 routes = flask.Blueprint('routes', __name__)
-# UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
+UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
 isAlive = False
 
 
