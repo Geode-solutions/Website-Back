@@ -13,16 +13,16 @@ isAlive = False
 
 def update_or_kill(update):
     global isAlive
-    print("T", threading.get_ident())
+    # print("T", threading.get_ident())
     if update:
         isAlive = True
     else:
         if not isAlive:
             os._exit(0)
         else:
-            print("isAlive", isAlive, flush=True)
+            # print("isAlive", isAlive, flush=True)
             isAlive = False
-            print("isAlive", isAlive, flush=True)
+            # print("isAlive", isAlive, flush=True)
 
 
 def set_interval(func, args, sec):
@@ -41,9 +41,9 @@ def root():
 
 @routes.route('/start', methods=['POST'])
 def start():
-    print(isAlive)
+    # print(isAlive)
     set_interval(update_or_kill, False, 40)
-    print(isAlive)
+    # print(isAlive)
     return {"status": 200}
 
 
