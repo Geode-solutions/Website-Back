@@ -18,7 +18,7 @@ elif FLASK_ENV == "development":
     app.config.from_object('config.DevConfig')
 
 ID = app.config.get('ID')
-PORT = app.config.get('PORT')
+PORT = int(app.config.get('PORT'))
 CORS_HEADERS = app.config.get('CORS_HEADERS')
 UPLOAD_FOLDER = app.config.get('UPLOAD_FOLDER')
 DEBUG = app.config.get('DEBUG')
