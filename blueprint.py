@@ -6,7 +6,7 @@ import GeodeObjects
 import threading
 
 routes = flask.Blueprint('routes', __name__)
-UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
+# UPLOAD_FOLDER = current_app.config['UPLOAD_FOLDER']
 isAlive = False
 
 
@@ -60,8 +60,8 @@ def allowedfiles():
     return response
 
 
-@routes.route('/allowedObjects', methods=['GET'])
-def allowedObjects():
+@routes.route('/allowedobjects', methods=['GET'])
+def allowedobjects():
     FileName = flask.request.form['fileName']
     (_, file_extension) = os.path.splitext(FileName)
     ObjectsList = GeodeObjects.ObjectsList()
@@ -70,6 +70,7 @@ def allowedObjects():
 
 @routes.route('/readfile', methods=['GET'])
 def readfile():
+    UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
     File = flask.request.form['file']
     if File:
         FileDecoded = base64.b64decode(File.split(',')[1])
