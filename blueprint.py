@@ -87,6 +87,24 @@ def readfile():
         return {"status": 500}
 
 
+@routes.route('/convertfile', methods=['POST'])
+def readfile():
+    UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
+    File = flask.request.form['file']
+    if File:
+        FileDecoded = base64.b64decode(File.split(',')[1])
+        filename = os.path.join(UPLOAD_FOLDER, flask.request.form['filename'])
+        f = open(filename, "wb")
+        f.write(FileDecoded)  # Writes in the file
+        f.close()  # Closes
+
+        model = opengeode.load_brep(filename)
+        # model = getattr(O_G, "load_brep")(filename)
+        return {"status": 200, "nb surfaces": model.nb_surfaces(), "name": model.name()}
+    else:
+        return {"status": 500}
+
+
 def ListObjects(ObjectsList, Extension):
     """
     Purpose:
