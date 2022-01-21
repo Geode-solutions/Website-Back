@@ -1,8 +1,9 @@
 import opengeode
-
+import opengeode_io
+import opengeode_geosciences
 
 def ObjectsList():
-    return {"BRep": {"input": opengeode.BRepInputFactory, "output": opengeode.BRepOutputFactory},
+    return {"BRep": {"input": opengeode.BRepInputFactory, "output": opengeode.BRepOutputFactory, "load": opengeode.load_brep, "save": opengeode.save_brep},
             "EdgedCurve2D": {"input": opengeode.EdgedCurveInputFactory2D, "output": opengeode.EdgedCurveOutputFactory2D},
             "EdgedCurve3D": {"input": opengeode.EdgedCurveInputFactory3D, "output": opengeode.EdgedCurveOutputFactory3D},
             "Graph": {"input": opengeode.GraphInputFactory, "output": opengeode.GraphOutputFactory},
