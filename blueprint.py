@@ -6,6 +6,7 @@ import base64
 import GeodeObjects
 import threading
 import werkzeug
+import asyncio
 
 routes = flask.Blueprint('routes', __name__)
 flask_cors.CORS(routes)
@@ -106,36 +107,41 @@ def outputfileextensions():
         }
 
 @routes.route('/convertfile', methods=['POST'])
-def convertfile():
-    # try:
-    # UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
-        # object = flask.request.values['object']
-        # file = flask.request.values['file']
-        # filename = flask.request.values['filename']
-        # extension = flask.request.values['extension']
-        # # print(filename)
-        # fileDecoded = base64.b64decode(file.split(',')[1])
-        # filename = werkzeug.utils.secure_filename(filename)
-        # filePath = os.path.join(UPLOAD_FOLDER, filename)
-        # f = open(filePath, "wb") #wb = WriteBinary
-        # f.write(fileDecoded)
-        # f.close()
-        # model = await GeodeObjects.ObjectsList()[object]['load'](filePath)
-        # strictFileName = os.path.splitext(filename)[0]
-        # newFileName = strictFileName + '.' + extension
-        # print(newFileName)
-        # await GeodeObjects.ObjectsList()[object]['save'](model, os.path.join(UPLOAD_FOLDER, newFileName))
-        # try:
-        #  "file": flask.send_from_directory(directory=UPLOAD_FOLDER, path="/", filename="corbi.msh", as_attachment=True)
-    return flask.jsonify({"status": 200})
-    #     except FileNotFoundError:
-    #         flask.abort(404)
-    # except Exception as e:
-    #     return {
-    #         # "code": e.code,
-    #         # "name": e.name,
-    #         # "description": e.description,
-    #     }
+async def convertfile():
+    try:
+        UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
+        object = flask.request.values['object']
+        file = flask.request.values['file']
+        filename = flask.request.values['filename']
+        extension = flask.request.values['extension']
+
+        print(object)
+        print(filename)
+        print(extension)
+
+        fileDecoded = base64.b64decode(file.split(',')[1])
+        filename = werkzeug.utils.secure_filename(filename)
+        filePath = os.path.join(UPLOAD_FOLDER, filename)
+        f = open(filePath, "wb") #wb = WriteBinary
+        f.write(fileDecoded)
+        f.close()
+        model = GeodeObjects.ObjectsList()[object]['load'](filePath)
+
+        strictFileName = os.path.splitext(filename)[0]
+        newFileName = strictFileName + '.' + extension
+        print(newFileName)
+        GeodeObjects.ObjectsList()[object]['save'](model, os.path.join(UPLOAD_FOLDER, newFileName))
+        try:
+            return flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
+        except FileNotFoundError:
+            flask.abort(404)
+    except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
+        return {
+            "error": str(e)
+        }
     
 
 
