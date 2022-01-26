@@ -22,7 +22,7 @@ class ProdConfig(Config):
 
 
 class DevConfig(Config):
-    ID = None
+    ID = os.environ.get('ID', default=None)
     DEBUG = True
     TESTING = True
-    ORIGINS = 'https://localhost:3000'
+    ORIGINS = 'http://localhost:3000'

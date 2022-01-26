@@ -27,7 +27,6 @@ ORIGINS = app.config.get('ORIGINS')
 
 if ID != None:
     app.register_blueprint(routes, url_prefix="/" + ID)
-    # print("ID: ", ID)
 else:
     app.register_blueprint(routes, url_prefix="/")
 
@@ -37,5 +36,6 @@ flask_cors.CORS(app, origins=ORIGINS)
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.mkdir(UPLOAD_FOLDER)
+    # print(ID)
     app.run(debug=DEBUG, host='0.0.0.0', port=PORT,
             threaded=False, ssl_context='adhoc')

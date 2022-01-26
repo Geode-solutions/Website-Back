@@ -1,10 +1,12 @@
 import flask
 import flask_cors
 import os
-import opengeode  # Importe le package OpenGeode
+# import opengeode  # Importe le package OpenGeode
 import base64
 import GeodeObjects
 import threading
+import werkzeug
+import asyncio
 
 routes = flask.Blueprint('routes', __name__)
 flask_cors.CORS(routes)
@@ -13,16 +15,13 @@ isAlive = False
 
 def update_or_kill(update):
     global isAlive
-    # print("T", threading.get_ident())
     if update:
         isAlive = True
     else:
         if not isAlive:
             os._exit(0)
         else:
-            # print("isAlive", isAlive, flush=True)
             isAlive = False
-            # print("isAlive", isAlive, flush=True)
 
 
 def set_interval(func, args, sec):
@@ -36,73 +35,118 @@ def set_interval(func, args, sec):
 
 @routes.route('/', methods=['GET'])
 def root():
-    return "root"
+    try: 
+        return "root"
+    except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
+        return {
+            "error": str(e)
+        }
 
 
 @routes.route('/start', methods=['POST'])
 def start():
-    # print(isAlive)
     set_interval(update_or_kill, False, 40)
-    # print(isAlive)
     return {"status": 200}
 
 
 @routes.route('/ping', methods=['POST'])
 def ping():
-    response = flask.jsonify(message="Simple server is running")
-    update_or_kill(True)
-    return response
-
+    try:
+        response = flask.jsonify(message="Simple server is running")
+        update_or_kill(True)
+        return response
+    except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
+        return {
+            "error": str(e)
+        }
 
 @routes.route('/allowedfiles', methods=['POST'])
 def allowedfiles():
-    ObjectsList = GeodeObjects.ObjectsList()
-    response = flask.jsonify({"extensions": ListExtensions(ObjectsList)})
-    return response
-
+    try:
+        ObjectsList = GeodeObjects.ObjectsList()
+        response = flask.jsonify({"extensions": ListExtensions(ObjectsList)})
+        return response
+    except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
+        return {
+            "error": str(e)
+        }
 
 @routes.route('/allowedobjects', methods=['POST'])
 def allowedobjects():
-    FileName = flask.request.form['fileName']
-    (_, file_extension) = os.path.splitext(FileName)
-    ObjectsList = GeodeObjects.ObjectsList()
-    return {"objects": ListObjects(ObjectsList, file_extension[1:])}
+    try:
+        FileName = flask.request.form['fileName']
+        (_, file_extension) = os.path.splitext(FileName)
+        ObjectsList = GeodeObjects.ObjectsList()
 
+        return {"status": 200, "objects": ListObjects(ObjectsList, file_extension[1:])}
+    except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
+        return {
+            "error": str(e)
+        }
 
-@routes.route('/readfile', methods=['POST'])
-def readfile():
-    UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
-    File = flask.request.form['file']
-    if File:
-        FileDecoded = base64.b64decode(File.split(',')[1])
-        filename = os.path.join(UPLOAD_FOLDER, flask.request.form['filename'])
-        f = open(filename, "wb")
-        f.write(FileDecoded)  # Writes in the file
-        f.close()  # Closes
-
-        model = opengeode.load_brep(filename)
-        # model = getattr(O_G, "load_brep")(filename)
-        return {"status": 200, "nb surfaces": model.nb_surfaces(), "name": model.name()}
-    else:
-        return {"status": 500}
-
+@routes.route('/outputfileextensions', methods=['POST'])
+def outputfileextensions():
+    try:
+        object = flask.request.values['object']
+        print(object)
+        # flask.jsonify({"extensions": ListExtensions(ObjectsList)})
+        return flask.jsonify({"status": 200, "outputfileextensions": GeodeObjects.ObjectsList()[object]['output'].list_creators()})
+    except Exception as e:
+        return {
+            # "code": e.code,
+            # "name": e.name,
+            # "description": e.description,
+        }
 
 @routes.route('/convertfile', methods=['POST'])
-def readfile():
-    UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
-    File = flask.request.form['file']
-    if File:
-        FileDecoded = base64.b64decode(File.split(',')[1])
-        filename = os.path.join(UPLOAD_FOLDER, flask.request.form['filename'])
-        f = open(filename, "wb")
-        f.write(FileDecoded)  # Writes in the file
-        f.close()  # Closes
+async def convertfile():
+    try:
+        UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
+        object = flask.request.values['object']
+        file = flask.request.values['file']
+        filename = flask.request.values['filename']
+        extension = flask.request.values['extension']
 
-        model = opengeode.load_brep(filename)
-        # model = getattr(O_G, "load_brep")(filename)
-        return {"status": 200, "nb surfaces": model.nb_surfaces(), "name": model.name()}
-    else:
-        return {"status": 500}
+        print(object)
+        print(filename)
+        print(extension)
+
+        fileDecoded = base64.b64decode(file.split(',')[1])
+        filename = werkzeug.utils.secure_filename(filename)
+        filePath = os.path.join(UPLOAD_FOLDER, filename)
+        f = open(filePath, "wb") #wb = WriteBinary
+        f.write(fileDecoded)
+        f.close()
+        model = GeodeObjects.ObjectsList()[object]['load'](filePath)
+
+        strictFileName = os.path.splitext(filename)[0]
+        newFileName = strictFileName + '.' + extension
+        print(newFileName)
+        GeodeObjects.ObjectsList()[object]['save'](model, os.path.join(UPLOAD_FOLDER, newFileName))
+        try:
+            return flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
+        except FileNotFoundError:
+            flask.abort(404)
+    except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
+        return {
+            "error": str(e)
+        }
+    
 
 
 def ListObjects(ObjectsList, Extension):
