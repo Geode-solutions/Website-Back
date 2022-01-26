@@ -38,10 +38,11 @@ def root():
     try: 
         return "root"
     except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
         return {
-            # "code": e.code,
-            "name": e.name,
-            "description": e.description,
+            "error": str(e)
         }
 
 
@@ -58,10 +59,11 @@ def ping():
         update_or_kill(True)
         return response
     except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
         return {
-            "code": e.code,
-            "name": e.name,
-            "description": e.description,
+            "error": str(e)
         }
 
 @routes.route('/allowedfiles', methods=['POST'])
@@ -71,10 +73,11 @@ def allowedfiles():
         response = flask.jsonify({"extensions": ListExtensions(ObjectsList)})
         return response
     except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
         return {
-            "code": e.code,
-            "name": e.name,
-            "description": e.description,
+            "error": str(e)
         }
 
 @routes.route('/allowedobjects', methods=['POST'])
@@ -86,10 +89,11 @@ def allowedobjects():
 
         return {"status": 200, "objects": ListObjects(ObjectsList, file_extension[1:])}
     except Exception as e:
+        print(e)
+        print(e.args)
+        print(type(e))
         return {
-            "code": e.code,
-            "name": e.name,
-            "description": e.description,
+            "error": str(e)
         }
 
 @routes.route('/outputfileextensions', methods=['POST'])
