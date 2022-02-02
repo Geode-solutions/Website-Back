@@ -104,10 +104,9 @@ def outputfileextensions():
         # flask.jsonify({"extensions": ListExtensions(ObjectsList)})
         return flask.jsonify({"status": 200, "outputfileextensions": GeodeObjects.ObjectsList()[object]['output'].list_creators()})
     except Exception as e:
+        print(e)
         return {
-            # "code": e.code,
-            # "name": e.name,
-            # "description": e.description,
+            "error": str(e)
         }
 
 @routes.route('/convertfile', methods=['POST'])
