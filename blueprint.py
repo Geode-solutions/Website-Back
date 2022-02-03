@@ -6,7 +6,7 @@ import base64
 import GeodeObjects
 import threading
 import werkzeug
-import asyncio
+# import asyncio
 
 routes = flask.Blueprint('routes', __name__)
 flask_cors.CORS(routes)
