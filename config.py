@@ -21,11 +21,10 @@ class ProdConfig(Config):
 class TestConfig(Config):
     DEBUG = False
     TESTING = False
-    ORIGINS = 'http://localhost:3000'
-    
+    ORIGINS = 'https://test.geode-solutions.com'
 
 
 class DevConfig(Config):
     DEBUG = True
     TESTING = True
-    ORIGINS = 'http://localhost:3000'
+    ORIGINS = ['http://localhost:3000']

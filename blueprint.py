@@ -1,37 +1,12 @@
 import flask
 import flask_cors
 import os
-# import opengeode  # Importe le package OpenGeode
 import base64
 import GeodeObjects
-import threading
 import werkzeug
-# import asyncio
 
 routes = flask.Blueprint('routes', __name__)
 flask_cors.CORS(routes)
-isAlive = False
-
-
-def update_or_kill(update):
-    global isAlive
-    if update:
-        isAlive = True
-    else:
-        if not isAlive:
-            os._exit(0)
-        else:
-            isAlive = False
-
-
-def set_interval(func, args, sec):
-    def func_wrapper():
-        set_interval(func, args, sec)
-        func(args)
-    t = threading.Timer(sec, func_wrapper)
-    t.start()
-    return t
-
 
 @routes.route('/', methods=['GET'])
 def root():
@@ -46,10 +21,10 @@ def root():
         }
 
 
-@routes.route('/start', methods=['POST'])
-def start():
-    set_interval(update_or_kill, False, 40)
-    return {"status": 200}
+# @routes.route('/start', methods=['POST'])
+# def start():
+    
+#     return {"status": 200}
 
 
 @routes.route('/ping', methods=['POST'])
@@ -101,7 +76,6 @@ def outputfileextensions():
     try:
         object = flask.request.values['object']
         print(object)
-        # flask.jsonify({"extensions": ListExtensions(ObjectsList)})
         return flask.jsonify({"status": 200, "outputfileextensions": GeodeObjects.ObjectsList()[object]['output'].list_creators()})
     except Exception as e:
         print(e)
