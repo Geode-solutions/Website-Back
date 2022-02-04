@@ -16,12 +16,13 @@ class Config(object):
 class ProdConfig(Config):
     DEBUG = False
     TESTING = False
-    ORIGINS = ['https://geode-solutions.com', 'https://api.geode-solutions.com']
+    ORIGINS = 'https://geode-solutions.com'
 
 class TestConfig(Config):
     DEBUG = False
     TESTING = False
-    ORIGINS = ['https://test.geode-solutions.com', 'https://api.geode-solutions.com']
+    ORIGINS = 'https://test.geode-solutions.com'
+
 
 class DevConfig(Config):
     DEBUG = True
