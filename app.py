@@ -3,6 +3,7 @@ import flask
 import flask_cors
 import os
 from blueprint import routes
+import threading
 
 ''' Global config '''
 app = flask.Flask(__name__)
@@ -35,9 +36,31 @@ else:
 
 flask_cors.CORS(app, origins=ORIGINS)
 
+def set_interval(func, args, sec):
+    def func_wrapper():
+        set_interval(func, args, sec)
+        func(args)
+    t = threading.Timer(sec, func_wrapper)
+    t.start()
+    return t
+
+def update_or_kill(update):
+    print(update)
+    if update:
+        if not os.path.isfile('./ping.txt'):
+            f = open('./ping.txt', 'a')
+            f.close()
+    else:
+        if not os.path.isfile('./ping.txt'):
+            os._exit(0)
+        else:
+            os.remove('./ping.txt') 
+
+
 ''' Main '''
 if __name__ == '__main__':
     if not os.path.exists(UPLOAD_FOLDER):
         os.mkdir(UPLOAD_FOLDER)
-    app.run(debug=DEBUG, host='0.0.0.0', port=PORT,
-            threaded=False, ssl_context='adhoc')
+    
+    set_interval(update_or_kill, False, 50)
+    app.run(debug=DEBUG, host='0.0.0.0', port=PORT, ssl_context='adhoc')
