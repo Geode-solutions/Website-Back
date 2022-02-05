@@ -45,10 +45,11 @@ def set_interval(func, sec):
     return t
 
 def kill():
-    print('kill')
     if not os.path.isfile('./ping.txt'):
+        print('kill')
         os._exit(0)
     else:
+        print('remove')
         os.remove('./ping.txt') 
 
 if not os.path.exists(UPLOAD_FOLDER):
