@@ -36,31 +36,26 @@ else:
 
 flask_cors.CORS(app, origins=ORIGINS)
 
-def set_interval(func, args, sec):
+def set_interval(func, sec):
     def func_wrapper():
-        set_interval(func, args, sec)
-        func(args)
+        set_interval(func, sec)
+        func()
     t = threading.Timer(sec, func_wrapper)
     t.start()
     return t
 
-def update_or_kill(update):
-    print(update)
-    if update:
-        if not os.path.isfile('./ping.txt'):
-            f = open('./ping.txt', 'a')
-            f.close()
+def kill():
+    print('kill')
+    if not os.path.isfile('./ping.txt'):
+        os._exit(0)
     else:
-        if not os.path.isfile('./ping.txt'):
-            os._exit(0)
-        else:
-            os.remove('./ping.txt') 
+        os.remove('./ping.txt') 
 
+if not os.path.exists(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
 
-''' Main '''
-if __name__ == '__main__':
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.mkdir(UPLOAD_FOLDER)
-    
-    set_interval(update_or_kill, False, 50)
-    app.run(debug=DEBUG, host='0.0.0.0', port=PORT, ssl_context='adhoc')
+set_interval(kill, 60)
+app.run(debug=DEBUG, host='0.0.0.0', port=PORT, ssl_context='adhoc')
+# ''' Main '''
+# if __name__ == '__main__':
+    # app.run(debug=False, host='0.0.0.0', port=PORT, ssl_context='adhoc')

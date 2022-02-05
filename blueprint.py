@@ -20,18 +20,14 @@ def root():
             "error": str(e)
         }
 
-
-# @routes.route('/start', methods=['POST'])
-# def start():
-    
-#     return {"status": 200}
-
-
 @routes.route('/ping', methods=['POST'])
 def ping():
     try:
         response = flask.jsonify(message="Simple server is running")
-        update_or_kill(True)
+        print('ping')
+        if not os.path.isfile('./ping.txt'):
+            f = open('./ping.txt', 'a')
+            f.close()
         return response
     except Exception as e:
         print(e)
