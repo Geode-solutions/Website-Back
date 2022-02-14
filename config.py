@@ -20,7 +20,6 @@ class TestConfig(Config):
     SSL = 'adhoc'
     ORIGINS = 'https://next.geode-solutions.com'
 
-
 class DevConfig(Config):
     DEBUG = True
     TESTING = True
