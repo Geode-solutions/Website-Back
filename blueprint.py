@@ -20,18 +20,13 @@ def root():
             "error": str(e)
         }
 
-
-# @routes.route('/start', methods=['POST'])
-# def start():
-    
-#     return {"status": 200}
-
-
 @routes.route('/ping', methods=['POST'])
 def ping():
     try:
         response = flask.jsonify(message="Simple server is running")
-        update_or_kill(True)
+        if not os.path.isfile('./ping.txt'):
+            f = open('./ping.txt', 'a')
+            f.close()
         return response
     except Exception as e:
         print(e)
@@ -99,7 +94,7 @@ async def convertfile():
         fileDecoded = base64.b64decode(file.split(',')[1])
         filename = werkzeug.utils.secure_filename(filename)
         filePath = os.path.join(UPLOAD_FOLDER, filename)
-        f = open(filePath, "wb") #wb = WriteBinary
+        f = open(filePath, "wb") # wb = WriteBinary
         f.write(fileDecoded)
         f.close()
         model = GeodeObjects.ObjectsList()[object]['load'](filePath)
@@ -119,8 +114,6 @@ async def convertfile():
         return {
             "error": str(e)
         }
-    
-
 
 def ListObjects(ObjectsList, Extension):
     """

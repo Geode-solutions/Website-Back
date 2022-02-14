@@ -4,19 +4,40 @@ import flask_cors
 import os
 from blueprint import routes
 import threading
+import dotenv
+
+if os.path.isfile('./.env'):
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    dotenv.load_dotenv(os.path.join(basedir, '.env'))
 
 ''' Global config '''
 app = flask.Flask(__name__)
 
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func()
+    t = threading.Timer(sec, func_wrapper)
+    t.daemon = True
+    t.start()
+    return t
+
+def kill():
+    if not os.path.isfile('./ping.txt'):
+        os._exit(0)
+    else:
+        os.remove('./ping.txt')
+
 ''' Config variables '''
 FLASK_ENV = os.environ['FLASK_ENV']
-print('Python is running in ' + FLASK_ENV + ' mode')
 
 if FLASK_ENV == "production":
     app.config.from_object('config.ProdConfig')
+    set_interval(kill, 45)
 
-if FLASK_ENV == "test":
+elif FLASK_ENV == "test":
     app.config.from_object('config.TestConfig')
+    set_interval(kill, 45)
 
 elif FLASK_ENV == "development":
     app.config.from_object('config.DevConfig')
@@ -28,39 +49,19 @@ UPLOAD_FOLDER = app.config.get('UPLOAD_FOLDER')
 DEBUG = app.config.get('DEBUG')
 TESTING = app.config.get('TESTING')
 ORIGINS = app.config.get('ORIGINS')
+SSL = app.config.get('SSL')
 
 if ID != None:
     app.register_blueprint(routes, url_prefix="/" + ID)
 else:
     app.register_blueprint(routes, url_prefix="/")
 
+if not os.path.exists(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
+
 flask_cors.CORS(app, origins=ORIGINS)
 
-def set_interval(func, args, sec):
-    def func_wrapper():
-        set_interval(func, args, sec)
-        func(args)
-    t = threading.Timer(sec, func_wrapper)
-    t.start()
-    return t
-
-def update_or_kill(update):
-    print(update)
-    if update:
-        if not os.path.isfile('./ping.txt'):
-            f = open('./ping.txt', 'a')
-            f.close()
-    else:
-        if not os.path.isfile('./ping.txt'):
-            os._exit(0)
-        else:
-            os.remove('./ping.txt') 
-
-
-''' Main '''
+# ''' Main '''
 if __name__ == '__main__':
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.mkdir(UPLOAD_FOLDER)
-    
-    set_interval(update_or_kill, False, 50)
-    app.run(debug=DEBUG, host='0.0.0.0', port=PORT, ssl_context='adhoc')
+    print('Python is running in ' + FLASK_ENV + ' mode')
+    app.run(debug=DEBUG, host='0.0.0.0', port=PORT, ssl_context=SSL)
