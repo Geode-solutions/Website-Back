@@ -34,12 +34,10 @@ FLASK_ENV = os.environ['FLASK_ENV']
 if FLASK_ENV == "production":
     app.config.from_object('config.ProdConfig')
     set_interval(kill, 45)
-
 elif FLASK_ENV == "test":
     app.config.from_object('config.TestConfig')
     set_interval(kill, 45)
-
-elif FLASK_ENV == "development":
+else:
     app.config.from_object('config.DevConfig')
 
 ID = app.config.get('ID')
@@ -51,6 +49,7 @@ TESTING = app.config.get('TESTING')
 ORIGINS = app.config.get('ORIGINS')
 SSL = app.config.get('SSL')
 
+
 if ID != None:
     app.register_blueprint(routes, url_prefix="/" + ID)
 else:
@@ -60,6 +59,11 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 
 flask_cors.CORS(app, origins=ORIGINS)
+
+# For development
+@app.route('/tools/createbackend', methods=['POST'])
+def createbackend():
+    return flask.jsonify({"status": 200, "ID": str("123456")})
 
 # ''' Main '''
 if __name__ == '__main__':
