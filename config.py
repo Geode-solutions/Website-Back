@@ -12,13 +12,7 @@ class ProdConfig(Config):
     DEBUG = False
     TESTING = False
     SSL = 'adhoc'
-    ORIGINS = 'https://geode-solutions.com'
-
-class TestConfig(Config):
-    DEBUG = False
-    TESTING = False
-    SSL = 'adhoc'
-    ORIGINS = 'https://next.geode-solutions.com'
+    ORIGINS = ['https://geode-solutions.com', 'https://next.geode-solutions.com']
 
 class DevConfig(Config):
     DEBUG = True
