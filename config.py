@@ -24,4 +24,4 @@ class DevConfig(Config):
     DEBUG = True
     TESTING = True
     SSL = None
-    ORIGINS = ['http://localhost:3000']
+    ORIGINS = 'http://localhost:3000'
