@@ -31,7 +31,7 @@ def kill():
 ''' Config variables '''
 FLASK_ENV = os.environ['FLASK_ENV']
 
-if FLASK_ENV == "production" or FLASK_ENV == "test":
+if FLASK_ENV == "production":
     app.config.from_object('config.ProdConfig')
     set_interval(kill, 45)
 else:
