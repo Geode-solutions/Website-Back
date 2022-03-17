@@ -19,8 +19,10 @@ jobs:
         pip install -r requirements.txt
         pytest -v tests
       env:
-        FLASK_ENV: development
-        ID: "123456"
+      - name: FLASK_ENV
+        value: development
+      - name: ID
+        value: "123456"
     - name: GithubPackages Login
       uses: docker/login-action@v1.10.0
       with:
