@@ -1,10 +1,12 @@
 ''' Packages '''
+import os
+import dotenv
+import threading
+
 import flask
 import flask_cors
-import os
+
 from blueprint import routes
-import threading
-import dotenv
 
 if os.path.isfile('./.env'):
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -60,7 +62,7 @@ flask_cors.CORS(app, origins=ORIGINS)
 # For development
 @app.route('/tools/createbackend', methods=['POST'])
 def createbackend():
-    return flask.jsonify({"status": 200, "ID": str("123456")})
+    return {"status": 200, "ID": str("123456")}
 
 # ''' Main '''
 if __name__ == '__main__':

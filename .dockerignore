@@ -3,6 +3,7 @@ env
 tests
 uploads
 .env
+.vscode
 ping.txt
 Architecture.drawio
 Architecture.svg

@@ -10,76 +10,72 @@ flask_cors.CORS(routes)
 
 @routes.route('/', methods=['GET'])
 def root():
-    return flask.jsonify({"status": 200})
+    return flask.make_response({"message": "root"}, 200)
 
 @routes.route('/ping', methods=['POST'])
 def ping():
-    try:
-        if not os.path.isfile('./ping.txt'):
-            f = open('./ping.txt', 'a')
-            f.close()
-        return flask.jsonify({"status": 200})
-    except Exception as e:
-        print("error : ", str(e))
-        return flask.jsonify({"status": 500, "error_message": str(e)})
+    if not os.path.isfile('./ping.txt'):
+        f = open('./ping.txt', 'a')
+        f.close()
+    return flask.make_response({"message": "Flask server is running"}, 200)
 
 @routes.route('/allowedfiles', methods=['POST'])
 def allowedfiles():
-    try:
-        ObjectsList = GeodeObjects.ObjectsList()
-        return flask.jsonify({"status": 200, "extensions": ListExtensions(ObjectsList)})
-    except Exception as e:
-        print("error : ", str(e))
-        return flask.jsonify({"status": 500, "error_message": str(e)})
+    ObjectsList = GeodeObjects.ObjectsList()
+    return {"status": 200, "extensions": ListExtensions(ObjectsList)}
 
 @routes.route('/allowedobjects', methods=['POST'])
 def allowedobjects():
-    try:
-        FileName = flask.request.form['fileName']
-        (_, file_extension) = os.path.splitext(FileName)
-        ObjectsList = GeodeObjects.ObjectsList()
-        return flask.jsonify({"status": 200, "objects": ListObjects(ObjectsList, file_extension[1:])})
-    except Exception as e:
-        print("error : ", str(e))
-        return flask.jsonify({"status": 500, "error_message": str(e)})
+    filename = flask.request.form.get('filename')
+    if filename is None:
+        return flask.make_response({"error_message": "No file sent"}, 400)
+    (_, file_extension) = os.path.splitext(filename)
+    ObjectsList = GeodeObjects.ObjectsList()
+    return flask.make_response({"objects": ListObjects(ObjectsList, file_extension[1:])}, 200)
 
 @routes.route('/outputfileextensions', methods=['POST'])
 def outputfileextensions():
-    try:
-        object = flask.request.values['object']
-        return flask.jsonify({"status": 200, "outputfileextensions": GeodeObjects.ObjectsList()[object]['output'].list_creators()})
-    except Exception as e:
-        print("error : ", str(e))
-        return flask.jsonify({"status": 500, "error_message": str(e)})
+    object = flask.request.form.get('object')
+    if object is None:
+        return flask.make_response({"error_message": "No object sent"}, 400)
+    return flask.make_response({"outputfileextensions": GeodeObjects.ObjectsList()[object]['output'].list_creators()}, 200)
 
 @routes.route('/convertfile', methods=['POST'])
 async def convertfile():
     try:
         UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
-        object = flask.request.values['object']
-        file = flask.request.values['file']
-        filename = flask.request.values['filename']
-        extension = flask.request.values['extension']
+        object = flask.request.form.get('object')
+        file = flask.request.form.get('file')
+        filename = flask.request.form.get('filename')
+        extension = flask.request.form.get('extension')
+        
+        if object is None:
+            return flask.make_response({"error_message": "No object sent"}, 400)
+        elif file is None:
+            return flask.make_response({"error_message": "No file sent"}, 400)
+        elif filename is None:
+            return flask.make_response({"error_message": "No filename sent"}, 400)
+        elif extension is None:
+            return flask.make_response({"error_message": "No extension sent"}, 400)
 
-        fileDecoded = base64.b64decode(file.split(',')[1])
+        fileDecoded = base64.b64decode(file.split(',')[-1])
         filename = werkzeug.utils.secure_filename(filename)
         filePath = os.path.join(UPLOAD_FOLDER, filename)
         f = open(filePath, "wb") # wb = WriteBinary
         f.write(fileDecoded)
         f.close()
         model = GeodeObjects.ObjectsList()[object]['load'](filePath)
-
         strictFileName = os.path.splitext(filename)[0]
         newFileName = strictFileName + '.' + extension
-        print(newFileName)
+
         GeodeObjects.ObjectsList()[object]['save'](model, os.path.join(UPLOAD_FOLDER, newFileName))
         try:
             return flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
         except FileNotFoundError:
-            flask.abort(404)
+            flask.make_response({"error_message": "File not found"}, 404)
     except Exception as e:
         print("error : ", str(e))
-        return flask.jsonify({"status": 500, "error_message": str(e)})
+        return {"status": 500, "error_message": str(e)}
 
 def ListObjects(ObjectsList, Extension):
     """
