@@ -17,7 +17,7 @@ def ping():
     if not os.path.isfile('./ping.txt'):
         f = open('./ping.txt', 'a')
         f.close()
-        print("Pong")
+    print("Pong")
     return flask.make_response({"message": "Flask server is running"}, 200)
 
 @routes.route('/allowedfiles', methods=['POST'])
