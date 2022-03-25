@@ -9,10 +9,10 @@ Flask-Cors==3.0.10
 itsdangerous==2.0.1
 Jinja2==3.0.3
 MarkupSafe==2.0.1
-OpenGeode-core==9.6.4
-OpenGeode-Geosciences==5.3.1
-OpenGeode-GeosciencesIO==3.6.0
-OpenGeode-IO==5.16.1
+OpenGeode-core==10.0.26
+OpenGeode-Geosciences==5.4.1
+OpenGeode-GeosciencesIO==3.7.1
+OpenGeode-IO==5.18.2
 pycparser==2.21
 python-dotenv==0.19.2
 six==1.16.0
