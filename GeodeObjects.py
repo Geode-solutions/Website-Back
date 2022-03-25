@@ -1,6 +1,7 @@
 import opengeode
 import opengeode_io
 import opengeode_geosciences
+import opengeode_geosciencesio
 
 def ObjectsList():
     return {"BRep": {"input": opengeode.BRepInputFactory, "output": opengeode.BRepOutputFactory, "load": opengeode.load_brep, "save": opengeode.save_brep},
