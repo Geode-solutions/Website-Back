@@ -4,6 +4,7 @@ import os
 import base64
 import GeodeObjects
 import werkzeug
+import pkg_resources
 
 routes = flask.Blueprint('routes', __name__)
 flask_cors.CORS(routes)
@@ -22,7 +23,8 @@ def ping():
 @routes.route('/allowedfiles', methods=['POST'])
 def allowedfiles():
     ObjectsList = GeodeObjects.ObjectsList()
-    return {"status": 200, "extensions": ListExtensions(ObjectsList)}
+    extensions = ListExtensions(ObjectsList, "input")
+    return {"status": 200, "extensions": extensions}
 
 @routes.route('/allowedobjects', methods=['POST'])
 def allowedobjects():
@@ -38,7 +40,8 @@ def outputfileextensions():
     object = flask.request.form.get('object')
     if object is None:
         return flask.make_response({"error_message": "No object sent"}, 400)
-    return flask.make_response({"outputfileextensions": GeodeObjects.ObjectsList()[object]['output'].list_creators()}, 200)
+    list = GeodeObjects.ObjectsList()[object]['output'].list_creators()
+    return flask.make_response({"outputfileextensions": list}, 200)
 
 @routes.route('/convertfile', methods=['POST'])
 async def convertfile():
@@ -94,7 +97,6 @@ def ListObjects(ObjectsList, Extension):
             if type not in List:  # If object's name isn't already in the list
                 List.append(type)  # Adds the object's name to the list
     return List  # Returns the final list
-
 
 def ListExtensions(ObjectsList):
     """
