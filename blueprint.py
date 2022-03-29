@@ -4,7 +4,6 @@ import os
 import base64
 import GeodeObjects
 import werkzeug
-import pkg_resources
 
 routes = flask.Blueprint('routes', __name__)
 flask_cors.CORS(routes)
@@ -22,8 +21,7 @@ def ping():
 
 @routes.route('/allowedfiles', methods=['POST'])
 def allowedfiles():
-    ObjectsList = GeodeObjects.ObjectsList()
-    extensions = ListExtensions(ObjectsList, "input")
+    extensions = MakeList(type = 'input')
     return {"status": 200, "extensions": extensions}
 
 @routes.route('/allowedobjects', methods=['POST'])
@@ -31,9 +29,14 @@ def allowedobjects():
     filename = flask.request.form.get('filename')
     if filename is None:
         return flask.make_response({"error_message": "No file sent"}, 400)
-    (_, file_extension) = os.path.splitext(filename)
-    ObjectsList = GeodeObjects.ObjectsList()
-    return flask.make_response({"objects": ListObjects(ObjectsList, file_extension[1:])}, 200)
+    file_extension = os.path.splitext(filename)[1:]
+    print(file_extension)
+
+    # # ObjectsList = GeodeObjects.ObjectsList()
+    objects = MakeList(extension=file_extension)
+    # # ListObjects(ObjectsList, file_extension[1:])
+    return flask.make_response({"objects": objects}, 200)
+    # return flask.make_response({}, 200)
 
 @routes.route('/outputfileextensions', methods=['POST'])
 def outputfileextensions():
@@ -41,6 +44,7 @@ def outputfileextensions():
     if object is None:
         return flask.make_response({"error_message": "No object sent"}, 400)
     list = GeodeObjects.ObjectsList()[object]['output'].list_creators()
+    # list = Make
     return flask.make_response({"outputfileextensions": list}, 200)
 
 @routes.route('/convertfile', methods=['POST'])
@@ -96,6 +100,7 @@ def ListObjects(ObjectsList, Extension):
         if values['input'].has_creator(Extension):
             if type not in List:  # If object's name isn't already in the list
                 List.append(type)  # Adds the object's name to the list
+    List.sort()
     return List  # Returns the final list
 
 def ListExtensions(ObjectsList):
@@ -114,4 +119,28 @@ def ListExtensions(ObjectsList):
         for Creator in Creators:  # Loop through
             if Creator not in List:  # If object's name isn't already in the list
                 List.append(Creator)  # Adds the object's name to the list
+    List.sort()
     return List  # Returns the final list
+
+def MakeList(type: str = "",
+            extension: str = ""):
+    List = []  # Initiaslizes an empty list
+    ObjectsList = GeodeObjects.ObjectsList() # Dict to loop through
+
+    if type:
+        for Object in ObjectsList.values():
+            values = Object[type]
+            for value in values:
+                creators = value.list_creators()
+                for creator in creators:  # Loop through
+                    if creator not in List:  # If object's name isn't already in the list
+                        List.append(creator)  # Adds the object's name to the list
+    elif extension:
+        for Object in ObjectsList.values():  # Loops through objects
+            # If object can handle this extension
+            inputs = Object['input']
+            if inputs.has_creator(extension):
+                if type not in List:  # If object's name isn't already in the list
+                    List.append(type)  # Adds the object's name to the list
+    List.sort()
+    return List
