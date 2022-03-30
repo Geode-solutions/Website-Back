@@ -66,6 +66,15 @@ def test_outputfileextensions(client):
     for outputfileextension in list_outputfileextensions:
         assert outputfileextension in outputfileextensions
 
+    # Normal test with object
+    response = client.post(f"/{ID}/outputfileextensions", data={"object": "TriangulatedSurface3D"})
+    assert response.status_code == 200
+    outputfileextensions = response.json["outputfileextensions"]
+    assert type(outputfileextensions) is list
+    list_outputfileextensions = ["obj", "og_tsf3d", "stl", "vtp"]
+    for outputfileextension in list_outputfileextensions:
+        assert outputfileextension in outputfileextensions
+
     # Test without object
     response = client.post(f"/{ID}/outputfileextensions")
     assert response.status_code == 400
