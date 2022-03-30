@@ -103,7 +103,7 @@ def ListObjects(extension: str):
     Purpose:
         Function that returns a list of objects that can handle a file, given his extension
     Args:
-        extension -- The exention of the file
+        extension -- The extension of the file
     Returns:
         An ordered list of object's names
     """
