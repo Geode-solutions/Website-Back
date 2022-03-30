@@ -32,7 +32,6 @@ def test_allowedobjects(client):
     assert response.status_code == 200
     objects = response.json["objects"]
     assert type(objects) is list
-    list_objects = ["HybridSolid3D", "PolyhedralSolid3D", "TetrahedralSolid3D"]
     assert "BRep" in objects
 
     # Normal test with filename .vtu
