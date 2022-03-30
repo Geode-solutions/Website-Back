@@ -28,15 +28,25 @@ def test_allowedfiles(client):
     assert response.status_code == 200
     extensions = response.json["extensions"]
     assert type(extensions) is list
-    assert "og_brep" in extensions
+    list_extensions = ["dxf", "lso", "ml", "msh", "obj", "og_brep", "og_edc2d", "og_edc3d", "og_grp", "og_hso3d", "og_psf2d", "og_psf3d", "og_pso3d", "og_pts2d", "og_pts3d", "og_rgd2d", "og_rgd3d", "og_sctn", "og_strm", "og_tsf2d", "og_tsf3d", "og_tso3d", "og_vts", "og_xsctn", "ply", "smesh", "stl", "svg", "ts", "vtp", "vtu", "wl"]
+    for extension in list_extensions:
+        assert extension in extensions
 
 def test_allowedobjects(client):
-    # Normal test with filename
+    # Normal test with filename "corbi.og_brep"
     response = client.post(f"/{ID}/allowedobjects", data={"filename": "corbi.og_brep"})
     assert response.status_code == 200
     objects = response.json["objects"]
     assert type(objects) is list
     assert "BRep" in objects
+
+    # Normal test with filename .vtu
+    response = client.post(f"/{ID}/allowedobjects", data={"filename": "toto.vtu"})
+    assert response.status_code == 200
+    objects = response.json["objects"]
+    list_objects = ["HybridSolid3D", "PolyhedralSolid3D", "TetrahedralSolid3D"]
+    for object in list_objects:
+        assert object in objects
 
     # Test with stupid filename
     response = client.post(f"/{ID}/allowedobjects", data={"filename": "toto.txt"})
@@ -57,8 +67,27 @@ def test_outputfileextensions(client):
     assert response.status_code == 200
     outputfileextensions = response.json["outputfileextensions"]
     assert type(outputfileextensions) is list
-    assert "og_brep" in outputfileextensions
-    assert "msh" in outputfileextensions
+    list_outputfileextensions = ["msh", "og_brep"]
+    for outputfileextension in list_outputfileextensions:
+        assert outputfileextension in outputfileextensions
+
+    # Normal test with object
+    response = client.post(f"/{ID}/outputfileextensions", data={"object": "TriangulatedSurface3D"})
+    assert response.status_code == 200
+    outputfileextensions = response.json["outputfileextensions"]
+    assert type(outputfileextensions) is list
+    list_outputfileextensions = ["obj", "og_tsf3d", "stl", "vtp"]
+    for outputfileextension in list_outputfileextensions:
+        assert outputfileextension in outputfileextensions
+
+    # Normal test with object
+    response = client.post(f"/{ID}/outputfileextensions", data={"object": "StructuralModel"})
+    assert response.status_code == 200
+    outputfileextensions = response.json["outputfileextensions"]
+    assert type(outputfileextensions) is list
+    list_outputfileextensions = ["lso", "ml", "msh", "og_brep", "og_strm"]
+    for outputfileextension in list_outputfileextensions:
+        assert outputfileextension in outputfileextensions
 
     # Test without object
     response = client.post(f"/{ID}/outputfileextensions")
@@ -132,3 +161,5 @@ def test_convertfile(client):
     assert response.status_code == 400
     error_message = response.json["error_message"]
     assert error_message == "No extension sent"
+
+
