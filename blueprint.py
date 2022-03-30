@@ -79,13 +79,14 @@ async def convertfile():
         newFileName = strictFileName + '.' + extension
 
         GeodeObjects.ObjectsList()[object]['save'](model, os.path.join(UPLOAD_FOLDER, newFileName))
-        try:
-            return flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
-        except FileNotFoundError:
-            flask.make_response({"error_message": "File not found"}, 404)
+        return flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
+    except FileNotFoundError:
+        return flask.make_response({"error_message": "File not found"}, 404)
+    except RuntimeError as e:
+        return flask.make_response({"error_message": str(e)}, 500)
     except Exception as e:
         print("error : ", str(e))
-        return {"status": 500, "error_message": str(e)}
+        return flask.make_response({"error_message": str(e)}, 500)
 
 def ListAllInputExtensions():
     """
