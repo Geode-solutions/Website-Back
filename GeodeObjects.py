@@ -5,7 +5,7 @@ import opengeode_geosciencesio
 
 def ObjectsList():
     return {"BRep": {"input": [ opengeode.BRepInputFactory ], "output": [ opengeode.BRepOutputFactory ], "load": opengeode.load_brep, "save": opengeode.save_brep},
-            "CrossSection": {"input": [ opengeode_geosciences.CrossSectionInputFactory ], "output": [ opengeode_geosciences.CrossSectionOutputFactory ], "load": opengeode_geosciences.load_cross_section, "save": opengeode_geosciences.save_cross_section},
+            "CrossSection": {"input": [ opengeode_geosciences.CrossSectionInputFactory ], "output": [ opengeode.SectionOutputFactory, opengeode_geosciences.CrossSectionOutputFactory ], "load": opengeode_geosciences.load_cross_section, "save": opengeode_geosciences.save_cross_section},
             "EdgedCurve2D": {"input": [ opengeode.EdgedCurveInputFactory2D ], "output": [ opengeode.EdgedCurveOutputFactory2D ], "load": opengeode.load_edged_curve2D, "save": opengeode.save_edged_curve2D},
             "EdgedCurve3D": {"input": [ opengeode.EdgedCurveInputFactory3D ], "output": [ opengeode.EdgedCurveOutputFactory3D ], "load": opengeode.load_edged_curve3D, "save": opengeode.save_edged_curve3D},
             "Graph": {"input": [ opengeode.GraphInputFactory ], "output": [ opengeode.GraphOutputFactory ], "load": opengeode.load_graph, "save": opengeode.save_graph},
