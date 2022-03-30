@@ -75,6 +75,15 @@ def test_outputfileextensions(client):
     for outputfileextension in list_outputfileextensions:
         assert outputfileextension in outputfileextensions
 
+    # Normal test with object
+    response = client.post(f"/{ID}/outputfileextensions", data={"object": "StructuralModel"})
+    assert response.status_code == 200
+    outputfileextensions = response.json["outputfileextensions"]
+    assert type(outputfileextensions) is list
+    list_outputfileextensions = ["lso", "ml", "msh", "og_brep", "og_strm"]
+    for outputfileextension in list_outputfileextensions:
+        assert outputfileextension in outputfileextensions
+
     # Test without object
     response = client.post(f"/{ID}/outputfileextensions")
     assert response.status_code == 400
