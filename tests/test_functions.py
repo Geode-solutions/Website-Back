@@ -13,6 +13,12 @@ def test_root(client):
     response = client.get(f"/{ID}/")
     assert response.status_code == 200
 
+def test_versions(client):
+    response = client.get(f"/{ID}/versions")
+    assert response.status_code == 200
+    versions = response.json["versions"]
+    assert type(versions) is dict
+
 def test_ping(client):
     response = client.post(f"/{ID}/ping")
     assert response.status_code == 200

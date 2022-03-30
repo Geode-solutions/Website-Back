@@ -4,6 +4,7 @@ import os
 import base64
 import GeodeObjects
 import werkzeug
+import pkg_resources
 
 routes = flask.Blueprint('routes', __name__)
 flask_cors.CORS(routes)
@@ -11,6 +12,14 @@ flask_cors.CORS(routes)
 @routes.route('/', methods=['GET'])
 def root():
     return flask.make_response({"message": "root"}, 200)
+
+@routes.route('/versions', methods=['GET'])
+def versions():
+    list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO']
+    list_with_versions = {}
+    for package in list_packages:
+        list_with_versions[package] = pkg_resources.get_distribution(package).version
+    return flask.make_response({"versions": list_with_versions}, 200)
 
 @routes.route('/ping', methods=['POST'])
 def ping():
