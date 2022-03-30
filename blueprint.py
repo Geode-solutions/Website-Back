@@ -21,24 +21,25 @@ def ping():
 
 @routes.route('/allowedfiles', methods=['POST'])
 def allowedfiles():
-    ObjectsList = GeodeObjects.ObjectsList()
-    return {"status": 200, "extensions": ListExtensions(ObjectsList)}
+    extensions = ListAllInputExtensions()
+    return {"status": 200, "extensions": extensions}
 
 @routes.route('/allowedobjects', methods=['POST'])
 def allowedobjects():
     filename = flask.request.form.get('filename')
     if filename is None:
         return flask.make_response({"error_message": "No file sent"}, 400)
-    (_, file_extension) = os.path.splitext(filename)
-    ObjectsList = GeodeObjects.ObjectsList()
-    return flask.make_response({"objects": ListObjects(ObjectsList, file_extension[1:])}, 200)
+    file_extension = os.path.splitext(filename)[1][1:]
+    objects = ListObjects(file_extension)
+    return flask.make_response({"objects": objects}, 200)
 
 @routes.route('/outputfileextensions', methods=['POST'])
 def outputfileextensions():
     object = flask.request.form.get('object')
     if object is None:
         return flask.make_response({"error_message": "No object sent"}, 400)
-    return flask.make_response({"outputfileextensions": GeodeObjects.ObjectsList()[object]['output'].list_creators()}, 200)
+    list = ListOutputFileExtensions(object)
+    return flask.make_response({"outputfileextensions": list}, 200)
 
 @routes.route('/convertfile', methods=['POST'])
 async def convertfile():
@@ -77,39 +78,64 @@ async def convertfile():
         print("error : ", str(e))
         return {"status": 500, "error_message": str(e)}
 
-def ListObjects(ObjectsList, Extension):
+def ListAllInputExtensions():
     """
     Purpose:
-        Function that returns a list of objects that can handle the file, given his extension
+        Function that returns a list of all input extensions
+    Returns:
+        An ordered list of input file extensions
+    """
+    List = []  # Initiaslizes an empty list
+    ObjectsList = GeodeObjects.ObjectsList() # Dict to loop through
+
+    for Object in ObjectsList.values():
+        values = Object['input']
+        for value in values:
+            list_creators = value.list_creators()
+            for creator in list_creators:  # Loop through
+                if creator not in List:  # If object's name isn't already in the list
+                    List.append(creator)  # Adds the object's name to the listlist
+    List.sort()
+    return List  # Returns the final list
+
+def ListObjects(extension: str):
+    """
+    Purpose:
+        Function that returns a list of objects that can handle a file, given his extension
     Args:
-        Extension -- The exention of the file
-        ObjectsList -- A list of objects with their InputFactory/OutputFactory/Name
+        extension -- The extension of the file
     Returns:
         An ordered list of object's names
     """
     List = []  # Initializes an empty list
-    for type, values in ObjectsList.items():  # Loops through objects
-        # If object can handle this extension
-        if values['input'].has_creator(Extension):
-            if type not in List:  # If object's name isn't already in the list
-                List.append(type)  # Adds the object's name to the list
+    ObjectsList = GeodeObjects.ObjectsList() # Dict to loop through
+
+    for Object, values in ObjectsList.items():  # Loops through objects
+        list_values = values['input']
+        for value in list_values:
+            if value.has_creator(extension):
+                if Object not in List:  # If object's name isn't already in the list
+                    List.append(Object)  # Adds the object's name to the list
+    List.sort()
     return List  # Returns the final list
 
-
-def ListExtensions(ObjectsList):
+def ListOutputFileExtensions(object: str):
     """
     Purpose:
-        Function that returns a list of extensions that can handled by the objects given in parameter
+        Function that returns a list of output file extensions that can be handled by an object
     Args:
-        ObjectsList -- A list of objects with their InputFactory/OutputFactory/Name
+        object -- The name of the object
     Returns:
         An ordered list of file extensions
     """
     List = []  # Initializes an empty list
-    for values in ObjectsList.values():  # Loops through objects
-        # List of extensions this object can handle
-        Creators = values['input'].list_creators()
-        for Creator in Creators:  # Loop through
-            if Creator not in List:  # If object's name isn't already in the list
-                List.append(Creator)  # Adds the object's name to the list
+    ObjectsList = GeodeObjects.ObjectsList() # Dict to loop through
+
+    values = ObjectsList[object]['output']
+    for value in values:
+        list_creators = value.list_creators()
+        for creator in list_creators:  # Loop through
+            if creator not in List:  # If object's name isn't already in the list
+                List.append(creator)  # Adds the object's name to the listlist
+    List.sort()
     return List  # Returns the final list
