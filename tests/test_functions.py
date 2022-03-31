@@ -17,7 +17,10 @@ def test_versions(client):
     response = client.get(f"/{ID}/versions")
     assert response.status_code == 200
     versions = response.json["versions"]
-    assert type(versions) is dict
+    assert type(versions) is list
+    for version in versions:
+        assert type(version) is dict
+
 
 def test_ping(client):
     response = client.post(f"/{ID}/ping")
