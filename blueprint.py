@@ -16,9 +16,9 @@ def root():
 @routes.route('/versions', methods=['GET'])
 def versions():
     list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO']
-    list_with_versions = {}
+    list_with_versions = []
     for package in list_packages:
-        list_with_versions[package] = pkg_resources.get_distribution(package).version
+        list_with_versions.append({"package": package, "version": pkg_resources.get_distribution(package).version})
     return flask.make_response({"versions": list_with_versions}, 200)
 
 @routes.route('/ping', methods=['POST'])
