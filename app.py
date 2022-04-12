@@ -31,7 +31,7 @@ def kill():
         os.remove('./ping.txt')
 
 ''' Config variables '''
-FLASK_ENV = os.environ['FLASK_ENV']
+FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
 
 if FLASK_ENV == "production" or FLASK_ENV == "test":
     app.config.from_object('config.ProdConfig')
