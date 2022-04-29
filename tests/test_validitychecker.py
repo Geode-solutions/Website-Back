@@ -11,7 +11,7 @@ def test_versions(client):
         assert type(version) is dict
 
 def test_allowedfiles(client):
-    response = client.post(f"/{ID}/validitychecker/allowedfiles")
+    response = client.get(f"/{ID}/validitychecker/allowedfiles")
     assert response.status_code == 200
     extensions = response.json["extensions"]
     assert type(extensions) is list
