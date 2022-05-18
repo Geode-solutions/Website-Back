@@ -33,14 +33,14 @@ def validitychecker_allowedobjects():
     objects = functions.ListObjects(file_extension)
     return flask.make_response({"objects": objects}, 200)
 
-@validitychecker_routes.route('/testnames', methods=['POST'])
+@validitychecker_routes.route('/testsnames', methods=['POST'])
 def vaditychecker_testnames():
     try:
         object = flask.request.form.get('object')
         if object is None:
             return flask.make_response({"error_message": "No object sent"}, 400)
 
-        modelChecks = InspectorFunctions.GetTestNames()[object]
+        modelChecks = InspectorFunctions.Inspector()[object]['testsnames']
         print(modelChecks)
         return flask.make_response({"modelChecks": modelChecks}, 200)
 
@@ -49,10 +49,10 @@ def vaditychecker_testnames():
         return flask.make_response({"error_message": str(e)}, 500)
 
 @validitychecker_routes.route('/inspectfile/<string:object>/<string:test_type>/<string:test_name>', methods=['POST'])
-def vaditychecker_inspectfile(object:str, test_type:str, test_name:str):
+def vaditychecker_inspectfile(object:str, test_name:str):
     try:
-        Result = InspectorFunctions.GetTestResult(object, test_type, test_name)
-        return flask.make_response({"Result": Result}, 200)
+        Result = InspectorFunctions.GetTestResult(object, test_name)
+        # return flask.make_response({"Result": Result}, 200)
 
         # UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
         # object = flask.request.form.get('object')
@@ -82,6 +82,7 @@ def vaditychecker_inspectfile(object:str, test_type:str, test_name:str):
 
         # return flask.make_response({"modelChecks": modelChecks}, 200)
         # return flask.make_response({"message": "Okay"}, 200)
+        return flask.make_response({"Result": Result}, 200)
 
     except RuntimeError as e:
         print("error : ", str(e))
