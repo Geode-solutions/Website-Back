@@ -1,4 +1,5 @@
 import os
+import base64
 
 ID = os.environ.get('ID')
 
@@ -36,7 +37,7 @@ def test_allowedobjects(client):
         assert object in objects
 
     # Test with stupid filename
-    response = client.post(f"/{ID}/validitychecker/allowedobjects", data={"object": "toto.txt"})
+    response = client.post(f"/{ID}/validitychecker/allowedobjects", data={"filename": "toto.txt"})
     assert response.status_code == 200
     objects = response.json["objects"]
     assert type(objects) is list
@@ -48,27 +49,62 @@ def test_allowedobjects(client):
     error_message = response.json["error_message"]
     assert error_message == "No file sent"
 
+def test_uploadfile(client):
+    # Test with file
+    response = client.post(f'/{ID}/validitychecker/uploadfile',
+        data = {
+            'file': base64.b64encode(open('./tests/corbi.og_brep', 'rb').read()),
+            'filename': 'corbi.og_brep',
+        }
+    )
+
+    assert response.status_code == 200
+    message = response.json["message"]
+    assert message == 'File uploaded'
+
+    # Test without file
+    response = client.post(f'/{ID}/validitychecker/uploadfile',
+        data = {
+            'filename': 'corbi.og_brep',
+        }
+    )
+
+    assert response.status_code == 400
+    error_message = response.json["error_message"]
+    assert error_message == 'No file sent'
+
+    # Test without filename
+    response = client.post(f'/{ID}/validitychecker/uploadfile',
+        data = {
+            'file': base64.b64encode(open('./tests/corbi.og_brep', 'rb').read()),
+        }
+    )
+
+    assert response.status_code == 400
+    error_message = response.json["error_message"]
+    assert error_message == 'No filename sent'
+
 def test_testnames(client):
     ObjectArray = [
                     "BRep"
-                    # , "CrossSection"
-                    # , "EdgedCurve2D"
-                    # , "EdgedCurve3D"
-                    # , "Graph"
-                    # , "HybridSolid3D"
-                    # , "PointSet2D"
-                    # , "PointSet3D"
-                    # , "PolygonalSurface2D"
-                    # , "PolygonalSurface3D"
-                    # , "PolyhedralSolid3D"
-                    # , "RegularGrid2D"
-                    # , "RegularGrid3D"
-                    # , "Section"
-                    # , "StructuralModel"
-                    # , "TetrahedralSolid3D"
-                    # , "TriangulatedSurface2D"
-                    # , "TriangulatedSurface3D"
-                    # , "VertexSet"
+                    , "CrossSection"
+                    , "EdgedCurve2D"
+                    , "EdgedCurve3D"
+                    , "Graph"
+                    , "HybridSolid3D"
+                    , "PointSet2D"
+                    , "PointSet3D"
+                    , "PolygonalSurface2D"
+                    , "PolygonalSurface3D"
+                    , "PolyhedralSolid3D"
+                    , "RegularGrid2D"
+                    , "RegularGrid3D"
+                    , "Section"
+                    , "StructuralModel"
+                    , "TetrahedralSolid3D"
+                    , "TriangulatedSurface2D"
+                    , "TriangulatedSurface3D"
+                    , "VertexSet"
                 ]
 
     for object in ObjectArray:
@@ -79,7 +115,44 @@ def test_testnames(client):
         assert type(modelChecks) is list
         for modelCheck in modelChecks:
             assert type(modelCheck) is dict
-            checks = modelCheck.list_invalidity
+            checks = modelCheck['list_invalidity']
+            assert type(checks) is list
+            for check in checks:
+                assert type(check) is list
+
+
+def test_inspectfile(client):
+    ObjectArray = [
+                    "BRep"
+                    , "CrossSection"
+                    , "EdgedCurve2D"
+                    , "EdgedCurve3D"
+                    , "Graph"
+                    , "HybridSolid3D"
+                    , "PointSet2D"
+                    , "PointSet3D"
+                    , "PolygonalSurface2D"
+                    , "PolygonalSurface3D"
+                    , "PolyhedralSolid3D"
+                    , "RegularGrid2D"
+                    , "RegularGrid3D"
+                    , "Section"
+                    , "StructuralModel"
+                    , "TetrahedralSolid3D"
+                    , "TriangulatedSurface2D"
+                    , "TriangulatedSurface3D"
+                    , "VertexSet"
+                ]
+
+    for object in ObjectArray:
+        # Normal test with all objects
+        response = client.post(f"/{ID}/validitychecker/inspectfile", data={"object": object})
+        assert response.status_code == 200
+        modelChecks = response.json["modelChecks"]
+        assert type(modelChecks) is list
+        for modelCheck in modelChecks:
+            assert type(modelCheck) is dict
+            checks = modelCheck['list_invalidity']
             assert type(check) is list
             for check in checks:
                 assert type(check) is list

@@ -63,11 +63,9 @@ async def fileconverter_convertfile():
         f = open(filePath, "wb") # wb = WriteBinary
         f.write(fileDecoded)
         f.close()
-        print("load")
         model = functions.GeodeObjects.ObjectsList()[object]['load'](filePath)
         strictFileName = os.path.splitext(filename)[0]
         newFileName = strictFileName + '.' + extension
-        print("save")
 
         functions.GeodeObjects.ObjectsList()[object]['save'](model, os.path.join(UPLOAD_FOLDER, newFileName))
         return flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
