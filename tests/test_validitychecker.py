@@ -115,44 +115,23 @@ def test_testnames(client):
         assert type(modelChecks) is list
         for modelCheck in modelChecks:
             assert type(modelCheck) is dict
-            checks = modelCheck['list_invalidity']
-            assert type(checks) is list
-            for check in checks:
-                assert type(check) is list
+            value = modelCheck['value']
+            is_leaf = modelCheck['is_leaf']
+            route = modelCheck['route']
+            expected_value = modelCheck['expected_value']
+            list_invalidity = modelCheck['list_invalidity']
+            assert type(is_leaf) is bool
+            assert type(route) is str
+            assert type(list_invalidity) is list
+            for check in list_invalidity:
+                assert type(check) is dict
+                if check['is_leaf'] == True:
+                    response_test = client.post(f"/{ID}/validitychecker/inspectfile",
+                        data = {
+                                'object': 'BRep',
+                                'filename': 'corbi.og_brep',
+                                'test': check['route']
+                        }
+                    )
 
-
-def test_inspectfile(client):
-    ObjectArray = [
-                    "BRep"
-                    , "CrossSection"
-                    , "EdgedCurve2D"
-                    , "EdgedCurve3D"
-                    , "Graph"
-                    , "HybridSolid3D"
-                    , "PointSet2D"
-                    , "PointSet3D"
-                    , "PolygonalSurface2D"
-                    , "PolygonalSurface3D"
-                    , "PolyhedralSolid3D"
-                    , "RegularGrid2D"
-                    , "RegularGrid3D"
-                    , "Section"
-                    , "StructuralModel"
-                    , "TetrahedralSolid3D"
-                    , "TriangulatedSurface2D"
-                    , "TriangulatedSurface3D"
-                    , "VertexSet"
-                ]
-
-    for object in ObjectArray:
-        # Normal test with all objects
-        response = client.post(f"/{ID}/validitychecker/inspectfile", data={"object": object})
-        assert response.status_code == 200
-        modelChecks = response.json["modelChecks"]
-        assert type(modelChecks) is list
-        for modelCheck in modelChecks:
-            assert type(modelCheck) is dict
-            checks = modelCheck['list_invalidity']
-            assert type(check) is list
-            for check in checks:
-                assert type(check) is list
+                    assert response_test.status_code == 200

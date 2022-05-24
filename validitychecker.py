@@ -76,17 +76,19 @@ def vaditychecker_inspectfile():
         UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
         object = flask.request.form.get('object')
         filename = flask.request.form.get('filename')
-        testName = flask.request.form.get('testName')
+        test = flask.request.form.get('test')
+
         if object is None:
             return flask.make_response({"error_message": "No object sent"}, 400)
         if filename is None:
             return flask.make_response({"error_message": "No filename sent"}, 400)
-        if testName is None:
-            return flask.make_response({"error_message": "No testName sent"}, 400)
+        if test is None:
+            return flask.make_response({"error_message": "No test sent"}, 400)
+            
         filePath = os.path.join(UPLOAD_FOLDER, filename)
         model = GeodeObjects.ObjectsList()[object]['load'](filePath)
         inspector = InspectorFunctions.Inspectors()[object]['inspector'](model)
-        testResult = getattr(inspector, testName)()
+        testResult = getattr(inspector, test)()
         return flask.make_response({"Result": testResult}, 200)
 
     except RuntimeError as e:
