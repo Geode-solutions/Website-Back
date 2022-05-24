@@ -1,10 +1,7 @@
 import flask
 import flask_cors
 import os
-import base64
 import functions
-import werkzeug
-import pkg_resources
 
 fileconverter_routes = flask.Blueprint('fileconverter_routes', __name__)
 flask_cors.CORS(fileconverter_routes)
@@ -12,10 +9,7 @@ flask_cors.CORS(fileconverter_routes)
 @fileconverter_routes.route('/versions', methods=['GET'])
 def fileconverter_versions():
     list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO']
-    list_with_versions = []
-    for package in list_packages:
-        list_with_versions.append({"package": package, "version": pkg_resources.get_distribution(package).version})
-    return flask.make_response({"versions": list_with_versions}, 200)
+    return flask.make_response({"versions": functions.GetVersions(list_packages)}, 200)
 
 @fileconverter_routes.route('/allowedfiles', methods=['GET'])
 def fileconverter_allowedfiles():
@@ -56,13 +50,9 @@ async def fileconverter_convertfile():
             return flask.make_response({"error_message": "No filename sent"}, 400)
         elif extension is None:
             return flask.make_response({"error_message": "No extension sent"}, 400)
-
-        fileDecoded = base64.b64decode(file.split(',')[-1])
-        filename = werkzeug.utils.secure_filename(filename)
+        
+        functions.UploadFile(file, filename, UPLOAD_FOLDER)
         filePath = os.path.join(UPLOAD_FOLDER, filename)
-        f = open(filePath, "wb") # wb = WriteBinary
-        f.write(fileDecoded)
-        f.close()
         model = functions.GeodeObjects.ObjectsList()[object]['load'](filePath)
         strictFileName = os.path.splitext(filename)[0]
         newFileName = strictFileName + '.' + extension

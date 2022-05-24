@@ -1,12 +1,9 @@
 import flask
 import flask_cors
 import os
-import base64
 import functions
 import GeodeObjects
 import InspectorFunctions
-import werkzeug
-import pkg_resources
 
 validitychecker_routes = flask.Blueprint('validitychecker_routes', __name__)
 flask_cors.CORS(validitychecker_routes)
@@ -14,10 +11,7 @@ flask_cors.CORS(validitychecker_routes)
 @validitychecker_routes.route('/versions', methods=['GET'])
 def validitychecker_versions():
     list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO', 'OpenGeode-Inspector']
-    list_with_versions = []
-    for package in list_packages:
-        list_with_versions.append({"package": package, "version": pkg_resources.get_distribution(package).version})
-    return flask.make_response({"versions": list_with_versions}, 200)
+    return flask.make_response({"versions": functions.GetVersions(list_packages)}, 200)
 
 @validitychecker_routes.route('/allowedfiles', methods=['GET'])
 def vaditychecker_allowedfiles():
@@ -44,15 +38,8 @@ def vaditychecker_uploadfile():
         if filename is None:
             return flask.make_response({"error_message": "No filename sent"}, 400)
         
-        fileDecoded = base64.b64decode(file.split(',')[-1])
-        secureFilename = werkzeug.utils.secure_filename(filename)
-        filePath = os.path.join(UPLOAD_FOLDER, secureFilename)
-        f = open(filePath, "wb")
-        f.write(fileDecoded)
-        f.close()
-
+        functions.UploadFile(file, filename, UPLOAD_FOLDER)
         return flask.make_response({"message": "File uploaded"}, 200)
-
     except Exception as e:
         print("error : ", str(e))
         return flask.make_response({"error_message": str(e)}, 500)
@@ -91,9 +78,6 @@ def vaditychecker_inspectfile():
         testResult = getattr(inspector, test)()
         return flask.make_response({"Result": testResult}, 200)
 
-    except RuntimeError as e:
-        print("error : ", str(e))
-        return flask.make_response({"error_message": str(e)}, 500)
     except Exception as e:
         print("error : ", str(e))
         return flask.make_response({"error_message": str(e)}, 500)

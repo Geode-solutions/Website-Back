@@ -1,4 +1,8 @@
+import base64
 import GeodeObjects
+import os
+import pkg_resources
+import werkzeug
 
 def ListAllInputExtensions():
     """
@@ -61,3 +65,18 @@ def ListOutputFileExtensions(object: str):
                 List.append(creator)  # Adds the object's name to the listlist
     List.sort()
     return List  # Returns the final list
+
+
+def GetVersions(list_packages: list):
+    list_with_versions = []
+    for package in list_packages:
+        list_with_versions.append({"package": package, "version": pkg_resources.get_distribution(package).version})
+    return list_with_versions
+
+def UploadFile(file: str, filename: str, uploadFolder: str):
+    fileDecoded = base64.b64decode(file.split(',')[-1])
+    secureFilename = werkzeug.utils.secure_filename(filename)
+    filePath = os.path.join(uploadFolder, secureFilename)
+    f = open(filePath, "wb")
+    f.write(fileDecoded)
+    f.close()
