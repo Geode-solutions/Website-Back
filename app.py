@@ -6,7 +6,8 @@ import threading
 import flask
 import flask_cors
 
-from blueprint import routes
+import fileconverter
+import validitychecker
 
 if os.path.isfile('./.env'):
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -31,7 +32,7 @@ def kill():
         os.remove('./ping.txt')
 
 ''' Config variables '''
-FLASK_ENV = os.environ['FLASK_ENV']
+FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
 
 if FLASK_ENV == "production" or FLASK_ENV == "test":
     app.config.from_object('config.ProdConfig')
@@ -50,9 +51,11 @@ SSL = app.config.get('SSL')
 
 
 if ID != None:
-    app.register_blueprint(routes, url_prefix="/" + ID)
+    app.register_blueprint(fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
+    app.register_blueprint(validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
 else:
-    app.register_blueprint(routes, url_prefix="/")
+    app.register_blueprint(fileconverter.fileconverter_routes, url_prefix='/fileconverter')
+    app.register_blueprint(validitychecker.validitychecker_routes, url_prefix='/validitychecker')
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
@@ -60,9 +63,19 @@ if not os.path.exists(UPLOAD_FOLDER):
 flask_cors.CORS(app, origins=ORIGINS)
 
 # For development
+@app.route('/', methods=['GET'])
+def root():
+    return flask.make_response({"message": "root"}, 200)
 @app.route('/tools/createbackend', methods=['POST'])
 def createbackend():
     return {"status": 200, "ID": str("123456")}
+# For production
+@app.route(f'/{ID}/ping', methods=['POST'])
+def ping():
+    if not os.path.isfile('./ping.txt'):
+        f = open('./ping.txt', 'a')
+        f.close()
+    return flask.make_response({"message": "Flask server is running"}, 200)
 
 # ''' Main '''
 if __name__ == '__main__':
