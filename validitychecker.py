@@ -50,7 +50,7 @@ def vaditychecker_testnames():
         object = flask.request.form.get('object')
         if object is None:
             return flask.make_response({"error_message": "No object sent"}, 400)
-        modelChecks = InspectorFunctions.Inspectors()[object]['testsnames']
+        modelChecks = InspectorFunctions.json_return(InspectorFunctions.Inspectors()[object]['testsnames'])
         return flask.make_response({"modelChecks": modelChecks}, 200)
 
     except Exception as e:

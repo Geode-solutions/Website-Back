@@ -5,116 +5,131 @@ class Result:
     def __init__(self
                 , value: bool
                 , list_invalidity: list
-                , is_leaf: bool
                 , route: str
                 , expected_value: any
                 ):
         self.value = value
+        self.validity_sentence = route.replace("_", " ").capitalize()
         self.list_invalidity = list_invalidity
-        self.is_leaf = is_leaf
+        self.is_leaf = len(list_invalidity) == 0
         self.route = route
         self.expected_value = expected_value
 
-    def json_return(self):
-        return {"value": self.value
-                , "validity_sentence": self.route.replace("_", " ").capitalize()
-                , "list_invalidity" : self.list_invalidity
-                , "is_leaf": self.is_leaf
-                , "route": self.route
-                , "expected_value": self.expected_value
-                }
+def json_return(Result_list: list):
+    json_result = []
+    for result in Result_list:
+        if result.is_leaf:
+            json_temp = {"value": result.value
+                    , "validity_sentence": result.validity_sentence
+                    , "list_invalidity" : result.list_invalidity
+                    , "is_leaf": result.is_leaf
+                    , "route": result.route
+                    , "expected_value": result.expected_value
+                    }
+            json_result.append(json_temp)
+        else:
+            json_temp = {"value": result.value
+                    , "validity_sentence": result.validity_sentence
+                    , "list_invalidity" : json_return(result.list_invalidity)
+                    , "is_leaf": result.is_leaf
+                    , "route": result.route
+                    , "expected_value": result.expected_value
+                    }
+            json_result.append(json_temp)
+            
+    return json_result
 
 def AdjacencyTests():
     AdjacencyTests = [ 
-                    Result(None, [], True, "nb_edges_with_wrong_adjacency", 0).json_return()
+                    Result(None, [], "nb_edges_with_wrong_adjacency", 0)
                     ]
-    Wrapper_AdjacencyTests = Result(None, AdjacencyTests, False, "adjacency", True).json_return()
+    Wrapper_AdjacencyTests = Result(None, AdjacencyTests, "adjacency", True)
     return Wrapper_AdjacencyTests
 
 def ColocationTests():
     ColocationTests = [ 
-                    Result(None, [], True, "nb_colocated_points", 0).json_return()
+                    Result(None, [], "nb_colocated_points", 0)
                     ]
-    Wrapper_ColocationTests = Result(None, ColocationTests, False, "colocation", True).json_return()
+    Wrapper_ColocationTests = Result(None, ColocationTests, "colocation", True)
     return Wrapper_ColocationTests
 def DegenerationTests():
     DegenerationTests = [ 
-                        Result(None, [], True, "mesh_has_wrong_adjacencies", 0).json_return()
+                        Result(None, [], "mesh_has_wrong_adjacencies", 0)
                         ]
-    Wrapper_DegenerationTests = Result(None, DegenerationTests, False, "degeneration", True).json_return()
+    Wrapper_DegenerationTests = Result(None, DegenerationTests, "degeneration", True)
     return Wrapper_DegenerationTests
 def ManifoldTests(object: str):
     ManifoldTests = [ 
-                        Result(None, [], True, f"nb_non_manifold_{object}", 0).json_return()
+                        Result(None, [], f"nb_non_manifold_{object}", 0)
                         ]
-    Wrapper_ManifoldTests = Result(None, ManifoldTests, False, "manifold", True).json_return()
+    Wrapper_ManifoldTests = Result(None, ManifoldTests, "manifold", True)
     return Wrapper_ManifoldTests
 def TopologyTests(object: str):
     if object == "brep":
         TopologyTests = [
-                        Result(None, [], True, "brep_meshed_components_are_linked_to_a_unique_vertex", True).json_return()
-                        , Result(None, [], True, "nb_corners_not_linked_to_a_unique_vertex", 0).json_return()
-                        , Result(None, [], True, "nb_lines_meshed_but_not_linked_to_a_unique_vertex", 0).json_return()
-                        , Result(None, [], True, "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex", 0).json_return()
-                        , Result(None, [], True, "nb_blocks_meshed_but_not_linked_to_a_unique_vertex", 0).json_return()
-                        , Result(None, [], True, "invalid_components_topology_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "multiple_corners_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "multiple_internals_corner_vertices", 0).json_return()
-                        , Result(None, [], True, "not_internal_nor_boundary_corner_vertices", 0).json_return()
-                        , Result(None, [], True, "internal_with_multiple_incidences_corner_vertices", 0).json_return()
-                        , Result(None, [], True, "line_corners_without_boundary_status", 0).json_return()
-                        , Result(None, [], True, "part_of_not_boundary_nor_internal_line_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_line_with_invalid_internal_topology_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_invalid_unique_line_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_lines_but_not_corner_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_not_boundary_nor_internal_surface_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_surface_with_invalid_internal_topology_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_invalid_unique_surface_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_invalid_multiple_surfaces_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_invalid_blocks_unique_vertices", 0).json_return()
+                        Result(None, [], "brep_meshed_components_are_linked_to_a_unique_vertex", True)
+                        , Result(None, [], "nb_corners_not_linked_to_a_unique_vertex", 0)
+                        , Result(None, [], "nb_lines_meshed_but_not_linked_to_a_unique_vertex", 0)
+                        , Result(None, [], "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex", 0)
+                        , Result(None, [], "nb_blocks_meshed_but_not_linked_to_a_unique_vertex", 0)
+                        , Result(None, [], "invalid_components_topology_unique_vertices", 0)
+                        , Result(None, [], "multiple_corners_unique_vertices", 0)
+                        , Result(None, [], "multiple_internals_corner_vertices", 0)
+                        , Result(None, [], "not_internal_nor_boundary_corner_vertices", 0)
+                        , Result(None, [], "internal_with_multiple_incidences_corner_vertices", 0)
+                        , Result(None, [], "line_corners_without_boundary_status", 0)
+                        , Result(None, [], "part_of_not_boundary_nor_internal_line_unique_vertices", 0)
+                        , Result(None, [], "part_of_line_with_invalid_internal_topology_unique_vertices", 0)
+                        , Result(None, [], "part_of_invalid_unique_line_unique_vertices", 0)
+                        , Result(None, [], "part_of_lines_but_not_corner_unique_vertices", 0)
+                        , Result(None, [], "part_of_not_boundary_nor_internal_surface_unique_vertices", 0)
+                        , Result(None, [], "part_of_surface_with_invalid_internal_topology_unique_vertices", 0)
+                        , Result(None, [], "part_of_invalid_unique_surface_unique_vertices", 0)
+                        , Result(None, [], "part_of_invalid_multiple_surfaces_unique_vertices", 0)
+                        , Result(None, [], "part_of_invalid_blocks_unique_vertices", 0)
                         ]
     elif object == "section":
         TopologyTests = [
-                        Result(None, [], True, "section_meshed_components_are_linked_to_a_unique_vertex", True).json_return()
-                        , Result(None, [], True, "nb_corners_not_linked_to_a_unique_vertex", 0).json_return()
-                        , Result(None, [], True, "nb_lines_meshed_but_not_linked_to_a_unique_vertex", 0).json_return()
-                        , Result(None, [], True, "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex", 0).json_return()
-                        , Result(None, [], True, "invalid_components_topology_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "multiple_corners_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "multiple_internals_corner_vertices", 0).json_return()
-                        , Result(None, [], True, "not_internal_nor_boundary_corner_vertices", 0).json_return()
-                        , Result(None, [], True, "internal_with_multiple_incidences_corner_vertices", 0).json_return()
-                        , Result(None, [], True, "line_corners_without_boundary_status", 0).json_return()
-                        , Result(None, [], True, "part_of_not_boundary_nor_internal_line_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_line_with_invalid_internal_topology_unique_vertices",0).json_return()
-                        , Result(None, [], True, "part_of_invalid_unique_line_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_lines_but_not_corner_unique_vertices", 0).json_return()
-                        , Result(None, [], True, "part_of_invalid_surfaces_unique_vertices", 0).json_return()
+                        Result(None, [], "section_meshed_components_are_linked_to_a_unique_vertex", True)
+                        , Result(None, [], "nb_corners_not_linked_to_a_unique_vertex", 0)
+                        , Result(None, [], "nb_lines_meshed_but_not_linked_to_a_unique_vertex", 0)
+                        , Result(None, [], "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex", 0)
+                        , Result(None, [], "invalid_components_topology_unique_vertices", 0)
+                        , Result(None, [], "multiple_corners_unique_vertices", 0)
+                        , Result(None, [], "multiple_internals_corner_vertices", 0)
+                        , Result(None, [], "not_internal_nor_boundary_corner_vertices", 0)
+                        , Result(None, [], "internal_with_multiple_incidences_corner_vertices", 0)
+                        , Result(None, [], "line_corners_without_boundary_status", 0)
+                        , Result(None, [], "part_of_not_boundary_nor_internal_line_unique_vertices", 0)
+                        , Result(None, [], "part_of_line_with_invalid_internal_topology_unique_vertices",0)
+                        , Result(None, [], "part_of_invalid_unique_line_unique_vertices", 0)
+                        , Result(None, [], "part_of_lines_but_not_corner_unique_vertices", 0)
+                        , Result(None, [], "part_of_invalid_surfaces_unique_vertices", 0)
                         ]
-    Wrapper_TopologyTests = Result(None, TopologyTests, False, "topology", True).json_return()
+    Wrapper_TopologyTests = Result(None, TopologyTests, "topology", True)
     return Wrapper_TopologyTests
 
 def Inspectors():
 
-    BRep_Tests = [Result(None, [TopologyTests("brep")], False, "BRep", True).json_return()]
-    CrossSection_Tests = [Result(None, [TopologyTests("section")], False, "CrossSection", True).json_return()]
-    EdgedCurve2D_Tests = [Result(None, [ColocationTests()], False, "EdgedCurve2D", True).json_return()]
-    EdgedCurve3D_Tests = [Result(None, [ColocationTests()], False, "EdgedCurve3D", True).json_return()]
-    Graph_Tests = [Result(True, [ColocationTests()], False, "Graph", True).json_return()]
-    HybridSolid3D_Tests = [Result(None, [ColocationTests(), DegenerationTests()], False, "HybridSolid3D", True).json_return()]
-    PointSet2D_Tests = [Result(None, [ColocationTests()], False, "PointSet2D", True).json_return()]
-    PointSet3D_Tests = [Result(None, [ColocationTests()], False, "PointSet3D", True).json_return()]
-    PolygonalSurface2D_Tests = [Result(None, [AdjacencyTests(), ColocationTests(), DegenerationTests()], False, "PolygonalSurface2D", True).json_return()]
-    PolygonalSurface3D_Tests = [Result(None, [AdjacencyTests(), ColocationTests(), DegenerationTests()], False, "PolygonalSurface3D", True).json_return()]
-    PolyhedralSolid3D_Tests = [Result(None, [], False, "PolyhedralSolid3D", True).json_return()]
-    RegularGrid2D_Tests = [Result(True, [], False, "RegularGrid2D", True).json_return()]
-    RegularGrid3D_Tests = [Result(True, [], False, "RegularGrid3D", True).json_return()]
-    Section_Tests = [Result(None, [TopologyTests("section")], False, "Section", True).json_return()]
-    StructuralModel_Tests = [Result(None, [TopologyTests("brep")], False, "StructuralModel", True).json_return()]
-    TetrahedralSolid3D_Tests = [Result(None, [ColocationTests(), DegenerationTests()], False, "TetrahedralSolid3D", True).json_return()]
-    TriangulatedSurface2D_Tests = [Result(None, [AdjacencyTests(), ColocationTests(), DegenerationTests()], False, "TriangulatedSurface2D", True).json_return()]
-    TriangulatedSurface3D_Tests = [Result(None, [AdjacencyTests(), ColocationTests(), DegenerationTests()], False, "TriangulatedSurface3D", True).json_return()]
-    VertexSet_Tests = [Result(True, [], False, "VertexSet", True).json_return()]
+    BRep_Tests = [Result(None, [TopologyTests("brep")], "BRep", True)]
+    CrossSection_Tests = [Result(None, [TopologyTests("section")], "CrossSection", True)]
+    EdgedCurve2D_Tests = [Result(None, [ColocationTests()], "EdgedCurve2D", True)]
+    EdgedCurve3D_Tests = [Result(None, [ColocationTests()], "EdgedCurve3D", True)]
+    Graph_Tests = [Result(True, [ColocationTests()], "Graph", True)]
+    HybridSolid3D_Tests = [Result(None, [ColocationTests(), DegenerationTests()], "HybridSolid3D", True)]
+    PointSet2D_Tests = [Result(None, [ColocationTests()], "PointSet2D", True)]
+    PointSet3D_Tests = [Result(None, [ColocationTests()], "PointSet3D", True)]
+    PolygonalSurface2D_Tests = [Result(None, [AdjacencyTests(), ColocationTests(), DegenerationTests()], "PolygonalSurface2D", True)]
+    PolygonalSurface3D_Tests = [Result(None, [AdjacencyTests(), ColocationTests(), DegenerationTests()], "PolygonalSurface3D", True)]
+    PolyhedralSolid3D_Tests = [Result(None, [], "PolyhedralSolid3D", True)]
+    RegularGrid2D_Tests = [Result(True, [], "RegularGrid2D", True)]
+    RegularGrid3D_Tests = [Result(True, [], "RegularGrid3D", True)]
+    Section_Tests = [Result(None, [TopologyTests("section")], "Section", True)]
+    StructuralModel_Tests = [Result(None, [TopologyTests("brep")], "StructuralModel", True)]
+    TetrahedralSolid3D_Tests = [Result(None, [ColocationTests(), DegenerationTests()], "TetrahedralSolid3D", True)]
+    TriangulatedSurface2D_Tests = [Result(None, [AdjacencyTests(), ColocationTests(), DegenerationTests()], "TriangulatedSurface2D", True)]
+    TriangulatedSurface3D_Tests = [Result(None, [AdjacencyTests(), ColocationTests(), DegenerationTests()], "TriangulatedSurface3D", True)]
+    VertexSet_Tests = [Result(True, [], "VertexSet", True)]
 
     return {
             "BRep": { "inspector": I.BRepInspector, "testsnames": BRep_Tests }
