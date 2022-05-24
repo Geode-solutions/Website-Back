@@ -11,18 +11,18 @@ def ListAllInputExtensions():
     Returns:
         An ordered list of input file extensions
     """
-    List = []  # Initiaslizes an empty list
-    ObjectsList = GeodeObjects.ObjectsList() # Dict to loop through
+    List = []
+    ObjectsList = GeodeObjects.ObjectsList()
 
     for Object in ObjectsList.values():
         values = Object['input']
         for value in values:
             list_creators = value.list_creators()
-            for creator in list_creators:  # Loop through
-                if creator not in List:  # If object's name isn't already in the list
-                    List.append(creator)  # Adds the object's name to the listlist
+            for creator in list_creators:
+                if creator not in List:
+                    List.append(creator)
     List.sort()
-    return List  # Returns the final list
+    return List
 
 def ListObjects(extension: str):
     """
@@ -33,17 +33,17 @@ def ListObjects(extension: str):
     Returns:
         An ordered list of object's names
     """
-    List = []  # Initializes an empty list
-    ObjectsList = GeodeObjects.ObjectsList() # Dict to loop through
+    List = []
+    ObjectsList = GeodeObjects.ObjectsList()
 
-    for Object, values in ObjectsList.items():  # Loops through objects
+    for Object, values in ObjectsList.items():
         list_values = values['input']
         for value in list_values:
             if value.has_creator(extension):
-                if Object not in List:  # If object's name isn't already in the list
-                    List.append(Object)  # Adds the object's name to the list
+                if Object not in List:
+                    List.append(Object)
     List.sort()
-    return List  # Returns the final list
+    return List
 
 def ListOutputFileExtensions(object: str):
     """
@@ -54,17 +54,17 @@ def ListOutputFileExtensions(object: str):
     Returns:
         An ordered list of file extensions
     """
-    List = []  # Initializes an empty list
-    ObjectsList = GeodeObjects.ObjectsList() # Dict to loop through
+    List = []
+    ObjectsList = GeodeObjects.ObjectsList()
 
     values = ObjectsList[object]['output']
     for value in values:
         list_creators = value.list_creators()
-        for creator in list_creators:  # Loop through
-            if creator not in List:  # If object's name isn't already in the list
-                List.append(creator)  # Adds the object's name to the listlist
+        for creator in list_creators:
+            if creator not in List:
+                List.append(creator)
     List.sort()
-    return List  # Returns the final list
+    return List
 
 
 def GetVersions(list_packages: list):
