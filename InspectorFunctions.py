@@ -18,24 +18,14 @@ class Result:
 def json_return(Result_list: list):
     json_result = []
     for result in Result_list:
-        if result.is_leaf:
-            json_temp = {"value": result.value
-                    , "validity_sentence": result.validity_sentence
-                    , "list_invalidity" : result.list_invalidity
-                    , "is_leaf": result.is_leaf
-                    , "route": result.route
-                    , "expected_value": result.expected_value
-                    }
-            json_result.append(json_temp)
-        else:
-            json_temp = {"value": result.value
-                    , "validity_sentence": result.validity_sentence
-                    , "list_invalidity" : json_return(result.list_invalidity)
-                    , "is_leaf": result.is_leaf
-                    , "route": result.route
-                    , "expected_value": result.expected_value
-                    }
-            json_result.append(json_temp)
+        json_temp = {"value": result.value
+                , "validity_sentence": result.validity_sentence
+                , "list_invalidity" : result.list_invalidity if result.is_leaf else json_return(result.list_invalidity)
+                , "is_leaf": result.is_leaf
+                , "route": result.route
+                , "expected_value": result.expected_value
+                }
+        json_result.append(json_temp)
             
     return json_result
 
