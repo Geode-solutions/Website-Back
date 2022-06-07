@@ -29,7 +29,7 @@ def test_allowedobjects(client):
     assert 'BRep' in objects
 
     # Normal test with filename .vtu
-    response = client.post(f'/{ID}/fileconverter/allowedobjects', data={'filename': 'toto.tutu'})
+    response = client.post(f'/{ID}/fileconverter/allowedobjects', data={'filename': 'toto.vtu'})
     assert response.status_code == 200
     objects = response.json['objects']
     list_objects = ['HybridSolid3D', 'PolyhedralSolid3D', 'TetrahedralSolid3D']
@@ -37,7 +37,7 @@ def test_allowedobjects(client):
         assert object in objects
 
     # Test with stupid filename
-    response = client.post(f'/{ID}/fileconverter/allowedobjects', data={'filename': 'toto.mp3'})
+    response = client.post(f'/{ID}/fileconverter/allowedobjects', data={'filename': 'toto.tutu'})
     assert response.status_code == 200
     objects = response.json['objects']
     assert type(objects) is list
