@@ -1,5 +1,6 @@
 import base64
 import GeodeObjects
+import flask
 import os
 import pkg_resources
 import werkzeug
@@ -73,10 +74,13 @@ def GetVersions(list_packages: list):
         list_with_versions.append({"package": package, "version": pkg_resources.get_distribution(package).version})
     return list_with_versions
 
-def UploadFile(file: str, filename: str, uploadFolder: str):
+def UploadFile(file: str, filename: str, uploadFolder: str, filesize: int):
     fileDecoded = base64.b64decode(file.split(',')[-1])
     secureFilename = werkzeug.utils.secure_filename(filename)
     filePath = os.path.join(uploadFolder, secureFilename)
     f = open(filePath, "wb")
     f.write(fileDecoded)
     f.close()
+
+    finalSize =  os.path.getsize(filePath)
+    return int(filesize) == int(finalSize)

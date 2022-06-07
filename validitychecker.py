@@ -33,12 +33,18 @@ def vaditychecker_uploadfile():
         UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
         file = flask.request.form.get('file')
         filename = flask.request.form.get('filename')
+        filesize = flask.request.form.get('filesize')
         if file is None:
             return flask.make_response({"error_message": "No file sent"}, 400)
         if filename is None:
             return flask.make_response({"error_message": "No filename sent"}, 400)
+        if filesize is None:
+            return flask.make_response({"error_message": "No filesize sent"}, 400)
         
-        functions.UploadFile(file, filename, UPLOAD_FOLDER)
+        uploadedFile = functions.UploadFile(file, filename, UPLOAD_FOLDER, filesize)
+        if not uploadedFile:
+            flask.make_response({"error_message": "File not uploaded"}, 500)
+
         return flask.make_response({"message": "File uploaded"}, 200)
     except Exception as e:
         print("error : ", str(e))
@@ -73,10 +79,22 @@ def vaditychecker_inspectfile():
             return flask.make_response({"error_message": "No test sent"}, 400)
             
         filePath = os.path.join(UPLOAD_FOLDER, filename)
-        model = GeodeObjects.ObjectsList()[object]['load'](filePath)
+        model = model = GeodeObjects.ObjectsList()[object]['load'](filePath)
+        if 'model' in flask.session:
+            model = flask.session['model']
         inspector = InspectorFunctions.Inspectors()[object]['inspector'](model)
         testResult = getattr(inspector, test)()
         return flask.make_response({"Result": testResult}, 200)
+
+    except Exception as e:
+        print("error : ", str(e))
+        return flask.make_response({"error_message": str(e)}, 500)
+
+@validitychecker_routes.route('/releasemodel', methods=['POST'])
+def vaditychecker_releasemodel():
+    try:
+        flask.session.pop('model', None)
+        return flask.make_response({"message": "model released"}, 200)
 
     except Exception as e:
         print("error : ", str(e))

@@ -40,18 +40,23 @@ async def fileconverter_convertfile():
         object = flask.request.form.get('object')
         file = flask.request.form.get('file')
         filename = flask.request.form.get('filename')
+        filesize = flask.request.form.get('filesize')
         extension = flask.request.form.get('extension')
         
         if object is None:
             return flask.make_response({"error_message": "No object sent"}, 400)
-        elif file is None:
+        if file is None:
             return flask.make_response({"error_message": "No file sent"}, 400)
-        elif filename is None:
+        if filename is None:
             return flask.make_response({"error_message": "No filename sent"}, 400)
-        elif extension is None:
+        if filesize is None:
+            return flask.make_response({"error_message": "No filesize sent"}, 400)
+        if extension is None:
             return flask.make_response({"error_message": "No extension sent"}, 400)
         
-        functions.UploadFile(file, filename, UPLOAD_FOLDER)
+        uploadedFile = functions.UploadFile(file, filename, UPLOAD_FOLDER, filesize)
+        if not uploadedFile:
+            flask.make_response({"error_message": "File not uploaded"}, 500)
         filePath = os.path.join(UPLOAD_FOLDER, filename)
         model = functions.GeodeObjects.ObjectsList()[object]['load'](filePath)
         strictFileName = os.path.splitext(filename)[0]

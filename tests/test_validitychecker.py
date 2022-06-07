@@ -16,7 +16,7 @@ def test_allowedfiles(client):
     assert response.status_code == 200
     extensions = response.json["extensions"]
     assert type(extensions) is list
-    list_extensions = ["dxf", "lso", "ml", "msh", "obj", "og_brep", "og_edc2d", "og_edc3d", "og_grp", "og_hso3d", "og_psf2d", "og_psf3d", "og_pso3d", "og_pts2d", "og_pts3d", "og_rgd2d", "og_rgd3d", "og_sctn", "og_strm", "og_tsf2d", "og_tsf3d", "og_tso3d", "og_vts", "og_xsctn", "ply", "smesh", "stl", "svg", "ts", "vtp", "vtu", "wl"]
+    list_extensions = ["dat", "dev", "dxf", "lso", "ml", "msh", "obj", "og_brep", "og_edc2d", "og_edc3d", "og_grp", "og_hso3d", "og_psf2d", "og_psf3d", "og_pso3d", "og_pts2d", "og_pts3d", "og_rgd2d", "og_rgd3d", "og_sctn", "og_strm", "og_tsf2d", "og_tsf3d", "og_tso3d", "og_vts", "og_xsctn", "ply", "smesh", "stl", "svg", "ts", "txt", "vtp", "vtu", "wl"]
     for extension in list_extensions:
         assert extension in extensions
 
@@ -37,7 +37,7 @@ def test_allowedobjects(client):
         assert object in objects
 
     # Test with stupid filename
-    response = client.post(f"/{ID}/validitychecker/allowedobjects", data={"filename": "toto.txt"})
+    response = client.post(f"/{ID}/validitychecker/allowedobjects", data={"filename": "toto.tutu"})
     assert response.status_code == 200
     objects = response.json["objects"]
     assert type(objects) is list
@@ -55,6 +55,7 @@ def test_uploadfile(client):
         data = {
             'file': base64.b64encode(open('./tests/corbi.og_brep', 'rb').read()),
             'filename': 'corbi.og_brep',
+            'filesize': os.path.getsize('./tests/corbi.og_brep')
         }
     )
 
