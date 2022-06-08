@@ -1,4 +1,4 @@
-import opengeode_inspector as I
+import opengeode_inspector as Inspector
 import GeodeObjects
 
 class Result:
@@ -18,25 +18,14 @@ class Result:
 def json_return(Result_list: list):
     json_result = []
     for result in Result_list:
-        if result.is_leaf:
-            json_temp = {"value": result.value
-                    , "validity_sentence": result.validity_sentence
-                    , "list_invalidity" : result.list_invalidity
-                    , "is_leaf": result.is_leaf
-                    , "route": result.route
-                    , "expected_value": result.expected_value
-                    }
-            json_result.append(json_temp)
-        else:
-            json_temp = {"value": result.value
-                    , "validity_sentence": result.validity_sentence
-                    , "list_invalidity" : json_return(result.list_invalidity)
-                    , "is_leaf": result.is_leaf
-                    , "route": result.route
-                    , "expected_value": result.expected_value
-                    }
-            json_result.append(json_temp)
-            
+        json_temp = {"value": result.value
+                , "validity_sentence": result.validity_sentence
+                , "list_invalidity" : result.list_invalidity if result.is_leaf else json_return(result.list_invalidity)
+                , "is_leaf": result.is_leaf
+                , "route": result.route
+                , "expected_value": result.expected_value
+                }
+        json_result.append(json_temp)
     return json_result
 
 def AdjacencyTests():
@@ -54,7 +43,7 @@ def ColocationTests():
     return Wrapper_ColocationTests
 def DegenerationTests():
     DegenerationTests = [ 
-                        Result([], "mesh_has_wrong_adjacencies", 0)
+                        Result([], "nb_degenerated_edges", 0)
                         ]
     Wrapper_DegenerationTests = Result(DegenerationTests, "degeneration", True)
     return Wrapper_DegenerationTests
@@ -62,7 +51,7 @@ def ManifoldTests(object: str):
     ManifoldTests = [ 
                         Result([], f"nb_non_manifold_{object}", 0)
                         ]
-    Wrapper_ManifoldTests = Result(ManifoldTests, "manifold", True)
+    Wrapper_ManifoldTests = Result(ManifoldTests, object, True)
     return Wrapper_ManifoldTests
 def TopologyTests(object: str):
     if object == "brep":
@@ -113,42 +102,42 @@ def Inspectors():
 
     BRep_Tests = [Result([TopologyTests("brep")], "BRep", True)]
     CrossSection_Tests = [Result([TopologyTests("section")], "CrossSection", True)]
-    EdgedCurve2D_Tests = [Result([ColocationTests()], "EdgedCurve2D", True)]
-    EdgedCurve3D_Tests = [Result([ColocationTests()], "EdgedCurve3D", True)]
-    Graph_Tests = [Result([ColocationTests()], "Graph", True, True)]
-    HybridSolid3D_Tests = [Result([ColocationTests(), DegenerationTests()], "HybridSolid3D", True)]
+    EdgedCurve2D_Tests = [Result([ColocationTests(), DegenerationTests()], "EdgedCurve2D", True)]
+    EdgedCurve3D_Tests = [Result([ColocationTests(), DegenerationTests()], "EdgedCurve3D", True)]
+    Graph_Tests = [Result([], "Graph", True, True)]
+    HybridSolid3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "HybridSolid3D", True)]
     PointSet2D_Tests = [Result([ColocationTests()], "PointSet2D", True)]
     PointSet3D_Tests = [Result([ColocationTests()], "PointSet3D", True)]
-    PolygonalSurface2D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests()], "PolygonalSurface2D", True)]
-    PolygonalSurface3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests()], "PolygonalSurface3D", True)]
-    PolyhedralSolid3D_Tests = [Result([], "PolyhedralSolid3D", True)]
+    PolygonalSurface2D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "PolygonalSurface2D", True)]
+    PolygonalSurface3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "PolygonalSurface3D", True)]
+    PolyhedralSolid3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "PolyhedralSolid3D", True)]
     RegularGrid2D_Tests = [Result([], "RegularGrid2D", True, True)]
     RegularGrid3D_Tests = [Result([], "RegularGrid3D", True, True)]
     Section_Tests = [Result([TopologyTests("section")], "Section", True)]
     StructuralModel_Tests = [Result([TopologyTests("brep")], "StructuralModel", True)]
-    TetrahedralSolid3D_Tests = [Result([ColocationTests(), DegenerationTests()], "TetrahedralSolid3D", True)]
-    TriangulatedSurface2D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests()], "TriangulatedSurface2D", True)]
-    TriangulatedSurface3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests()], "TriangulatedSurface3D", True)]
+    TetrahedralSolid3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "TetrahedralSolid3D", True)]
+    TriangulatedSurface2D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "TriangulatedSurface2D", True)]
+    TriangulatedSurface3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "TriangulatedSurface3D", True)]
     VertexSet_Tests = [Result([], "VertexSet", True, True)]
 
     return {
-            "BRep": { "inspector": I.BRepInspector, "testsnames": BRep_Tests }
-            , "CrossSection": { "inspector": I.SectionInspector, "testsnames": CrossSection_Tests }
-            , "EdgedCurve2D": { "inspector": I.EdgedCurveInspector2D, "testsnames": EdgedCurve2D_Tests }
-            , "EdgedCurve3D": { "inspector": I.EdgedCurveInspector3D, "testsnames": EdgedCurve3D_Tests }
+            "BRep": { "inspector": Inspector.BRepInspector, "testsnames": BRep_Tests }
+            , "CrossSection": { "inspector": Inspector.SectionInspector, "testsnames": CrossSection_Tests }
+            , "EdgedCurve2D": { "inspector": Inspector.EdgedCurveInspector2D, "testsnames": EdgedCurve2D_Tests }
+            , "EdgedCurve3D": { "inspector": Inspector.EdgedCurveInspector3D, "testsnames": EdgedCurve3D_Tests }
             , "Graph": { "inspector": "", "testsnames": Graph_Tests }
-            , "HybridSolid3D": { "inspector": I.SolidMeshInspector3D, "testsnames": HybridSolid3D_Tests }
-            , "PointSet2D": { "inspector": I.PointSetInspector2D, "testsnames": PointSet2D_Tests }
-            , "PointSet3D": { "inspector": I.PointSetInspector3D, "testsnames": PointSet3D_Tests }
-            , "PolygonalSurface2D": { "inspector": I.SurfaceMeshInspector2D, "testsnames": PolygonalSurface2D_Tests }
-            , "PolygonalSurface3D": { "inspector": I.SurfaceMeshInspector3D, "testsnames": PolygonalSurface3D_Tests }
-            , "PolyhedralSolid3D": { "inspector": I.SolidMeshInspector3D, "testsnames": PolyhedralSolid3D_Tests }
+            , "HybridSolid3D": { "inspector": Inspector.SolidMeshInspector3D, "testsnames": HybridSolid3D_Tests }
+            , "PointSet2D": { "inspector": Inspector.PointSetInspector2D, "testsnames": PointSet2D_Tests }
+            , "PointSet3D": { "inspector": Inspector.PointSetInspector3D, "testsnames": PointSet3D_Tests }
+            , "PolygonalSurface2D": { "inspector": Inspector.SurfaceMeshInspector2D, "testsnames": PolygonalSurface2D_Tests }
+            , "PolygonalSurface3D": { "inspector": Inspector.SurfaceMeshInspector3D, "testsnames": PolygonalSurface3D_Tests }
+            , "PolyhedralSolid3D": { "inspector": Inspector.SolidMeshInspector3D, "testsnames": PolyhedralSolid3D_Tests }
             , "RegularGrid2D": { "inspector": "", "testsnames": RegularGrid2D_Tests }
             , "RegularGrid3D": { "inspector": "", "testsnames": RegularGrid3D_Tests }
-            , "Section": { "inspector": I.SectionInspector, "testsnames": Section_Tests }
-            , "StructuralModel": { "inspector": I.BRepInspector, "testsnames": StructuralModel_Tests }
-            , "TetrahedralSolid3D": { "inspector": I.SolidMeshInspector3D, "testsnames": TetrahedralSolid3D_Tests }
-            , "TriangulatedSurface2D": { "inspector": I.SurfaceMeshInspector2D, "testsnames": TriangulatedSurface2D_Tests }
-            , "TriangulatedSurface3D": { "inspector": I.SurfaceMeshInspector3D, "testsnames": TriangulatedSurface3D_Tests }
+            , "Section": { "inspector": Inspector.SectionInspector, "testsnames": Section_Tests }
+            , "StructuralModel": { "inspector": Inspector.BRepInspector, "testsnames": StructuralModel_Tests }
+            , "TetrahedralSolid3D": { "inspector": Inspector.SolidMeshInspector3D, "testsnames": TetrahedralSolid3D_Tests }
+            , "TriangulatedSurface2D": { "inspector": Inspector.SurfaceMeshInspector2D, "testsnames": TriangulatedSurface2D_Tests }
+            , "TriangulatedSurface3D": { "inspector": Inspector.SurfaceMeshInspector3D, "testsnames": TriangulatedSurface3D_Tests }
             , "VertexSet": { "inspector": "", "testsnames": VertexSet_Tests }
             }
