@@ -75,7 +75,6 @@ def GetVersions(list_packages: list):
     return list_with_versions
 
 def UploadFile(file: str, filename: str, uploadFolder: str, filesize: int):
-def UploadFile(file: str, filename: str, uploadFolder: str):
     fileDecoded = base64.b64decode(file.split(',')[-1])
     secureFilename = werkzeug.utils.secure_filename(filename)
     filePath = os.path.join(uploadFolder, secureFilename)
