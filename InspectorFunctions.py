@@ -26,7 +26,6 @@ def json_return(Result_list: list):
                 , "expected_value": result.expected_value
                 }
         json_result.append(json_temp)
-            
     return json_result
 
 def AdjacencyTests():

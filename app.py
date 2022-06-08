@@ -63,7 +63,7 @@ if not os.path.exists(UPLOAD_FOLDER):
 flask_cors.CORS(app, origins=ORIGINS)
 
 # For development
-@app.route('/', methods=['GET'])
+@app.route(f'/{ID}/', methods=['GET'])
 def root():
     return flask.make_response({"message": "root"}, 200)
 @app.route('/tools/createbackend', methods=['POST'])

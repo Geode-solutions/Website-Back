@@ -44,7 +44,7 @@ def vaditychecker_uploadfile():
         uploadedFile = functions.UploadFile(file, filename, UPLOAD_FOLDER, filesize)
         if not uploadedFile:
             flask.make_response({"error_message": "File not uploaded"}, 500)
-
+        
         return flask.make_response({"message": "File uploaded"}, 200)
     except Exception as e:
         print("error : ", str(e))
@@ -85,16 +85,6 @@ def vaditychecker_inspectfile():
         inspector = InspectorFunctions.Inspectors()[object]['inspector'](model)
         testResult = getattr(inspector, test)()
         return flask.make_response({"Result": testResult}, 200)
-
-    except Exception as e:
-        print("error : ", str(e))
-        return flask.make_response({"error_message": str(e)}, 500)
-
-@validitychecker_routes.route('/releasemodel', methods=['POST'])
-def vaditychecker_releasemodel():
-    try:
-        flask.session.pop('model', None)
-        return flask.make_response({"message": "model released"}, 200)
 
     except Exception as e:
         print("error : ", str(e))

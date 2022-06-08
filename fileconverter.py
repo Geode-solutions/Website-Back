@@ -57,6 +57,7 @@ async def fileconverter_convertfile():
         uploadedFile = functions.UploadFile(file, filename, UPLOAD_FOLDER, filesize)
         if not uploadedFile:
             flask.make_response({"error_message": "File not uploaded"}, 500)
+
         filePath = os.path.join(UPLOAD_FOLDER, filename)
         model = functions.GeodeObjects.ObjectsList()[object]['load'](filePath)
         strictFileName = os.path.splitext(filename)[0]
