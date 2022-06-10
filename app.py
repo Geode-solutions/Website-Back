@@ -57,9 +57,6 @@ else:
     app.register_blueprint(fileconverter.fileconverter_routes, url_prefix='/fileconverter')
     app.register_blueprint(validitychecker.validitychecker_routes, url_prefix='/validitychecker')
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.mkdir(UPLOAD_FOLDER)
-
 flask_cors.CORS(app, origins=ORIGINS)
 
 # For development
@@ -68,7 +65,8 @@ def root():
     return flask.make_response({"message": "root"}, 200)
 @app.route('/tools/createbackend', methods=['POST'])
 def createbackend():
-    return {"status": 200, "ID": str("123456")}
+    return flask.make_response({"ID": str("123456")}, 200)
+  
 # For production
 @app.route(f'/{ID}/ping', methods=['POST'])
 def ping():

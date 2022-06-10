@@ -28,9 +28,9 @@ def json_return(Result_list: list):
         json_result.append(json_temp)
     return json_result
 
-def AdjacencyTests():
+def AdjacencyTests(object: str):
     AdjacencyTests = [ 
-                    Result([], "nb_edges_with_wrong_adjacency", 0)
+                    Result([], f"nb_{object}_with_wrong_adjacency", 0)
                     ]
     Wrapper_AdjacencyTests = Result(AdjacencyTests, "adjacency", True)
     return Wrapper_AdjacencyTests
@@ -105,19 +105,19 @@ def Inspectors():
     EdgedCurve2D_Tests = [Result([ColocationTests(), DegenerationTests()], "EdgedCurve2D", True)]
     EdgedCurve3D_Tests = [Result([ColocationTests(), DegenerationTests()], "EdgedCurve3D", True)]
     Graph_Tests = [Result([], "Graph", True, True)]
-    HybridSolid3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "HybridSolid3D", True)]
+    HybridSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "HybridSolid3D", True)]
     PointSet2D_Tests = [Result([ColocationTests()], "PointSet2D", True)]
     PointSet3D_Tests = [Result([ColocationTests()], "PointSet3D", True)]
-    PolygonalSurface2D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "PolygonalSurface2D", True)]
-    PolygonalSurface3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "PolygonalSurface3D", True)]
-    PolyhedralSolid3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "PolyhedralSolid3D", True)]
+    PolygonalSurface2D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "PolygonalSurface2D", True)]
+    PolygonalSurface3D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "PolygonalSurface3D", True)]
+    PolyhedralSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "PolyhedralSolid3D", True)]
     RegularGrid2D_Tests = [Result([], "RegularGrid2D", True, True)]
     RegularGrid3D_Tests = [Result([], "RegularGrid3D", True, True)]
     Section_Tests = [Result([TopologyTests("section")], "Section", True)]
     StructuralModel_Tests = [Result([TopologyTests("brep")], "StructuralModel", True)]
-    TetrahedralSolid3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "TetrahedralSolid3D", True)]
-    TriangulatedSurface2D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "TriangulatedSurface2D", True)]
-    TriangulatedSurface3D_Tests = [Result([AdjacencyTests(), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "TriangulatedSurface3D", True)]
+    TetrahedralSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold", True)], "TetrahedralSolid3D", True)]
+    TriangulatedSurface2D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "TriangulatedSurface2D", True)]
+    TriangulatedSurface3D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold", True)], "TriangulatedSurface3D", True)]
     VertexSet_Tests = [Result([], "VertexSet", True, True)]
 
     return {

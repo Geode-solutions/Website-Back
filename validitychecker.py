@@ -40,11 +40,11 @@ def vaditychecker_uploadfile():
             return flask.make_response({"error_message": "No filename sent"}, 400)
         if filesize is None:
             return flask.make_response({"error_message": "No filesize sent"}, 400)
-    
+          
         uploadedFile = functions.UploadFile(file, filename, UPLOAD_FOLDER, filesize)
         if not uploadedFile:
             flask.make_response({"error_message": "File not uploaded"}, 500)
-        
+            
         return flask.make_response({"message": "File uploaded"}, 200)
     except Exception as e:
         print("error : ", str(e))
