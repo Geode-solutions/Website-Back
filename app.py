@@ -28,10 +28,10 @@ def set_interval(func, sec):
 def kill():
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
+    if len(os.listdir('./lock')) == 0:
+        os._exit(0)
     if os.path.isfile('./lock/ping.txt'):
         os.remove('./lock/ping.txt')
-    elif len(os.listdir('./lock')) == 0:
-        os._exit(0)
 
 ''' Config variables '''
 FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
