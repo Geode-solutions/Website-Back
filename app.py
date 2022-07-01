@@ -75,6 +75,8 @@ def test_kill():
 # For production
 @app.route(f'/{ID}/ping', methods=['POST'])
 def ping():
+    if not os.path.exists(LOCK_FOLDER):
+        os.mkdir(LOCK_FOLDER)
     if not os.path.isfile('./lock/ping.txt'):
         f = open('./lock/ping.txt', 'a')
         f.close()
