@@ -3,4 +3,4 @@ env
 uploads
 .env
 .vscode
-ping.txt
+lock

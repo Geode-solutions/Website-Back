@@ -4,6 +4,6 @@ tests
 uploads
 .env
 .vscode
-ping.txt
+lock
 Architecture.drawio
 Architecture.svg
