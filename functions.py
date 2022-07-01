@@ -93,10 +93,10 @@ def create_lock_file():
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
     flask.g.UUID = uuid.uuid4()
-    filePath = f'./lock/{str(flask.g.UUID)}.txt'
-    if not os.path.isfile(filePath):
-        f = open(filePath, 'a')
-        f.close()
+    filePath = f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt'
+    f = open(filePath, 'a')
+    f.close()
 
 def remove_lock_file():
-    os.remove(f'./lock/{str(flask.g.UUID)}.txt')
+    LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
+    os.remove(f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt')

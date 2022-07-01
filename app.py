@@ -28,10 +28,10 @@ def set_interval(func, sec):
 def kill():
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
-    if len(os.listdir('./lock')) == 0:
+    if len(os.listdir(LOCK_FOLDER)) == 0:
         os._exit(0)
-    if os.path.isfile('./lock/ping.txt'):
-        os.remove('./lock/ping.txt')
+    if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
+        os.remove(LOCK_FOLDER + '/ping.txt')
 
 ''' Config variables '''
 FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
@@ -79,8 +79,8 @@ def test_kill():
 def ping():
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
-    if not os.path.isfile('./lock/ping.txt'):
-        f = open('./lock/ping.txt', 'a')
+    if not os.path.isfile(LOCK_FOLDER + '/ping.txt'):
+        f = open(LOCK_FOLDER + '/ping.txt', 'a')
         f.close()
     return flask.make_response({"message": "Flask server is running"}, 200)
 
