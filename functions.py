@@ -3,6 +3,8 @@ import GeodeObjects
 import os
 import pkg_resources
 import werkzeug
+import flask
+import uuid
 
 def ListAllInputExtensions():
     """
@@ -86,3 +88,15 @@ def UploadFile(file: str, filename: str, uploadFolder: str, filesize: int):
     finalSize =  os.path.getsize(filePath)
     return int(filesize) == int(finalSize)
 
+def create_lock_file():
+    LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
+    if not os.path.exists(LOCK_FOLDER):
+        os.mkdir(LOCK_FOLDER)
+    flask.g.UUID = uuid.uuid4()
+    filePath = f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt'
+    f = open(filePath, 'a')
+    f.close()
+
+def remove_lock_file():
+    LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
+    os.remove(f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt')

@@ -2,9 +2,19 @@ import flask
 import flask_cors
 import os
 import functions
+import werkzeug
 
 fileconverter_routes = flask.Blueprint('fileconverter_routes', __name__)
 flask_cors.CORS(fileconverter_routes)
+
+
+@fileconverter_routes.before_request
+def before_request():
+    functions.create_lock_file()
+
+@fileconverter_routes.teardown_request
+def teardown_request(exception):
+    functions.remove_lock_file()
 
 @fileconverter_routes.route('/versions', methods=['GET'])
 def fileconverter_versions():
@@ -58,7 +68,8 @@ async def fileconverter_convertfile():
         if not uploadedFile:
             flask.make_response({"error_message": "File not uploaded"}, 500)
 
-        filePath = os.path.join(UPLOAD_FOLDER, filename)
+        secureFilename = werkzeug.utils.secure_filename(filename)
+        filePath = os.path.join(UPLOAD_FOLDER, secureFilename)
         model = functions.GeodeObjects.ObjectsList()[object]['load'](filePath)
         strictFileName = os.path.splitext(filename)[0]
         newFileName = strictFileName + '.' + extension

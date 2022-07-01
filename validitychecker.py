@@ -4,9 +4,18 @@ import os
 import functions
 import GeodeObjects
 import InspectorFunctions
+import werkzeug
 
 validitychecker_routes = flask.Blueprint('validitychecker_routes', __name__)
 flask_cors.CORS(validitychecker_routes)
+
+@validitychecker_routes.before_request
+def before_request():
+    functions.create_lock_file()
+
+@validitychecker_routes.teardown_request
+def teardown_request(exception):
+    functions.remove_lock_file()
 
 @validitychecker_routes.route('/versions', methods=['GET'])
 def validitychecker_versions():
@@ -77,8 +86,9 @@ def vaditychecker_inspectfile():
             return flask.make_response({"error_message": "No filename sent"}, 400)
         if test is None:
             return flask.make_response({"error_message": "No test sent"}, 400)
-            
-        filePath = os.path.join(UPLOAD_FOLDER, filename)
+        
+        secureFilename = werkzeug.utils.secure_filename(filename)
+        filePath = os.path.join(UPLOAD_FOLDER, secureFilename)
         model = model = GeodeObjects.ObjectsList()[object]['load'](filePath)
         if 'model' in flask.session:
             model = flask.session['model']

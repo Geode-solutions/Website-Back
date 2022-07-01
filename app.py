@@ -26,10 +26,12 @@ def set_interval(func, sec):
     return t
 
 def kill():
-    if not os.path.isfile('./ping.txt'):
+    if not os.path.exists(LOCK_FOLDER):
+        os.mkdir(LOCK_FOLDER)
+    if len(os.listdir(LOCK_FOLDER)) == 0:
         os._exit(0)
-    else:
-        os.remove('./ping.txt')
+    if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
+        os.remove(LOCK_FOLDER + '/ping.txt')
 
 ''' Config variables '''
 FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
@@ -44,6 +46,7 @@ ID = app.config.get('ID')
 PORT = int(app.config.get('PORT'))
 CORS_HEADERS = app.config.get('CORS_HEADERS')
 UPLOAD_FOLDER = app.config.get('UPLOAD_FOLDER')
+LOCK_FOLDER = app.config.get('LOCK_FOLDER')
 DEBUG = app.config.get('DEBUG')
 TESTING = app.config.get('TESTING')
 ORIGINS = app.config.get('ORIGINS')
@@ -66,12 +69,18 @@ def root():
 @app.route('/tools/createbackend', methods=['POST'])
 def createbackend():
     return flask.make_response({"ID": str("123456")}, 200)
+@app.route(f'/{ID}/kill', methods=['POST'])
+def test_kill():
+    kill()
+    return flask.make_response({"message": "Task killed"}, 200)
   
 # For production
 @app.route(f'/{ID}/ping', methods=['POST'])
 def ping():
-    if not os.path.isfile('./ping.txt'):
-        f = open('./ping.txt', 'a')
+    if not os.path.exists(LOCK_FOLDER):
+        os.mkdir(LOCK_FOLDER)
+    if not os.path.isfile(LOCK_FOLDER + '/ping.txt'):
+        f = open(LOCK_FOLDER + '/ping.txt', 'a')
         f.close()
     return flask.make_response({"message": "Flask server is running"}, 200)
 
