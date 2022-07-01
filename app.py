@@ -26,6 +26,8 @@ def set_interval(func, sec):
     return t
 
 def kill():
+    if not os.path.exists(LOCK_FOLDER):
+        os.mkdir(LOCK_FOLDER)
     if os.path.isfile('./lock/ping.txt'):
         os.remove('./lock/ping.txt')
     if len(os.listdir('./lock')) == 0:
