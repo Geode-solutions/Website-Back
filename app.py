@@ -30,7 +30,7 @@ def kill():
         os.mkdir(LOCK_FOLDER)
     if os.path.isfile('./lock/ping.txt'):
         os.remove('./lock/ping.txt')
-    if len(os.listdir('./lock')) == 0:
+    elif len(os.listdir('./lock')) == 0:
         os._exit(0)
 
 ''' Config variables '''
