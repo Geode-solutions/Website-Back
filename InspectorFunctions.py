@@ -6,94 +6,116 @@ class Result:
                 , list_invalidity: list
                 , route: str
                 , expected_value: any
-                , value: bool = None
+                , validity_sentence: str = None
                 ):
-        self.validity_sentence = route.replace("_", " ").capitalize()
         self.list_invalidity = list_invalidity
         self.is_leaf = len(list_invalidity) == 0
         self.route = route
         self.expected_value = expected_value
-        self.value = value
+        self.value = None
+        self.validity_sentence = validity_sentence
 
 def json_return(Result_list: list):
     json_result = []
     for result in Result_list:
         json_temp = {"value": result.value
-                , "validity_sentence": result.validity_sentence
                 , "list_invalidity" : result.list_invalidity if result.is_leaf else json_return(result.list_invalidity)
                 , "is_leaf": result.is_leaf
                 , "route": result.route
                 , "expected_value": result.expected_value
+                , "validity_sentence": result.validity_sentence if result.validity_sentence != None else result.route
                 }
         json_result.append(json_temp)
     return json_result
 
 def AdjacencyTests(object: str):
     AdjacencyTests = [ 
-                    Result([], f"nb_{object}_with_wrong_adjacency", 0)
+                    Result([], f"nb_{object}_with_wrong_adjacency", 0, f"Number of {object} with invalid adjacencies")
                     ]
     Wrapper_AdjacencyTests = Result(AdjacencyTests, "adjacency", True)
     return Wrapper_AdjacencyTests
 
 def ColocationTests():
     ColocationTests = [ 
-                    Result([], "nb_colocated_points", 0)
+                    Result([], "nb_colocated_points", 0, "Number of colocated points")
                     ]
     Wrapper_ColocationTests = Result(ColocationTests, "colocation", True)
     return Wrapper_ColocationTests
 def DegenerationTests():
     DegenerationTests = [ 
-                        Result([], "nb_degenerated_edges", 0)
+                        Result([], "nb_degenerated_edges", 0, "Number of degenerated edges")
                         ]
     Wrapper_DegenerationTests = Result(DegenerationTests, "degeneration", True)
     return Wrapper_DegenerationTests
 def ManifoldTests(object: str):
     ManifoldTests = [ 
-                        Result([], f"nb_non_manifold_{object}", 0)
+                        Result([], f"nb_non_manifold_{object}", 0, f"Number of non manifold {object}")
                         ]
     Wrapper_ManifoldTests = Result(ManifoldTests, object, True)
     return Wrapper_ManifoldTests
 def TopologyTests(object: str):
+    unique_vertices_colocation = [
+        Result([], "unique_vertices_linked_to_different_points", 0, "Number of unique vertices linked to different points in space")
+        , Result([], "colocated_unique_vertices_groups", 0, "Number of unique vertices colocqted in space")
+    ]
     if object == "brep":
+        brep_components_are_linked_to_a_unique_vertex = [
+            Result([], "nb_corners_not_linked_to_a_unique_vertex", 0, "Number of corners not linked to a unique vertex")
+            , Result([], "nb_lines_meshed_but_not_linked_to_a_unique_vertex", 0, "Number of lines not linked to a unique vertex")
+            , Result([], "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex", 0, "Number of surfaces not linked to a unique vertex")
+            , Result([], "nb_blocks_meshed_but_not_linked_to_a_unique_vertex", 0, "Number of blocks not linked to a unique vertex")
+        ]
+
+        brep_invalid_components_topology_unique_vertices = [
+            Result([], "multiple_corners_unique_vertices", 0, "Unique vertices linked to multiple corners")
+            , Result([], "multiple_internals_corner_vertices", 0, "Unique vertices linked to a corner with multiple internal relations")
+            , Result([], "not_internal_nor_boundary_corner_vertices", 0, "Unique vertices linked to a corner which is neither internal nor boundary")
+            , Result([], "line_corners_without_boundary_status", 0, "Unique vertices linked to a line and a corner not boundary of the line")
+            , Result([], "part_of_not_boundary_nor_internal_line_unique_vertices", 0, "Unique vertices part of a line without boundary or internal relations")
+            , Result([], "part_of_line_with_invalid_internal_topology_unique_vertices", 0, "Unique vertices part of a line with invalid internal topology relations")
+            , Result([], "part_of_invalid_unique_line_unique_vertices", 0, "Unique vertices part of a single line with invalid topology")
+            , Result([], "part_of_lines_but_not_corner_unique_vertices", 0, "Unique vertices part of multiple lines with invalid topology")
+            , Result([], "part_of_not_boundary_nor_internal_surface_unique_vertices", 0, "Unique vertices part of a surface which has no boundary or internal relations")
+            , Result([], "part_of_surface_with_invalid_internal_topology_unique_vertices", 0, "Unique vertices part of a surface with invalid internal topology")
+            , Result([], "part_of_invalid_unique_surface_unique_vertices", 0, "Unique vertices part of a unique surface with invalid topology")
+            , Result([], "part_of_invalid_multiple_surfaces_unique_vertices", 0, "Unique vertices part of multiple surfaces with invalid topology")
+            , Result([], "part_of_line_and_not_on_surface_border_unique_vertices", 0, "Unique vertices part of a line and a surface but not on the border of the surface mesh")
+            , Result([], "part_of_invalid_blocks_unique_vertices", 0, "Unique vertices part of blocks with invalid topology")
+        ]
+
         TopologyTests = [
-                        Result([], "brep_meshed_components_are_linked_to_a_unique_vertex", True)
-                        , Result([], "nb_corners_not_linked_to_a_unique_vertex", 0)
-                        , Result([], "nb_lines_meshed_but_not_linked_to_a_unique_vertex", 0)
-                        , Result([], "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex", 0)
-                        , Result([], "nb_blocks_meshed_but_not_linked_to_a_unique_vertex", 0)
-                        , Result([], "invalid_components_topology_unique_vertices", 0)
-                        , Result([], "multiple_corners_unique_vertices", 0)
-                        , Result([], "multiple_internals_corner_vertices", 0)
-                        , Result([], "not_internal_nor_boundary_corner_vertices", 0)
-                        , Result([], "line_corners_without_boundary_status", 0)
-                        , Result([], "part_of_not_boundary_nor_internal_line_unique_vertices", 0)
-                        , Result([], "part_of_line_with_invalid_internal_topology_unique_vertices", 0)
-                        , Result([], "part_of_invalid_unique_line_unique_vertices", 0)
-                        , Result([], "part_of_lines_but_not_corner_unique_vertices", 0)
-                        , Result([], "part_of_not_boundary_nor_internal_surface_unique_vertices", 0)
-                        , Result([], "part_of_surface_with_invalid_internal_topology_unique_vertices", 0)
-                        , Result([], "part_of_invalid_unique_surface_unique_vertices", 0)
-                        , Result([], "part_of_invalid_multiple_surfaces_unique_vertices", 0)
-                        , Result([], "part_of_invalid_blocks_unique_vertices", 0)
+                        Result(brep_components_are_linked_to_a_unique_vertex, "Meshed components are linked to a unique vertex", True)
+                        , Result(brep_invalid_components_topology_unique_vertices, "Unique vertices linked to components with invalid topology", True)
+                        , Result(unique_vertices_colocation, "Unique vertices with colocation issues", True)
+                        
                         ]
     elif object == "section":
+        section_components_are_linked_to_a_unique_vertex = [
+            Result([], "nb_corners_not_linked_to_a_unique_vertex", 0, "Number of corners not linked to a unique vertex")
+            , Result([], "nb_lines_meshed_but_not_linked_to_a_unique_vertex", 0, "Number of lines not linked to a unique vertex")
+            , Result([], "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex", 0, "Number of surfaces not linked to a unique vertex")
+            , Result([], "nb_blocks_meshed_but_not_linked_to_a_unique_vertex", 0, "Number of blocks not linked to a unique vertex")
+        ]
+
+        section_invalid_components_topology_unique_vertices = [
+            Result([], "multiple_corners_unique_vertices", 0, "Unique vertices linked to multiple corners")
+            , Result([], "multiple_internals_corner_vertices", 0, "Unique vertices linked to a corner with multiple internal relations")
+            , Result([], "not_internal_nor_boundary_corner_vertices", 0, "Unique vertices linked to a corner which is neither internal nor boundary")
+            , Result([], "line_corners_without_boundary_status", 0, "Unique vertices linked to a line and a corner not boundary of the line")
+            , Result([], "part_of_not_boundary_nor_internal_line_unique_vertices", 0, "Unique vertices part of a line without boundary or internal relations")
+            , Result([], "part_of_line_with_invalid_internal_topology_unique_vertices", 0, "Unique vertices part of a line with invalid internal topology relations")
+            , Result([], "part_of_invalid_unique_line_unique_vertices", 0, "Unique vertices part of a single line with invalid topology")
+            , Result([], "part_of_lines_but_not_corner_unique_vertices", 0, "Unique vertices part of multiple lines with invalid topology")
+            , Result([], "part_of_invalid_surfaces_unique_vertices", 0, "Unique vertices part of surfaces with invalid topology")
+            , Result([], "part_of_line_and_not_on_surface_border_unique_vertices", 0, "Unique vertices part of a line and a surface but not on the border of the surface mesh")
+        ]
+
         TopologyTests = [
-                        Result([], "section_meshed_components_are_linked_to_a_unique_vertex", True)
-                        , Result([], "nb_corners_not_linked_to_a_unique_vertex", 0)
-                        , Result([], "nb_lines_meshed_but_not_linked_to_a_unique_vertex", 0)
-                        , Result([], "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex", 0)
-                        , Result([], "invalid_components_topology_unique_vertices", 0)
-                        , Result([], "multiple_corners_unique_vertices", 0)
-                        , Result([], "multiple_internals_corner_vertices", 0)
-                        , Result([], "not_internal_nor_boundary_corner_vertices", 0)
-                        , Result([], "line_corners_without_boundary_status", 0)
-                        , Result([], "part_of_not_boundary_nor_internal_line_unique_vertices", 0)
-                        , Result([], "part_of_line_with_invalid_internal_topology_unique_vertices",0)
-                        , Result([], "part_of_invalid_unique_line_unique_vertices", 0)
-                        , Result([], "part_of_lines_but_not_corner_unique_vertices", 0)
-                        , Result([], "part_of_invalid_surfaces_unique_vertices", 0)
+                        Result(section_components_are_linked_to_a_unique_vertex, "Meshed components are linked to a unique vertex", True)
+                        , Result(section_invalid_components_topology_unique_vertices, "Unique vertices linked to components with invalid topology", True)
+                        , Result(unique_vertices_colocation, "Unique vertices with colocation issues", True)
                         ]
-    Wrapper_TopologyTests = Result(TopologyTests, "topology", True)
+    Wrapper_TopologyTests = Result(TopologyTests, "Topology", True)
     return Wrapper_TopologyTests
 
 def Inspectors():
