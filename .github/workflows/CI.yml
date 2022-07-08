@@ -1,0 +1,22 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches-ignore: [ master, develop ] 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Test
+      run: |
+        pip install pytest
+        pip install -r requirements.txt
+        pytest -v tests
+      env:
+        FLASK_ENV: development
+        ID: 123456
