@@ -1,5 +1,5 @@
 python-dotenv
-Flask
+Flask[async]
 Flask-Cors
 Werkzeug
 OpenGeode-core
