@@ -56,7 +56,7 @@ def ManifoldTests(object: str):
 def TopologyTests(object: str):
     unique_vertices_colocation = [
         Result([], "unique_vertices_linked_to_different_points", 0, "Number of unique vertices linked to different points in space")
-        , Result([], "colocated_unique_vertices_groups", 0, "Number of unique vertices colocqted in space")
+        , Result([], "colocated_unique_vertices_groups", 0, "Number of unique vertices colocated in space")
     ]
     if object == "brep":
         brep_components_are_linked_to_a_unique_vertex = [
