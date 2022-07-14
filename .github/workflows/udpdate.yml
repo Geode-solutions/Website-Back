@@ -17,6 +17,8 @@ jobs:
     - name: "Skip if no new version"
       uses: Geode-solutions/actions/need-update@master
       id: update
+      with:
+        token: ${{ secrets.TOKEN }}
     - name: Stop
       if: steps.update.outputs.update == 'false' 
       run: exit 0
