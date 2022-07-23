@@ -19,20 +19,30 @@ jobs:
       id: update
       with:
         token: ${{ secrets.TOKEN }}
-    - name: Stop
-      if: steps.update.outputs.update == 'false' 
-      run: exit 0
+    - name: Remove old branch
+      uses: actions/github-script@v6
+      if: steps.update.outputs.update == 'true' 
+      with:
+        script: |
+          github.rest.git.deleteRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: version-update
+          })
     - name: Update
+      if: steps.update.outputs.update == 'true' 
       run: |
         pip install pip-tools
         pip-compile --upgrade requirements.in
     - uses: stefanzweifel/git-auto-commit-action@v4
+      if: steps.update.outputs.update == 'true' 
       with:
         commit_message: Apply update changes
         branch: version-update
         create_branch: true
     - name: pull-request
       uses: repo-sync/pull-request@v2
+      if: steps.update.outputs.update == 'true' 
       with:
         source_branch: version-update
         destination_branch: master
