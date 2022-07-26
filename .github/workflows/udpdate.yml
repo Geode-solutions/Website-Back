@@ -27,7 +27,7 @@ jobs:
           github.rest.git.deleteRef({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            ref: version-update
+            ref: "version-update"
           })
     - name: Update
       if: steps.update.outputs.update == 'true' 
