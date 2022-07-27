@@ -1,9 +1,13 @@
+from io import BytesIO
 import flask
 import flask_cors
 import os
 import functions
 import werkzeug
 import shutil
+
+import zipfile
+import time
 
 
 fileconverter_routes = flask.Blueprint('fileconverter_routes', __name__)
@@ -81,18 +85,39 @@ async def fileconverter_convertfile():
             shutil.rmtree(subFolder)
 
         functions.GeodeObjects.ObjectsList()[object]['save'](model, os.path.join(UPLOAD_FOLDER, newFileName))
-        
+        mimetype = 'application/octet-binary'
+
         list_exceptions = ['triangle', 'vtm']
         if extension in list_exceptions:
-            os.mkdir(subFolder)
+            if extension == 'triangle':
+                os.mkdir(subFolder)
+                generatedFiles = f"{UPLOAD_FOLDER}/{strictFileName}"
+                shutil.move(generatedFiles + '.ele', subFolder)
+                shutil.move(generatedFiles + '.neigh', subFolder)
+                shutil.move(generatedFiles + '.node', subFolder)
+            elif extension == 'vtm':
+                a = 1
+            newFileName = strictFileName + '.zip'
+            mimetype = 'application/x-zip-compressed'
+            if os.path.isfile(newFileName):
+                os.remove(newFileName)
             shutil.make_archive(base_name = subFolder
                                 , format = 'zip'
                                 , root_dir = UPLOAD_FOLDER
                                 , base_dir = strictFileName)
-            newFileName = strictFileName + '.zip'
-        
-        print('response')
-        response = flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
+
+            memory_file = BytesIO()
+            with zipfile.ZipFile(memory_file, 'w') as zf:
+                files = [newFileName]
+                for individualFile in files:
+                    data = zipfile.ZipInfo(individualFile['fileName'])
+                    data.date_time = time.localtime(time.time())[:6]
+                    data.compress_type = zipfile.ZIP_DEFLATED
+                    zf.writestr(data, individualFile['fileData'])
+                memory_file.seek(0)
+                return flask.send_file(memory_file, attachment_filename='capsule.zip', as_attachment=True)
+
+        response = flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = mimetype)
         response.headers['new-file-name'] = newFileName
         response.headers['Access-Control-Expose-Headers'] = 'new-file-name'
         return response
