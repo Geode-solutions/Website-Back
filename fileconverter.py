@@ -3,6 +3,8 @@ import flask_cors
 import os
 import functions
 import werkzeug
+import shutil
+
 
 fileconverter_routes = flask.Blueprint('fileconverter_routes', __name__)
 flask_cors.CORS(fileconverter_routes)
@@ -52,7 +54,7 @@ async def fileconverter_convertfile():
         filename = flask.request.form.get('filename')
         filesize = flask.request.form.get('filesize')
         extension = flask.request.form.get('extension')
-        
+
         if object is None:
             return flask.make_response({"error_message": "No object sent"}, 400)
         if file is None:
@@ -71,11 +73,29 @@ async def fileconverter_convertfile():
         secureFilename = werkzeug.utils.secure_filename(filename)
         filePath = os.path.join(UPLOAD_FOLDER, secureFilename)
         model = functions.GeodeObjects.ObjectsList()[object]['load'](filePath)
-        strictFileName = os.path.splitext(filename)[0]
+        strictFileName = os.path.splitext(secureFilename)[0]
         newFileName = strictFileName + '.' + extension
 
+        subFolder = f"{UPLOAD_FOLDER}/{strictFileName}/"
+        if os.path.exists(subFolder):
+            shutil.rmtree(subFolder)
+
         functions.GeodeObjects.ObjectsList()[object]['save'](model, os.path.join(UPLOAD_FOLDER, newFileName))
-        return flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
+        
+        list_exceptions = ['triangle', 'vtm']
+        if extension in list_exceptions:
+            os.mkdir(subFolder)
+            shutil.make_archive(base_name = subFolder
+                                , format = 'zip'
+                                , root_dir = UPLOAD_FOLDER
+                                , base_dir = strictFileName)
+            newFileName = strictFileName + '.zip'
+        
+        print('response')
+        response = flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = "application/octet-binary")
+        response.headers['new-file-name'] = newFileName
+        response.headers['Access-Control-Expose-Headers'] = 'new-file-name'
+        return response
     except FileNotFoundError:
         return flask.make_response({"error_message": "File not found"}, 404)
     except RuntimeError as e:
