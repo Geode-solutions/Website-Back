@@ -120,8 +120,8 @@ def test_testnames(client):
             value = modelCheck['value']
             is_leaf = modelCheck['is_leaf']
             route = modelCheck['route']
-            expected_value = modelCheck['expected_value']
             list_invalidity = modelCheck['list_invalidity']
+            assert value == None
             assert type(is_leaf) is bool
             assert type(route) is str
             assert type(list_invalidity) is list
