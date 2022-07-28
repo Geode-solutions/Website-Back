@@ -94,6 +94,10 @@ def vaditychecker_inspectfile():
             model = flask.session['model']
         inspector = InspectorFunctions.Inspectors()[object]['inspector'](model)
         testResult = getattr(inspector, test)()
+        expectedValue = InspectorFunctions.InpectorExpectedResult()[test]
+        print('testResult :', type(testResult))
+        print('expectedValue :', type(expectedValue))
+        print(testResult == expectedValue)
         return flask.make_response({"Result": testResult}, 200)
 
     except Exception as e:
