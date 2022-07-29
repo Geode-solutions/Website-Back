@@ -227,7 +227,4 @@ def InpectorExpectedResults():
         , "part_of_not_boundary_nor_internal_surface_unique_vertices" : []
         , "surfaces_nb_edges_with_wrong_adjacencies" : {}
         , "unique_vertices_linked_to_different_points" : []
-        
     }
-
-
