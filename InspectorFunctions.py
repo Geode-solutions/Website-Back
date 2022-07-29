@@ -3,24 +3,26 @@ import GeodeObjects
 
 class Result:
     def __init__(self
-                , list_invalidity: list
+                , children: list
                 , route: str
-                , validity_sentence: str = None
+                , sentence: str = None
+                , value = None
                 ):
-        self.list_invalidity = list_invalidity
-        self.is_leaf = len(list_invalidity) == 0
+        self.children = children
+        self.is_leaf = len(children) == 0
         self.route = route
-        self.value = None
-        self.validity_sentence = validity_sentence
+        self.value = value
+        self.sentence = sentence
+        self.list_invalidities = None
 
 def json_return(Result_list: list):
     json_result = []
     for result in Result_list:
         json_temp = {"value": result.value
-                , "list_invalidity" : result.list_invalidity if result.is_leaf else json_return(result.list_invalidity)
+                , "children" : result.children if result.is_leaf else json_return(result.children)
                 , "is_leaf": result.is_leaf
                 , "route": result.route
-                , "validity_sentence": result.validity_sentence if result.validity_sentence != None else result.route
+                , "sentence": result.sentence if result.sentence != None else result.route
                 }
         json_result.append(json_temp)
     return json_result
@@ -29,26 +31,26 @@ def AdjacencyTests(object: str):
     AdjacencyTests = [ 
         Result([], f"nb_{object}_with_wrong_adjacency", f"Number of {object} with invalid adjacencies")
     ]
-    Wrapper_AdjacencyTests = Result(AdjacencyTests, "adjacency", True)
+    Wrapper_AdjacencyTests = Result(AdjacencyTests, "Adjacency")
     return Wrapper_AdjacencyTests
 
 def ColocationTests():
     ColocationTests = [
         Result([], "nb_colocated_points", "Number of colocated points")
     ]
-    Wrapper_ColocationTests = Result(ColocationTests, "colocation", True)
+    Wrapper_ColocationTests = Result(ColocationTests, "Colocation")
     return Wrapper_ColocationTests
 def DegenerationTests():
     DegenerationTests = [ 
         Result([], "nb_degenerated_edges", "Number of degenerated edges")
     ]
-    Wrapper_DegenerationTests = Result(DegenerationTests, "degeneration", True)
+    Wrapper_DegenerationTests = Result(DegenerationTests, "Degeneration")
     return Wrapper_DegenerationTests
-def ManifoldTests(object: str):
-    ManifoldTests = [ 
-        Result([], f"nb_non_manifold_{object}", f"Number of non manifold {object}")
-    ]
-    Wrapper_ManifoldTests = Result(ManifoldTests, object, True)
+def ManifoldTests(objects: list):
+    ManifoldTests = []
+    for object in objects:
+        ManifoldTests.append(Result([], f"nb_non_manifold_{object}", f"Number of non manifold {object}"))
+    Wrapper_ManifoldTests = Result(ManifoldTests, "Manifold")
     return Wrapper_ManifoldTests
 def TopologyTests(object: str):
     unique_vertices_colocation = [
@@ -104,25 +106,25 @@ def TopologyTests(object: str):
 
 def ComponentMeshesTests(object: str):
     component_meshes_adjacency = [
-        Result([], "surfaces_nb_edges_with_wrong_adjacencies", "")
+        Result([], "surfaces_nb_edges_with_wrong_adjacencies", "Model component meshes edge adjacencies")
     ]
     component_meshes_colocation = [
-        Result([], "components_nb_colocated_points", "")
+        Result([], "components_nb_colocated_points", "Model component meshes point colocation")
     ]
     component_meshes_degeneration = [
-        Result([], "components_nb_degenerated_edges", "")
+        Result([], "components_nb_degenerated_edges", "Model component meshes edge degeneration")
     ]
     component_meshes_manifold = [
-        Result([], "component_meshes_nb_non_manifold_vertices", "")
-        , Result([], "component_meshes_nb_non_manifold_edges", "")
+        Result([], "component_meshes_nb_non_manifold_vertices", "Model component meshes vertex manifold")
+        , Result([], "component_meshes_nb_non_manifold_edges", "Model component meshes edge manifold")
     ]
 
     if object == "brep":
         brep_component_meshes_adjacency = component_meshes_adjacency
-        brep_component_meshes_adjacency.append(Result([], "blocks_nb_facets_with_wrong_adjacencies", ""))
+        brep_component_meshes_adjacency.append(Result([], "blocks_nb_facets_with_wrong_adjacencies", "Model component meshes facet adjacencies"))
 
         brep_component_meshes_manifold = component_meshes_manifold
-        brep_component_meshes_manifold.append(Result([], "component_meshes_nb_non_manifold_facets", ""))
+        brep_component_meshes_manifold.append(Result([], "component_meshes_nb_non_manifold_facets", "Model component meshes facet manifold"))
 
         ComponentMeshesTests = [
             Result(brep_component_meshes_adjacency, "Adjacency")
@@ -149,21 +151,21 @@ def Inspectors():
     CrossSection_Tests = [Result([TopologyTests("section"), ComponentMeshesTests("section")], "CrossSection")]
     EdgedCurve2D_Tests = [Result([ColocationTests(), DegenerationTests()], "EdgedCurve2D")]
     EdgedCurve3D_Tests = [Result([ColocationTests(), DegenerationTests()], "EdgedCurve3D")]
-    Graph_Tests = [Result([], "Graph", True)]
-    HybridSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold")], "HybridSolid3D")]
-    PointSet2D_Tests = [Result([ColocationTests()], "PointSet2D", True)]
-    PointSet3D_Tests = [Result([ColocationTests()], "PointSet3D", True)]
-    PolygonalSurface2D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold")], "PolygonalSurface2D")]
-    PolygonalSurface3D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold")], "PolygonalSurface3D")]
-    PolyhedralSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold")], "PolyhedralSolid3D")]
-    RegularGrid2D_Tests = [Result([], "RegularGrid2D", True)]
-    RegularGrid3D_Tests = [Result([], "RegularGrid3D", True)]
+    Graph_Tests = [Result([], "Graph", value=True)]
+    HybridSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "facets", "vertices"])], "HybridSolid3D")]
+    PointSet2D_Tests = [Result([ColocationTests()], "PointSet2D", value=True)]
+    PointSet3D_Tests = [Result([ColocationTests()], "PointSet3D", value=True)]
+    PolygonalSurface2D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "vertices"])], "PolygonalSurface2D")]
+    PolygonalSurface3D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "vertices"])], "PolygonalSurface3D")]
+    PolyhedralSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "facets", "vertices"])], "PolyhedralSolid3D")]
+    RegularGrid2D_Tests = [Result([], "RegularGrid2D", value=True)]
+    RegularGrid3D_Tests = [Result([], "RegularGrid3D", value=True)]
     Section_Tests = [Result([TopologyTests("section"), ComponentMeshesTests("section")], "Section")]
     StructuralModel_Tests = [Result([TopologyTests("brep"), ComponentMeshesTests("brep")], "StructuralModel")]
-    TetrahedralSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("facets"), ManifoldTests("facets"), ManifoldTests("vertices")], "manifold")], "TetrahedralSolid3D")]
-    TriangulatedSurface2D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold")], "TriangulatedSurface2D")]
-    TriangulatedSurface3D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), Result([ManifoldTests("edges"), ManifoldTests("vertices")], "manifold")], "TriangulatedSurface3D")]
-    VertexSet_Tests = [Result([], "VertexSet", True)]
+    TetrahedralSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "facets", "vertices"])], "TetrahedralSolid3D")]
+    TriangulatedSurface2D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "vertices"])], "TriangulatedSurface2D")]
+    TriangulatedSurface3D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "vertices"])], "TriangulatedSurface3D")]
+    VertexSet_Tests = [Result([], "VertexSet", value=True)]
 
     return {
         "BRep": { "inspector": Inspector.BRepInspector, "testsnames": BRep_Tests }
@@ -188,37 +190,44 @@ def Inspectors():
     }
 
 
-def InpectorExpectedResult(object: str):
+def InpectorExpectedResults():
     return {
-        f"nb_{object}_with_wrong_adjacency" : 0
-        , "nb_colocated_points" : 0
-        , "nb_degenerated_edges" : 0
-        , f"nb_non_manifold_{object}" : 0
-        , "unique_vertices_linked_to_different_points" : 0
-        , "colocated_unique_vertices_groups" : 0
-        , "nb_corners_not_linked_to_a_unique_vertex" : 0
-        , "nb_lines_meshed_but_not_linked_to_a_unique_vertex" : 0
-        , "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex" : 0
-        , "multiple_corners_unique_vertices" : 0
-        , "multiple_internals_corner_vertices" : 0
-        , "not_internal_nor_boundary_corner_vertices" : 0
-        , "line_corners_without_boundary_status" : 0
-        , "part_of_not_boundary_nor_internal_line_unique_vertices" : 0
-        , "part_of_line_with_invalid_internal_topology_unique_vertices" : 0
-        , "part_of_invalid_unique_line_unique_vertices" : 0
-        , "part_of_lines_but_not_corner_unique_vertices" : 0
-        , "part_of_line_and_not_on_surface_border_unique_vertices" : 0
-        , "nb_blocks_meshed_but_not_linked_to_a_unique_vertex" : 0
-        , "part_of_not_boundary_nor_internal_surface_unique_vertices" : 0
-        , "part_of_surface_with_invalid_internal_topology_unique_vertices" : 0
-        , "part_of_invalid_unique_surface_unique_vertices" : 0
-        , "part_of_invalid_multiple_surfaces_unique_vertices" : 0
-        , "part_of_invalid_blocks_unique_vertices" : 0
-        , "surfaces_nb_edges_with_wrong_adjacencies" : {}
+        "blocks_nb_facets_with_wrong_adjacencies" : {}
+        , "colocated_unique_vertices_groups" : []
         , "components_nb_colocated_points" : {}
         , "components_nb_degenerated_edges" : {}
-        , "component_meshes_nb_non_manifold_vertices" : {}
         , "component_meshes_nb_non_manifold_edges" : {}
+        , "component_meshes_nb_non_manifold_facets": {}
+        , "component_meshes_nb_non_manifold_vertices" : {}
+        , "line_corners_without_boundary_status" : []
+        , "multiple_corners_unique_vertices" : []
+        , "multiple_internals_corner_vertices" : []
+        , "nb_blocks_meshed_but_not_linked_to_a_unique_vertex" : 0
+        , "nb_colocated_points" : 0
+        , "nb_corners_not_linked_to_a_unique_vertex" : 0
+        , "nb_degenerated_edges" : 0
+        , "nb_edges_with_wrong_adjacency" : 0
+        , "nb_facets_with_wrong_adjacency" : 0
+        , "nb_lines_meshed_but_not_linked_to_a_unique_vertex" : 0
+        , "nb_non_manifold_edges" : 0
+        , "nb_non_manifold_facets" : 0
+        , "nb_non_manifold_vertices" : 0
+        , "nb_surfaces_meshed_but_not_linked_to_a_unique_vertex" : 0
+        , "not_internal_nor_boundary_corner_vertices" : []
+        , "part_of_not_boundary_nor_internal_line_unique_vertices" : []
+        , "part_of_invalid_unique_line_unique_vertices" : []
+        , "part_of_line_and_not_on_surface_border_unique_vertices" : []
+        , "part_of_invalid_blocks_unique_vertices" : []
+        , "part_of_invalid_multiple_surfaces_unique_vertices" : []
+        , "part_of_invalid_surfaces_unique_vertices": []
+        , "part_of_invalid_unique_surface_unique_vertices" : []
+        , "part_of_surface_with_invalid_internal_topology_unique_vertices" : []
+        , "part_of_line_with_invalid_internal_topology_unique_vertices" : []
+        , "part_of_lines_but_not_corner_unique_vertices" : []
+        , "part_of_not_boundary_nor_internal_surface_unique_vertices" : []
+        , "surfaces_nb_edges_with_wrong_adjacencies" : {}
+        , "unique_vertices_linked_to_different_points" : []
+        
     }
 
 
