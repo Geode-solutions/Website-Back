@@ -24,6 +24,12 @@ jobs:
       if: steps.update.outputs.update == 'true' 
       with:
         script: |
+          const branch = await github.rest.git.getRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "heads/version-update"
+          })
+          console.log(branch)
           github.rest.git.deleteRef({
             owner: context.repo.owner,
             repo: context.repo.repo,
