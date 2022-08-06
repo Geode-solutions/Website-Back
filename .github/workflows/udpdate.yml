@@ -29,7 +29,7 @@ jobs:
             repo: context.repo.repo,
             ref: "heads/version-update"
           })
-          console.log(branch)
+          if(branch.status == 404) return
           github.rest.git.deleteRef({
             owner: context.repo.owner,
             repo: context.repo.repo,
