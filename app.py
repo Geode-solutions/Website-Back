@@ -6,8 +6,8 @@ import threading
 import flask
 import flask_cors
 
-import fileconverter
-import validitychecker
+import blueprint_fileconverter
+import blueprint_validitychecker
 
 if os.path.isfile('./.env'):
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -54,11 +54,11 @@ SSL = app.config.get('SSL')
 
 
 if ID != None:
-    app.register_blueprint(fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
-    app.register_blueprint(validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
+    app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
+    app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
 else:
-    app.register_blueprint(fileconverter.fileconverter_routes, url_prefix='/fileconverter')
-    app.register_blueprint(validitychecker.validitychecker_routes, url_prefix='/validitychecker')
+    app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix='/fileconverter')
+    app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix='/validitychecker')
 
 flask_cors.CORS(app, origins=ORIGINS)
 
