@@ -30,7 +30,7 @@ markupsafe==2.1.1
     # via
     #   jinja2
     #   werkzeug
-opengeode-core==11.0.8
+opengeode-core==11.1.1
     # via
     #   -r requirements.in
     #   opengeode-geosciences
@@ -42,13 +42,13 @@ opengeode-geosciences==5.5.1
     #   -r requirements.in
     #   opengeode-geosciencesio
     #   opengeode-inspector
-opengeode-geosciencesio==3.9.1
+opengeode-geosciencesio==3.9.2
     # via
     #   -r requirements.in
     #   opengeode-inspector
-opengeode-inspector==2.2.0
+opengeode-inspector==2.3.0
     # via -r requirements.in
-opengeode-io==5.20.1
+opengeode-io==5.20.2
     # via
     #   -r requirements.in
     #   opengeode-inspector
@@ -58,7 +58,7 @@ python-dotenv==0.20.0
     # via -r requirements.in
 six==1.16.0
     # via flask-cors
-werkzeug==2.2.0
+werkzeug==2.2.2
     # via
     #   -r requirements.in
     #   flask

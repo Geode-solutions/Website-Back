@@ -17,16 +17,42 @@ jobs:
     - name: "Skip if no new version"
       uses: Geode-solutions/actions/need-update@master
       id: update
-    - name: Stop
-      if: !steps.update.outputs.update
-      run: exit 0
+      with:
+        token: ${{ secrets.TOKEN }}
+    - name: Remove old branch
+      uses: actions/github-script@v6
+      if: steps.update.outputs.update == 'true' 
+      with:
+        script: |
+          const branch = await github.rest.git.listMatchingRefs({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "heads/version-update"
+          })
+          console.log(branch)
+          if(!branch.data.length) return
+          github.rest.git.deleteRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "heads/version-update"
+          })
     - name: Update
+      if: steps.update.outputs.update == 'true' 
       run: |
         pip install pip-tools
         pip-compile --upgrade requirements.in
     - uses: stefanzweifel/git-auto-commit-action@v4
+      if: steps.update.outputs.update == 'true' 
       with:
         commit_message: Apply update changes
         branch: version-update
         create_branch: true
-
+    - name: pull-request
+      uses: repo-sync/pull-request@v2
+      if: steps.update.outputs.update == 'true' 
+      with:
+        source_branch: version-update
+        destination_branch: master
+        pr_reviewer: JulienChampagnol
+        github_token: ${{ secrets.TOKEN }}
+        
