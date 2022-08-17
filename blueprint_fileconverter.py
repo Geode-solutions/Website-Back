@@ -2,10 +2,8 @@ import shutil
 import flask
 import flask_cors
 import os
-
 import werkzeug
 import functions
-
 import zipfile
 
 
@@ -94,30 +92,16 @@ async def fileconverter_convertfile():
                 shutil.move(generatedFiles + '.ele', subFolder)
                 shutil.move(generatedFiles + '.neigh', subFolder)
                 shutil.move(generatedFiles + '.node', subFolder)
-                newFileName = strictFileName + '.zip'
-
-                with zipfile.ZipFile(f'{UPLOAD_FOLDER}/{newFileName}', 'w') as zipObj:
+            elif extension == 'vtm':
+                generatedFiles = f"{UPLOAD_FOLDER}/{strictFileName}"
+                shutil.move(generatedFiles + '.vtm', subFolder)
+            newFileName = strictFileName + '.zip'
+            mimetype = 'application/zip'
+            with zipfile.ZipFile(f'{UPLOAD_FOLDER}/{newFileName}', 'w') as zipObj:
                     for folderName, subfolders, filenames in os.walk(subFolder):
                         for filename in filenames:
                             filePath = os.path.join(folderName, filename)
                             zipObj.write(filePath, os.path.basename(filePath))
-                # response = flask.send_file(f'{UPLOAD_FOLDER}/{newFileName}', attachment_filename=newFileName, as_attachment=True)
-                response = flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = 'application/zip')
-                print(newFileName)
-                response.headers['new-file-name'] = newFileName
-                response.headers['Access-Control-Expose-Headers'] = 'new-file-name'
-                return response
-            elif extension == 'vtm':
-                a = 1
-            newFileName = strictFileName + '.zip'
-            mimetype = 'application/x-zip-compressed'
-            if os.path.isfile(newFileName):
-                os.remove(newFileName)
-            shutil.make_archive(base_name = subFolder
-                                , format = 'zip'
-                                , root_dir = UPLOAD_FOLDER
-                                , base_dir = strictFileName)
-
 
         response = flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = mimetype)
         response.headers['new-file-name'] = newFileName
@@ -130,33 +114,3 @@ async def fileconverter_convertfile():
     except Exception as e:
         print("error : ", str(e))
         return flask.make_response({"error_message": str(e)}, 500)
-
-# @fileconverter_routes.route('/convertfile', methods=['POST'])
-# async def fileconverter_convertfile():
-#     try:
-#         UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
-#         return flask.make_response({"message": "Toto"}, 200)
-#         subFolder = f"{UPLOAD_FOLDER}/File/"
-#         newFileName = 'File.zip'
-
-#         memory_file = io.BytesIO()
-#         with zipfile.ZipFile(memory_file, 'w') as zf:
-#             for individualFile in os.listdir(subFolder):
-#                 data = zipfile.ZipInfo(individualFile)
-#                 data.date_time = time.localtime(time.time())[:6]
-#                 data.compress_type = zipfile.ZIP_DEFLATED
-#                 zf.writestr(data, individualFile)
-#         memory_file.seek(0)
-
-#         response = flask.send_file(memory_file, attachment_filename=newFileName, as_attachment=True)
-#         response.headers['new-file-name'] = newFileName
-#         response.headers['Access-Control-Expose-Headers'] = 'new-file-name'
-#         return response
-
-#     except FileNotFoundError:
-#         return flask.make_response({"error_message": "File not found"}, 404)
-#     except RuntimeError as e:
-#         return flask.make_response({"error_message": str(e)}, 500)
-#     except Exception as e:
-#         print("error : ", str(e))
-#         return flask.make_response({"error_message": str(e)}, 500)
