@@ -8,6 +8,7 @@ class Config(object):
     CORS_HEADERS = 'Content-Type'
     UPLOAD_FOLDER = './uploads'
     LOCK_FOLDER = './lock'
+    TIME_FOLDER = './time'
 
 class ProdConfig(Config):
     DEBUG = False

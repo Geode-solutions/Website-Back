@@ -12,14 +12,7 @@ flask_cors.CORS(validitychecker_routes)
 @validitychecker_routes.before_request
 def before_request():
     functions.create_lock_file()
-    # request = request()
-    from flask import request
-    print(request.base_url)
-    if '/ping' in request.base_url:
-
-        print('ping')
-    else:
-        print('not ping')
+    functions.create_time_file()
 
 @validitychecker_routes.teardown_request
 def teardown_request(exception):

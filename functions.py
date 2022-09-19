@@ -5,6 +5,7 @@ import pkg_resources
 import werkzeug
 import flask
 import uuid
+import time
 
 def ListAllInputExtensions():
     """
@@ -95,6 +96,19 @@ def create_lock_file():
     flask.g.UUID = uuid.uuid4()
     filePath = f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt'
     f = open(filePath, 'a')
+    f.close()
+
+def create_time_file():
+    TIME_FOLDER = flask.current_app.config['TIME_FOLDER']
+    if not os.path.exists(TIME_FOLDER):
+        os.mkdir(TIME_FOLDER)
+    filePath = f'{TIME_FOLDER}/time.txt'
+    if not os.path.isfile(filePath):
+        f = open(filePath, 'a')
+        f.close()
+
+    f = open(TIME_FOLDER + '/time.txt', 'a')
+    f.write(str(time.time()))
     f.close()
 
 def remove_lock_file():

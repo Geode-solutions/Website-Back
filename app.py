@@ -31,7 +31,12 @@ def set_interval(func, sec):
 def kill():
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
+    if not os.path.exists(TIME_FOLDER):
+        os.mkdir(TIME_FOLDER)
+        
     if len(os.listdir(LOCK_FOLDER)) == 0:
+        os._exit(0)
+    if len(os.listdir(TIME_FOLDER)) == 0:
         os._exit(0)
     if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
         os.remove(LOCK_FOLDER + '/ping.txt')
@@ -50,6 +55,7 @@ PORT = int(app.config.get('PORT'))
 CORS_HEADERS = app.config.get('CORS_HEADERS')
 UPLOAD_FOLDER = app.config.get('UPLOAD_FOLDER')
 LOCK_FOLDER = app.config.get('LOCK_FOLDER')
+TIME_FOLDER = app.config.get('TIME_FOLDER')
 DEBUG = app.config.get('DEBUG')
 TESTING = app.config.get('TESTING')
 ORIGINS = app.config.get('ORIGINS')
