@@ -31,15 +31,27 @@ def set_interval(func, sec):
 def kill():
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
-    if not os.path.exists(TIME_FOLDER):
-        os.mkdir(TIME_FOLDER)
-        
-    if len(os.listdir(LOCK_FOLDER)) == 0:
-        os._exit(0)
-    if len(os.listdir(TIME_FOLDER)) == 0:
-        os._exit(0)
-    if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
-        os.remove(LOCK_FOLDER + '/ping.txt')
+    
+    # if len(os.listdir(LOCK_FOLDER)) == 0:
+    #     os._exit(0)
+    # if not os.path.exists(TIME_FOLDER) == 0:
+    #     os._exit(0)
+    # if not os.path.isfile(TIME_FOLDER + '/time.txt'):
+    #     os._exit(0)
+    if os.path.isfile(TIME_FOLDER + '/time.txt'):
+        with open(TIME_FOLDER + '/time.txt', 'r') as file:
+            try:
+                last_request_time = float(file.read())
+            except Exception as e:
+                print("error : ", str(e))
+                os._exit(0)
+            current_time = time.time()
+            print('substraction : ', current_time - last_request_time)
+            if current_time - last_request_time > 60*10:
+                os._exit(0)
+
+    # if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
+    #     os.remove(LOCK_FOLDER + '/ping.txt')
 
 ''' Config variables '''
 FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
@@ -49,6 +61,7 @@ if FLASK_ENV == "production" or FLASK_ENV == "test":
     set_interval(kill, 60)
 else:
     app.config.from_object('config.DevConfig')
+    set_interval(kill, 10)
 
 ID = app.config.get('ID')
 PORT = int(app.config.get('PORT'))

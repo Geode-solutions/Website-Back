@@ -104,10 +104,10 @@ def create_time_file():
         os.mkdir(TIME_FOLDER)
     filePath = f'{TIME_FOLDER}/time.txt'
     if not os.path.isfile(filePath):
-        f = open(filePath, 'a')
+        f = open(filePath, 'w')
         f.close()
 
-    f = open(TIME_FOLDER + '/time.txt', 'a')
+    f = open(TIME_FOLDER + '/time.txt', 'w')
     f.write(str(time.time()))
     f.close()
 
