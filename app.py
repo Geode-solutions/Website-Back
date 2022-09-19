@@ -9,6 +9,9 @@ import flask_cors
 import blueprint_fileconverter
 import blueprint_validitychecker
 
+import time
+
+
 if os.path.isfile('./.env'):
     basedir = os.path.abspath(os.path.dirname(__file__))
     dotenv.load_dotenv(os.path.join(basedir, '.env'))
@@ -38,7 +41,7 @@ FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
 
 if FLASK_ENV == "production" or FLASK_ENV == "test":
     app.config.from_object('config.ProdConfig')
-    set_interval(kill, 45)
+    set_interval(kill, 60)
 else:
     app.config.from_object('config.DevConfig')
 
@@ -65,6 +68,12 @@ flask_cors.CORS(app, origins=ORIGINS)
 # For development
 @app.route(f'/{ID}/', methods=['GET'])
 def root():
+    return flask.make_response({"message": "root"}, 200)
+@app.route('/toto', methods=['GET'])
+def test():
+    from flask import request
+    print(request.base_url)
+    print(time.time())
     return flask.make_response({"message": "root"}, 200)
 @app.route('/tools/createbackend', methods=['POST'])
 def createbackend():
