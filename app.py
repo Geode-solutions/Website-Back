@@ -24,6 +24,7 @@ FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
 
 if FLASK_ENV == "production" or FLASK_ENV == "test":
     app.config.from_object('config.ProdConfig')
+    functions.set_interval(functions.kill_task, 60)
 else:
     app.config.from_object('config.DevConfig')
 
@@ -67,7 +68,6 @@ app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_pre
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
 
 functions.set_interval(kill_task, TIME_OUT)
-
 flask_cors.CORS(app, origins=ORIGINS)
 
 @app.route('/tools/createbackend', methods=['POST'])
