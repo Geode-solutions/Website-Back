@@ -1,16 +1,15 @@
 ''' Packages '''
 import os
 import dotenv
-import threading
 
 import flask
 import flask_cors
 
 import blueprint_fileconverter
 import blueprint_validitychecker
+import blueprint_ID
 
-import time
-
+import functions
 
 if os.path.isfile('./.env'):
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -19,49 +18,14 @@ if os.path.isfile('./.env'):
 ''' Global config '''
 app = flask.Flask(__name__)
 
-def set_interval(func, sec):
-    def func_wrapper():
-        set_interval(func, sec)
-        func()
-    t = threading.Timer(sec, func_wrapper)
-    t.daemon = True
-    t.start()
-    return t
-
-def kill():
-    if not os.path.exists(LOCK_FOLDER):
-        os.mkdir(LOCK_FOLDER)
-    
-    # if len(os.listdir(LOCK_FOLDER)) == 0:
-    #     os._exit(0)
-    # if not os.path.exists(TIME_FOLDER) == 0:
-    #     os._exit(0)
-    # if not os.path.isfile(TIME_FOLDER + '/time.txt'):
-    #     os._exit(0)
-    if os.path.isfile(TIME_FOLDER + '/time.txt'):
-        with open(TIME_FOLDER + '/time.txt', 'r') as file:
-            try:
-                last_request_time = float(file.read())
-            except Exception as e:
-                print("error : ", str(e))
-                os._exit(0)
-            current_time = time.time()
-            print('substraction : ', current_time - last_request_time)
-            if current_time - last_request_time > 60*10:
-                os._exit(0)
-
-    # if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
-    #     os.remove(LOCK_FOLDER + '/ping.txt')
-
 ''' Config variables '''
 FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
 
 if FLASK_ENV == "production" or FLASK_ENV == "test":
     app.config.from_object('config.ProdConfig')
-    set_interval(kill, 60)
+    functions.set_interval(functions.kill_task, 60)
 else:
     app.config.from_object('config.DevConfig')
-    set_interval(kill, 10)
 
 ID = app.config.get('ID')
 PORT = int(app.config.get('PORT'))
@@ -74,43 +38,20 @@ TESTING = app.config.get('TESTING')
 ORIGINS = app.config.get('ORIGINS')
 SSL = app.config.get('SSL')
 
-
 if ID != None:
     app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
     app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
+    app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}/')
 else:
     app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix='/fileconverter')
     app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix='/validitychecker')
+    app.register_blueprint(blueprint_ID.ID_routes, url_prefix='/')
 
 flask_cors.CORS(app, origins=ORIGINS)
 
-# For development
-@app.route(f'/{ID}/', methods=['GET'])
-def root():
-    return flask.make_response({"message": "root"}, 200)
-@app.route('/toto', methods=['GET'])
-def test():
-    from flask import request
-    print(request.base_url)
-    print(time.time())
-    return flask.make_response({"message": "root"}, 200)
 @app.route('/tools/createbackend', methods=['POST'])
 def createbackend():
     return flask.make_response({"ID": str("123456")}, 200)
-@app.route(f'/{ID}/kill', methods=['POST'])
-def test_kill():
-    kill()
-    return flask.make_response({"message": "Task killed"}, 200)
-  
-# For production
-@app.route(f'/{ID}/ping', methods=['POST'])
-def ping():
-    if not os.path.exists(LOCK_FOLDER):
-        os.mkdir(LOCK_FOLDER)
-    if not os.path.isfile(LOCK_FOLDER + '/ping.txt'):
-        f = open(LOCK_FOLDER + '/ping.txt', 'a')
-        f.close()
-    return flask.make_response({"message": "Flask server is running"}, 200)
 
 # ''' Main '''
 if __name__ == '__main__':
