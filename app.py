@@ -19,25 +19,6 @@ if os.path.isfile('./.env'):
 ''' Global config '''
 app = flask.Flask(__name__)
 
-''' Config variables '''
-FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
-
-if FLASK_ENV == "production" or FLASK_ENV == "test":
-    app.config.from_object('config.ProdConfig')
-    functions.set_interval(functions.kill_task, 60)
-else:
-    app.config.from_object('config.DevConfig')
-
-ID = app.config.get('ID')
-PORT = int(app.config.get('PORT'))
-DEBUG = app.config.get('DEBUG')
-TESTING = app.config.get('TESTING')
-ORIGINS = app.config.get('ORIGINS')
-SSL = app.config.get('SSL')
-LOCK_FOLDER = app.config.get('LOCK_FOLDER')
-TIME_FOLDER = app.config.get('TIME_FOLDER')
-TIME_OUT = float(app.config.get('TIME_OUT'))
-
 def kill_task():
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
@@ -61,6 +42,25 @@ def kill_task():
                 os._exit(0)
     if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
         os.remove(LOCK_FOLDER + '/ping.txt')
+
+''' Config variables '''
+FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
+
+if FLASK_ENV == "production" or FLASK_ENV == "test":
+    app.config.from_object('config.ProdConfig')
+    functions.set_interval(kill_task, 60)
+else:
+    app.config.from_object('config.DevConfig')
+
+ID = app.config.get('ID')
+PORT = int(app.config.get('PORT'))
+DEBUG = app.config.get('DEBUG')
+TESTING = app.config.get('TESTING')
+ORIGINS = app.config.get('ORIGINS')
+SSL = app.config.get('SSL')
+LOCK_FOLDER = app.config.get('LOCK_FOLDER')
+TIME_FOLDER = app.config.get('TIME_FOLDER')
+TIME_OUT = float(app.config.get('TIME_OUT'))
 
 
 app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
