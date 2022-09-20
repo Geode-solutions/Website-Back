@@ -29,10 +29,6 @@ else:
 
 ID = app.config.get('ID')
 PORT = int(app.config.get('PORT'))
-CORS_HEADERS = app.config.get('CORS_HEADERS')
-UPLOAD_FOLDER = app.config.get('UPLOAD_FOLDER')
-LOCK_FOLDER = app.config.get('LOCK_FOLDER')
-TIME_FOLDER = app.config.get('TIME_FOLDER')
 DEBUG = app.config.get('DEBUG')
 TESTING = app.config.get('TESTING')
 ORIGINS = app.config.get('ORIGINS')
@@ -50,7 +46,7 @@ else:
 flask_cors.CORS(app, origins=ORIGINS)
 
 @app.route('/tools/createbackend', methods=['POST'])
-def createbackend():
+def create_backend():
     return flask.make_response({"ID": str("123456")}, 200)
 
 # ''' Main '''
