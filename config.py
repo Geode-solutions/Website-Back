@@ -15,11 +15,11 @@ class ProdConfig(Config):
     TESTING = False
     SSL = 'adhoc'
     ORIGINS = ['https://geode-solutions.com', 'https://next.geode-solutions.com']
-    TIME_OUT = '10'
+    TIME_OUT = '2'
 
 class DevConfig(Config):
     DEBUG = True
     TESTING = True
     SSL = None
     ORIGINS = 'http://localhost:3000'
-    TIME_OUT = '2'
+    TIME_OUT = '60'
