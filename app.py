@@ -55,9 +55,8 @@ def kill_task():
                 print("error : ", str(e))
                 os._exit(0)
             current_time = time.time()
-            print('current_time : ', current_time)
-            print('substraction : ', current_time - last_request_time)
             if (current_time - last_request_time)/60 > TIME_OUT:
+                print('Server timed out due to inactivity, shutting down...')
                 os._exit(0)
     if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
         os.remove(LOCK_FOLDER + '/ping.txt')
@@ -65,7 +64,7 @@ def kill_task():
 
 app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
 app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
-app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}/')
+app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
 
 functions.set_interval(kill_task, TIME_OUT)
 

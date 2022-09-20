@@ -22,4 +22,4 @@ class DevConfig(Config):
     TESTING = True
     SSL = None
     ORIGINS = 'http://localhost:3000'
-    TIME_OUT = '60'
+    TIME_OUT = '2'
