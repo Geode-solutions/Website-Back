@@ -12,6 +12,7 @@ flask_cors.CORS(validitychecker_routes)
 @validitychecker_routes.before_request
 def before_request():
     functions.create_lock_file()
+    functions.create_time_file()
 
 @validitychecker_routes.teardown_request
 def teardown_request(exception):
@@ -100,6 +101,7 @@ def vaditychecker_inspectfile():
             print(test, ' : ', testResult)
             if type(testResult) is dict:
                 for key in testResult:
+                    print('key : ', key)
                     new_key = key.string()
                     testResult[new_key] = testResult.pop(key)
 
