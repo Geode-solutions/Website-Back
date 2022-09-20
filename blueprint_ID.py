@@ -3,7 +3,6 @@ import os
 import flask
 import flask_cors
 
-import app
 
 ID_routes = flask.Blueprint('ID_routes', __name__)
 flask_cors.CORS(ID_routes)
@@ -11,10 +10,6 @@ flask_cors.CORS(ID_routes)
 @ID_routes.route('/', methods=['GET'])
 def root():
     return flask.make_response({"message": "root"}, 200)
-@ID_routes.route('/kill', methods=['GET'])
-def test_kill():
-    app.kill_task()
-    return flask.make_response({"message": "Task killed"}, 200)
 @ID_routes.route('/ping', methods=['POST'])
 def ping():
     LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
