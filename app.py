@@ -49,9 +49,10 @@ FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
 
 if FLASK_ENV == "production" or FLASK_ENV == "test":
     app.config.from_object('config.ProdConfig')
-    functions.set_interval(kill_task, 60)
+    # functions.set_interval(kill_task, 60)
 else:
     app.config.from_object('config.DevConfig')
+    # functions.set_interval(kill_task, 10)
 
 ID = app.config.get('ID')
 PORT = int(app.config.get('PORT'))
@@ -77,5 +78,5 @@ def create_backend():
 
 # ''' Main '''
 if __name__ == '__main__':
-    print('Python is running in ' + FLASK_ENV + ' mode')
+    print(f'Python is running in {FLASK_ENV} mode')
     app.run(debug=DEBUG, host='0.0.0.0', port=PORT, ssl_context=SSL)
