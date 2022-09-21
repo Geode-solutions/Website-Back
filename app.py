@@ -62,7 +62,6 @@ LOCK_FOLDER = app.config.get('LOCK_FOLDER')
 TIME_FOLDER = app.config.get('TIME_FOLDER')
 TIME_OUT = float(app.config.get('TIME_OUT'))
 
-
 app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
 app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
