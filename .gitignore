@@ -1,7 +1,8 @@
-__pycache__
-env
-uploads
 .env
-.vscode
-lock
-time
+env/
+.vscode/
+lock/
+time/
+uploads/
+__pycache__/
+.pytest_cache/
