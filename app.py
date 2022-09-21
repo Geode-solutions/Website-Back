@@ -77,4 +77,5 @@ def create_backend():
 # ''' Main '''
 if __name__ == '__main__':
     print('Python is running in ' + FLASK_ENV + ' mode')
+    print('ID : ', ID)
     app.run(debug=DEBUG, host='0.0.0.0', port=PORT, ssl_context=SSL)
