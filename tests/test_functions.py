@@ -3,7 +3,7 @@ import os
 ID = os.environ.get('ID')
 
 def test_root(client):
-    response = client.get(f'/{ID}/')
+    response = client.get(f'/{ID}/healthcheck')
     assert response.status_code == 200
 
 def test_createbackend(client):

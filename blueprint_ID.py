@@ -6,9 +6,9 @@ import flask_cors
 ID_routes = flask.Blueprint('ID_routes', __name__)
 flask_cors.CORS(ID_routes)
 
-@ID_routes.route('/', methods=['GET'])
+@ID_routes.route('/healthcheck', methods=['GET'])
 def root():
-    return flask.make_response({"message": "root"}, 200)
+    return flask.make_response({"message": "healthy"}, 200)
 @ID_routes.route('/ping', methods=['POST'])
 def ping():
     LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
