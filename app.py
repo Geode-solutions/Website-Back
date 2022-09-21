@@ -8,7 +8,7 @@ import time
 
 import blueprint_fileconverter
 import blueprint_validitychecker
-import blueprint_ID
+# import blueprint_ID
 
 import functions
 
@@ -65,11 +65,23 @@ TIME_OUT = float(app.config.get('TIME_OUT'))
 
 app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
 app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
-app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
+# app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
 
 functions.set_interval(kill_task, TIME_OUT)
 flask_cors.CORS(app, origins=ORIGINS)
 
+@app.route(f'/{ID}/healthcheck', methods=['GET'])
+def root():
+    return flask.make_response({"message": "healthy"}, 200)
+@app.route(f'/{ID}/ping', methods=['POST'])
+def ping():
+    LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
+    if not os.path.exists(LOCK_FOLDER):
+        os.mkdir(LOCK_FOLDER)
+    if not os.path.isfile(LOCK_FOLDER + '/ping.txt'):
+        f = open(LOCK_FOLDER + '/ping.txt', 'a')
+        f.close()
+    return flask.make_response({"message": "Flask server is running"}, 200)
 @app.route('/tools/createbackend', methods=['POST'])
 def create_backend():
     return flask.make_response({"ID": str("123456")}, 200)
