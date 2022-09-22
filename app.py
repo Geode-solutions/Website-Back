@@ -12,6 +12,7 @@ import blueprint_ID
 
 import functions
 
+
 if os.path.isfile('./.env'):
     basedir = os.path.abspath(os.path.dirname(__file__))
     dotenv.load_dotenv(os.path.join(basedir, '.env'))
