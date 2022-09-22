@@ -61,13 +61,14 @@ ORIGINS = app.config.get('ORIGINS')
 SSL = app.config.get('SSL')
 LOCK_FOLDER = app.config.get('LOCK_FOLDER')
 TIME_FOLDER = app.config.get('TIME_FOLDER')
-TIME_OUT = float(app.config.get('TIME_OUT'))
+MINUTES_BEFORE_TIMEOUT = float(app.config.get('MINUTES_BEFORE_TIMEOUT'))
+SECONDS_BETWEEN_SHUTDOWNS = float(app.config.get('SECONDS_BETWEEN_SHUTDOWNS'))
 
 app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=f'/{ID}/fileconverter')
 app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
 
-functions.set_interval(kill_task, TIME_OUT)
+functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
 flask_cors.CORS(app, origins=ORIGINS)
 
 @app.route('/tools/createbackend', methods=['POST'])
