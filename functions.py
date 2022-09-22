@@ -1,10 +1,14 @@
-import base64
-import GeodeObjects
 import os
-import pkg_resources
+import threading
+import time
+import base64
 import werkzeug
-import flask
 import uuid
+
+import flask
+import pkg_resources
+
+import GeodeObjects
 
 def ListAllInputExtensions():
     """
@@ -97,7 +101,29 @@ def create_lock_file():
     f = open(filePath, 'a')
     f.close()
 
+def create_time_file():
+    TIME_FOLDER = flask.current_app.config['TIME_FOLDER']
+    if not os.path.exists(TIME_FOLDER):
+        os.mkdir(TIME_FOLDER)
+    filePath = f'{TIME_FOLDER}/time.txt'
+    if not os.path.isfile(filePath):
+        f = open(filePath, 'w')
+        f.close()
+
+    f = open(TIME_FOLDER + '/time.txt', 'w')
+    f.write(str(time.time()))
+    f.close()
+
 def remove_lock_file():
     LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
     os.remove(f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt')
+
+def set_interval(func, sec):
+    def func_wrapper():
+        set_interval(func, sec)
+        func()
+    t = threading.Timer(sec, func_wrapper)
+    t.daemon = True
+    t.start()
+    return t
     

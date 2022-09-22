@@ -18,6 +18,7 @@ def before_request():
 @fileconverter_routes.teardown_request
 def teardown_request(exception):
     functions.remove_lock_file()
+    functions.create_time_file()
 
 @fileconverter_routes.route('/versions', methods=['GET'])
 def fileconverter_versions():
