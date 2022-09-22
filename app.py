@@ -39,7 +39,7 @@ def kill_task():
                 print("error : ", str(e), flush=True)
                 os._exit(0)
             current_time = time.time()
-            if (current_time - last_request_time)/60 > TIME_OUT:
+            if (current_time - last_request_time)/60 > MINUTES_BEFORE_TIMEOUT:
                 print('Server timed out due to inactivity, shutting down...', flush=True)
                 os._exit(0)
     if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
