@@ -15,8 +15,8 @@ class ProdConfig(Config):
     TESTING = False
     SSL = 'adhoc'
     ORIGINS = ['https://geode-solutions.com', 'https://next.geode-solutions.com']
-    MINUTES_BEFORE_TIMEOUT = '10'
-    SECONDS_BETWEEN_SHUTDOWNS = '60'
+    MINUTES_BEFORE_TIMEOUT = '5'
+    SECONDS_BETWEEN_SHUTDOWNS = '45'
 
 class DevConfig(Config):
     DEBUG = True
