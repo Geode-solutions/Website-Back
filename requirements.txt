@@ -46,7 +46,7 @@ opengeode-geosciencesio==3.10.0
     # via
     #   -r requirements.in
     #   opengeode-inspector
-opengeode-inspector==2.4.0
+opengeode-inspector==2.5.1
     # via -r requirements.in
 opengeode-io==5.21.1
     # via
