@@ -28,7 +28,7 @@ markupsafe==2.1.1
     # via
     #   jinja2
     #   werkzeug
-opengeode-core==12.2.5
+opengeode-core==12.2.6
     # via
     #   -r requirements.in
     #   opengeode-geosciences
@@ -60,5 +60,5 @@ werkzeug==2.2.2
     # via
     #   -r requirements.in
     #   flask
-zipp==3.9.0
+zipp==3.10.0
     # via importlib-metadata
