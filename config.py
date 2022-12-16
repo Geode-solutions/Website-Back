@@ -4,7 +4,7 @@ import os
 class Config(object):
     FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
     ID = os.environ.get('ID', default=None)
-    PORT = '5000'
+    PORT = '443'
     CORS_HEADERS = 'Content-Type'
     UPLOAD_FOLDER = './uploads'
     LOCK_FOLDER = './lock'
