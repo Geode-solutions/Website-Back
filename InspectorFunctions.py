@@ -1,5 +1,4 @@
 import opengeode_inspector as Inspector
-import GeodeObjects
 
 class Result:
     def __init__(self
@@ -65,7 +64,8 @@ def TopologyTests(object: str):
     ]
 
     invalid_components_topology_unique_vertices = [
-        Result([], "multiple_corners_unique_vertices", "Unique vertices linked to multiple corners")
+        Result([], "unique_vertices_not_linked_to_a_component_vertex", "Number of unique vertices not linked to a component mesh vertex")
+        , Result([], "multiple_corners_unique_vertices", "Unique vertices linked to multiple corners")
         , Result([], "multiple_internals_corner_vertices", "Unique vertices linked to a corner with multiple internal relations")
         , Result([], "not_internal_nor_boundary_corner_vertices", "Unique vertices linked to a corner which is neither internal nor boundary")
         , Result([], "line_corners_without_boundary_status", "Unique vertices linked to a line and a corner not boundary of the line")
@@ -227,4 +227,5 @@ def InpectorExpectedResults():
         , "part_of_not_boundary_nor_internal_surface_unique_vertices" : []
         , "surfaces_nb_edges_with_wrong_adjacencies" : {}
         , "unique_vertices_linked_to_different_points" : []
+        , "unique_vertices_not_linked_to_a_component_vertex" : []
     }
