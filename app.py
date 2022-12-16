@@ -47,17 +47,15 @@ def kill_task():
         os.remove(LOCK_FOLDER + '/ping.txt')
 
 ''' Config variables '''
-FLASK_ENV = os.environ.get('FLASK_ENV', default=None)
+FLASK_DEBUG = True if os.environ.get('FLASK_DEBUG', default=None) == 'True' else False
 
-if FLASK_ENV == "production" or FLASK_ENV == "test":
+if FLASK_DEBUG == False:
     app.config.from_object('config.ProdConfig')
 else:
     app.config.from_object('config.DevConfig')
 
 ID = app.config.get('ID')
 PORT = int(app.config.get('PORT'))
-DEBUG = app.config.get('DEBUG')
-TESTING = app.config.get('TESTING')
 ORIGINS = app.config.get('ORIGINS')
 SSL = app.config.get('SSL')
 LOCK_FOLDER = app.config.get('LOCK_FOLDER')
@@ -78,5 +76,5 @@ def create_backend():
 
 # ''' Main '''
 if __name__ == '__main__':
-    print(f'Python is running in {FLASK_ENV} mode')
-    app.run(debug=DEBUG, host='0.0.0.0', port=PORT, ssl_context=SSL)
+    print(f'Python is running in {FLASK_DEBUG} mode')
+    app.run(debug=FLASK_DEBUG, host='0.0.0.0', port=PORT, ssl_context=SSL)
