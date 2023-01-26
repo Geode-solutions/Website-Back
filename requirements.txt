@@ -24,11 +24,11 @@ itsdangerous==2.1.2
     # via flask
 jinja2==3.1.2
     # via flask
-markupsafe==2.1.1
+markupsafe==2.1.2
     # via
     #   jinja2
     #   werkzeug
-opengeode-core==12.6.0
+opengeode-core==12.6.5
     # via
     #   -r requirements.in
     #   opengeode-geosciences
@@ -44,7 +44,7 @@ opengeode-geosciencesio==3.12.3
     # via
     #   -r requirements.in
     #   opengeode-inspector
-opengeode-inspector==2.7.1
+opengeode-inspector==2.8.0
     # via -r requirements.in
 opengeode-io==5.23.3
     # via
@@ -52,7 +52,7 @@ opengeode-io==5.23.3
     #   opengeode-inspector
 pycparser==2.21
     # via cffi
-python-dotenv==0.21.0
+python-dotenv==0.21.1
     # via -r requirements.in
 six==1.16.0
     # via flask-cors
