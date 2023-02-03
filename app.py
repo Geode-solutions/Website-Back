@@ -26,25 +26,25 @@ def kill_task():
     if not os.path.exists(TIME_FOLDER):
         os.mkdir(TIME_FOLDER)
     
-    if len(os.listdir(LOCK_FOLDER)) == 0:
-        print(f'No files in the {LOCK_FOLDER} folder, shutting down...', flush=True)
-        os._exit(0)
-    if not os.path.isfile(TIME_FOLDER + '/time.txt'):
-        print('\'time.txt\' file doesn\'t exist, shutting down...', flush=True)
-        os._exit(0)
-    if os.path.isfile(TIME_FOLDER + '/time.txt'):
-        with open(TIME_FOLDER + '/time.txt', 'r') as file:
-            try:
-                last_request_time = float(file.read())
-            except Exception as e:
-                print("error : ", str(e), flush=True)
-                os._exit(0)
-            current_time = time.time()
-            if (current_time - last_request_time)/60 > MINUTES_BEFORE_TIMEOUT:
-                print('Server timed out due to inactivity, shutting down...', flush=True)
-                os._exit(0)
-    if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
-        os.remove(LOCK_FOLDER + '/ping.txt')
+    # if len(os.listdir(LOCK_FOLDER)) == 0:
+    #     print(f'No files in the {LOCK_FOLDER} folder, shutting down...', flush=True)
+    #     os._exit(0)
+    # if not os.path.isfile(TIME_FOLDER + '/time.txt'):
+    #     print('\'time.txt\' file doesn\'t exist, shutting down...', flush=True)
+    #     os._exit(0)
+    # if os.path.isfile(TIME_FOLDER + '/time.txt'):
+    #     with open(TIME_FOLDER + '/time.txt', 'r') as file:
+    #         try:
+    #             last_request_time = float(file.read())
+    #         except Exception as e:
+    #             print("error : ", str(e), flush=True)
+    #             os._exit(0)
+    #         current_time = time.time()
+    #         if (current_time - last_request_time)/60 > MINUTES_BEFORE_TIMEOUT:
+    #             print('Server timed out due to inactivity, shutting down...', flush=True)
+    #             os._exit(0)
+    # if os.path.isfile(LOCK_FOLDER + '/ping.txt'):
+    #     os.remove(LOCK_FOLDER + '/ping.txt')
 
 ''' Config variables '''
 FLASK_DEBUG = True if os.environ.get('FLASK_DEBUG', default=None) == 'True' else False
@@ -67,7 +67,8 @@ app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=
 app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
 
-functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
+if FLASK_DEBUG == False:
+    functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
 flask_cors.CORS(app, origins=ORIGINS)
 
 @app.route('/tools/createbackend', methods=['POST'])
