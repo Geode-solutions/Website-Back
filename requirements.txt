@@ -28,25 +28,25 @@ markupsafe==2.1.2
     # via
     #   jinja2
     #   werkzeug
-opengeode-core==12.6.9
+opengeode-core==12.6.10
     # via
     #   -r requirements.in
     #   opengeode-geosciences
     #   opengeode-geosciencesio
     #   opengeode-inspector
     #   opengeode-io
-opengeode-geosciences==5.7.8
+opengeode-geosciences==5.7.9
     # via
     #   -r requirements.in
     #   opengeode-geosciencesio
     #   opengeode-inspector
-opengeode-geosciencesio==3.12.3
+opengeode-geosciencesio==3.12.4
     # via
     #   -r requirements.in
     #   opengeode-inspector
-opengeode-inspector==2.9.1
+opengeode-inspector==2.9.2
     # via -r requirements.in
-opengeode-io==5.23.3
+opengeode-io==5.23.4
     # via
     #   -r requirements.in
     #   opengeode-inspector
@@ -60,5 +60,5 @@ werkzeug==2.2.2
     # via
     #   -r requirements.in
     #   flask
-zipp==3.12.0
+zipp==3.12.1
     # via importlib-metadata
