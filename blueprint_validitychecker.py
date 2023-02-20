@@ -99,16 +99,23 @@ def vaditychecker_inspectfile():
         expectedValue = InspectorFunctions.InpectorExpectedResults()[test]
 
         if testResult != expectedValue or type(testResult) != type(expectedValue):
-            print(test, ' : ', testResult)
-            if type(testResult) is dict:
-                for key in testResult:
-                    new_key = key.string()
-                    testResult[new_key] = testResult.pop(key)
-
+            if type(testResult) is list:
+                if type(testResult[0]) is tuple:
+                    temp_testResult = []
+                    for tuple_item in testResult:
+                        temp_list = []
+                        for index in range(len(tuple_item)):
+                            temp_list.append(tuple_item[index].string())
+                        temp_testResult.append(temp_list)
+                    testResult = temp_testResult
         result = testResult == expectedValue and type(testResult) == type(expectedValue)
+
+        if (result == False):
+            print(f'{test=}', flush=True)
 
         return flask.make_response({"Result": result, "list_invalidities": str(testResult)}, 200)
 
     except Exception as e:
-        print("error : ", str(e))
+        print("error : ", str(e), flush=True)
+        print(f'{test=}', flush=True)
         return flask.make_response({"error_message": str(e)}, 500)

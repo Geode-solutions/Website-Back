@@ -51,6 +51,12 @@ def ManifoldTests(objects: list):
         ManifoldTests.append(Result([], f"nb_non_manifold_{object}", f"Number of non manifold {object}"))
     Wrapper_ManifoldTests = Result(ManifoldTests, "Manifold")
     return Wrapper_ManifoldTests
+def IntersectionTests():
+    IntersectionTests = [ 
+        Result([], "intersecting_elements", "Number of intersecting elements")
+    ]
+    Wrapper_IntersectionTests = Result(IntersectionTests, "Intersection")
+    return Wrapper_IntersectionTests
 def TopologyTests(object: str):
     unique_vertices_colocation = [
         Result([], "unique_vertices_linked_to_different_points", "Number of unique vertices linked to different points in space")
@@ -112,11 +118,14 @@ def ComponentMeshesTests(object: str):
         Result([], "components_nb_colocated_points", "Model component meshes point colocation")
     ]
     component_meshes_degeneration = [
-        Result([], "components_nb_degenerated_edges", "Model component meshes edge degeneration")
+        Result([], "components_nb_degenerated_elements", "Model component meshes element degeneration")
     ]
     component_meshes_manifold = [
         Result([], "component_meshes_nb_non_manifold_vertices", "Model component meshes vertex manifold")
         , Result([], "component_meshes_nb_non_manifold_edges", "Model component meshes edge manifold")
+    ]
+    component_meshes_intersection = [
+        Result([], "intersecting_surfaces_elements", "Pairs of component meshes triangles intersecting")
     ]
 
     if object == "brep":
@@ -131,6 +140,7 @@ def ComponentMeshesTests(object: str):
             , Result(component_meshes_colocation, "Colocation")
             , Result(component_meshes_degeneration, "Degeneration")
             , Result(brep_component_meshes_manifold, "Manifold")
+            , Result(component_meshes_intersection, "Intersections")
         ]
 
     elif object == "section":
@@ -163,8 +173,8 @@ def Inspectors():
     Section_Tests = [Result([TopologyTests("section"), ComponentMeshesTests("section")], "Section")]
     StructuralModel_Tests = [Result([TopologyTests("brep"), ComponentMeshesTests("brep")], "StructuralModel")]
     TetrahedralSolid3D_Tests = [Result([AdjacencyTests("facets"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "facets", "vertices"])], "TetrahedralSolid3D")]
-    TriangulatedSurface2D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "vertices"])], "TriangulatedSurface2D")]
-    TriangulatedSurface3D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "vertices"])], "TriangulatedSurface3D")]
+    TriangulatedSurface2D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "vertices"]),IntersectionTests()], "TriangulatedSurface2D")]
+    TriangulatedSurface3D_Tests = [Result([AdjacencyTests("edges"), ColocationTests(), DegenerationTests(), ManifoldTests(["edges", "vertices"]),IntersectionTests()], "TriangulatedSurface3D")]
     VertexSet_Tests = [Result([], "VertexSet", value=True)]
 
     return {
@@ -195,11 +205,13 @@ def InpectorExpectedResults():
         "blocks_nb_facets_with_wrong_adjacencies" : {}
         , "colocated_unique_vertices_groups" : []
         , "components_nb_colocated_points" : {}
-        , "components_nb_degenerated_edges" : {}
+        , "components_nb_degenerated_elements" : {}
         , "component_meshes_nb_non_manifold_edges" : {}
         , "component_meshes_nb_non_manifold_facets": {}
         , "component_meshes_nb_non_manifold_vertices" : {}
         , "line_corners_without_boundary_status" : []
+        , "intersecting_elements": []
+        , "intersecting_surfaces_elements": []
         , "multiple_corners_unique_vertices" : []
         , "multiple_internals_corner_vertices" : []
         , "nb_blocks_meshed_but_not_linked_to_a_unique_vertex" : 0
