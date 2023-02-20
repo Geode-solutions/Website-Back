@@ -130,7 +130,7 @@ def ComponentMeshesTests(object: str):
 
     if object == "brep":
         brep_component_meshes_adjacency = component_meshes_adjacency
-        # brep_component_meshes_adjacency.append(Result([], "blocks_nb_facets_with_wrong_adjacencies", "Model component meshes facet adjacencies"))
+        brep_component_meshes_adjacency.append(Result([], "blocks_nb_facets_with_wrong_adjacencies", "Model component meshes facet adjacencies"))
 
         brep_component_meshes_manifold = component_meshes_manifold
         brep_component_meshes_manifold.append(Result([], "component_meshes_nb_non_manifold_facets", "Model component meshes facet manifold"))
