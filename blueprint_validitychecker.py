@@ -82,7 +82,6 @@ def vaditychecker_inspectfile():
         filename = flask.request.form.get('filename')
         test = flask.request.form.get('test')
 
-        print(f'{test=}', flush=True)
         if object is None:
             return flask.make_response({"error_message": "No object sent"}, 400)
         if filename is None:
