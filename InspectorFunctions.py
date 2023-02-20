@@ -205,7 +205,7 @@ def InpectorExpectedResults():
         "blocks_nb_facets_with_wrong_adjacencies" : {}
         , "colocated_unique_vertices_groups" : []
         , "components_nb_colocated_points" : {}
-        , "components_nb_degenerated_edges" : {}
+        , "components_nb_degenerated_elements" : {}
         , "component_meshes_nb_non_manifold_edges" : {}
         , "component_meshes_nb_non_manifold_facets": {}
         , "component_meshes_nb_non_manifold_vertices" : {}
