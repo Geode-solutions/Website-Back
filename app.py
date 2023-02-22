@@ -67,7 +67,8 @@ app.register_blueprint(blueprint_fileconverter.fileconverter_routes, url_prefix=
 app.register_blueprint(blueprint_validitychecker.validitychecker_routes, url_prefix=f'/{ID}/validitychecker')
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
 
-functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
+if FLASK_DEBUG == False:
+    functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
 flask_cors.CORS(app, origins=ORIGINS)
 
 @app.route('/tools/createbackend', methods=['POST'])
