@@ -91,9 +91,7 @@ def vaditychecker_inspectfile():
         
         secureFilename = werkzeug.utils.secure_filename(filename)
         filePath = os.path.join(UPLOAD_FOLDER, secureFilename)
-        model = model = GeodeObjects.ObjectsList()[object]['load'](filePath)
-        if 'model' in flask.session:
-            model = flask.session['model']
+        model = GeodeObjects.ObjectsList()[object]['load'](filePath)
         inspector = InspectorFunctions.Inspectors()[object]['inspector'](model)
         testResult = getattr(inspector, test)()
         expectedValue = InspectorFunctions.InpectorExpectedResults()[test]

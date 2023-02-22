@@ -194,8 +194,8 @@ def Inspectors():
         , "Section": { "inspector": Inspector.SectionInspector, "testsnames": Section_Tests }
         , "StructuralModel": { "inspector": Inspector.BRepInspector, "testsnames": StructuralModel_Tests }
         , "TetrahedralSolid3D": { "inspector": Inspector.SolidMeshInspector3D, "testsnames": TetrahedralSolid3D_Tests }
-        , "TriangulatedSurface2D": { "inspector": Inspector.SurfaceMeshInspector2D, "testsnames": TriangulatedSurface2D_Tests }
-        , "TriangulatedSurface3D": { "inspector": Inspector.SurfaceMeshInspector3D, "testsnames": TriangulatedSurface3D_Tests }
+        , "TriangulatedSurface2D": { "inspector": Inspector.TriangulatedSurfaceInspector2D, "testsnames": TriangulatedSurface2D_Tests }
+        , "TriangulatedSurface3D": { "inspector": Inspector.TriangulatedSurfaceInspector3D, "testsnames": TriangulatedSurface3D_Tests }
         , "VertexSet": { "inspector": "", "testsnames": VertexSet_Tests }
     }
 
