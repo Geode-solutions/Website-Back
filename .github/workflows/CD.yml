@@ -25,7 +25,7 @@ jobs:
     needs: test
     uses: Geode-solutions/actions/.github/workflows/docker-build-squash-push.yml@master
     with:
-      image_name: 'sharetwin_viewer'
-      tag: 'test'
+      image_name: 'geode-backend'
+      tag: ${{ github.ref_name }}
     secrets: 
       TOKEN: ${{secrets.GITHUB_TOKEN}}
