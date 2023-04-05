@@ -22,30 +22,46 @@ def teardown_request(exception):
 
 @fileconverter_routes.route('/versions', methods=['GET'])
 def fileconverter_versions():
-    list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO']
-    return flask.make_response({"versions": functions.GetVersions(list_packages)}, 200)
+    try:
+        list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO']
+        return flask.make_response({"versions": functions.GetVersions(list_packages)}, 200)
+    except Exception as e:
+        print("error : ", str(e))
+        return flask.make_response({"error_message": str(e)}, 500)
 
 @fileconverter_routes.route('/allowedfiles', methods=['GET'])
 def fileconverter_allowedfiles():
-    extensions = functions.ListAllInputExtensions()
-    return {"status": 200, "extensions": extensions}
+    try:
+        extensions = functions.ListAllInputExtensions()
+        return {"status": 200, "extensions": extensions}
+    except Exception as e:
+        print("error : ", str(e))
+        return flask.make_response({"error_message": str(e)}, 500)
 
 @fileconverter_routes.route('/allowedobjects', methods=['POST'])
 def fileconverter_allowedobjects():
-    filename = flask.request.form.get('filename')
-    if filename is None:
-        return flask.make_response({"error_message": "No file sent"}, 400)
-    file_extension = os.path.splitext(filename)[1][1:]
-    objects = functions.ListObjects(file_extension)
-    return flask.make_response({"objects": objects}, 200)
+    try:
+        filename = flask.request.form.get('filename')
+        if filename is None:
+            return flask.make_response({"error_message": "No file sent"}, 400)
+        file_extension = os.path.splitext(filename)[1][1:]
+        objects = functions.ListObjects(file_extension)
+        return flask.make_response({"objects": objects}, 200)
+    except Exception as e:
+        print("error : ", str(e))
+        return flask.make_response({"error_message": str(e)}, 500)
 
 @fileconverter_routes.route('/outputfileextensions', methods=['POST'])
 def fileconverter_outputfileextensions():
-    object = flask.request.form.get('object')
-    if object is None:
-        return flask.make_response({"error_message": "No object sent"}, 400)
-    list = functions.ListOutputFileExtensions(object)
-    return flask.make_response({"outputfileextensions": list}, 200)
+    try:
+        object = flask.request.form.get('object')
+        if object is None:
+            return flask.make_response({"error_message": "No object sent"}, 400)
+        list = functions.ListOutputFileExtensions(object)
+        return flask.make_response({"outputfileextensions": list}, 200)
+    except Exception as e:
+        print("error : ", str(e))
+        return flask.make_response({"error_message": str(e)}, 500)
 
 @fileconverter_routes.route('/convertfile', methods=['POST'])
 async def fileconverter_convertfile():

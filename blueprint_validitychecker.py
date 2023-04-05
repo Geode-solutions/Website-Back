@@ -20,22 +20,34 @@ def teardown_request(exception):
 
 @validitychecker_routes.route('/versions', methods=['GET'])
 def validitychecker_versions():
-    list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO', 'OpenGeode-Inspector']
-    return flask.make_response({"versions": functions.GetVersions(list_packages)}, 200)
+    try:
+        list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO', 'OpenGeode-Inspector']
+        return flask.make_response({"versions": functions.GetVersions(list_packages)}, 200)
+    except Exception as e:
+        print("error : ", str(e))
+        return flask.make_response({"error_message": str(e)}, 500)
 
 @validitychecker_routes.route('/allowedfiles', methods=['GET'])
 def vaditychecker_allowedfiles():
-    extensions = functions.ListAllInputExtensions()
-    return {"status": 200, "extensions": extensions}
+    try:
+        extensions = functions.ListAllInputExtensions()
+        return {"status": 200, "extensions": extensions}
+    except Exception as e:
+        print("error : ", str(e))
+        return flask.make_response({"error_message": str(e)}, 500)
 
 @validitychecker_routes.route('/allowedobjects', methods=['POST'])
 def validitychecker_allowedobjects():
-    filename = flask.request.form.get('filename')
-    if filename is None:
-        return flask.make_response({"error_message": "No file sent"}, 400)
-    file_extension = os.path.splitext(filename)[1][1:]
-    objects = functions.ListObjects(file_extension)
-    return flask.make_response({"objects": objects}, 200)
+    try:
+        filename = flask.request.form.get('filename')
+        if filename is None:
+            return flask.make_response({"error_message": "No file sent"}, 400)
+        file_extension = os.path.splitext(filename)[1][1:]
+        objects = functions.ListObjects(file_extension)
+        return flask.make_response({"objects": objects}, 200)
+    except Exception as e:
+        print("error : ", str(e))
+        return flask.make_response({"error_message": str(e)}, 500)
 
 @validitychecker_routes.route('/uploadfile', methods=['POST'])
 def vaditychecker_uploadfile():
@@ -67,7 +79,6 @@ def vaditychecker_testnames():
         if object is None:
             return flask.make_response({"error_message": "No object sent"}, 400)
         modelChecks = InspectorFunctions.json_return(InspectorFunctions.Inspectors()[object]['testsnames'])
-        # print('modelChecks : ', modelChecks)
         return flask.make_response({"modelChecks": modelChecks}, 200)
 
     except Exception as e:
