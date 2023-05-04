@@ -3,7 +3,7 @@ import opengeode_io
 import opengeode_geosciences
 import opengeode_geosciencesio
 
-def ObjectsList():
+def objects_list():
     return {"BRep": {"input": [ opengeode.BRepInputFactory ], "output": [ opengeode.BRepOutputFactory ], "load": opengeode.load_brep, "save": opengeode.save_brep},
             "CrossSection": {"input": [ opengeode_geosciences.CrossSectionInputFactory ], "output": [ opengeode.SectionOutputFactory, opengeode_geosciences.CrossSectionOutputFactory ], "load": opengeode_geosciences.load_cross_section, "save": opengeode_geosciences.save_cross_section},
             "EdgedCurve2D": {"input": [ opengeode.EdgedCurveInputFactory2D ], "output": [ opengeode.EdgedCurveOutputFactory2D ], "load": opengeode.load_edged_curve2D, "save": opengeode.save_edged_curve2D},
