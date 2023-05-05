@@ -96,13 +96,16 @@ async def fileconverter_convertfile():
             elif extension == 'vtm':
                 generatedFiles = f"{UPLOAD_FOLDER}/{strictFileName}"
                 shutil.move(generatedFiles + '.vtm', subFolder)
+                shutil.move(strictFileName, subFolder)
+
             newFileName = strictFileName + '.zip'
             mimetype = 'application/zip'
+            
             with zipfile.ZipFile(f'{UPLOAD_FOLDER}/{newFileName}', 'w') as zipObj:
-                    for folderName, subfolders, filenames in os.walk(subFolder):
-                        for filename in filenames:
-                            filePath = os.path.join(folderName, filename)
-                            zipObj.write(filePath, os.path.basename(filePath))
+                for folderName, subfolders, filenames in os.walk(subFolder):
+                    for filename in filenames:
+                        filePath = os.path.join(folderName, filename)
+                        zipObj.write(filePath, os.path.basename(filePath))
 
         response = flask.send_from_directory(directory=UPLOAD_FOLDER, path=newFileName, as_attachment=True, mimetype = mimetype)
         response.headers['new-file-name'] = newFileName
@@ -111,6 +114,7 @@ async def fileconverter_convertfile():
     except FileNotFoundError:
         return flask.make_response({"error_message": "File not found"}, 404)
     except RuntimeError as e:
+        print("error : ", str(e))
         return flask.make_response({"error_message": str(e)}, 500)
     except Exception as e:
         print("error : ", str(e))
