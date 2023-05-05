@@ -32,25 +32,25 @@ markupsafe==2.1.2
     # via
     #   jinja2
     #   werkzeug
-opengeode-core==14.0.12
+opengeode-core==14.0.13
     # via
     #   -r requirements.in
     #   opengeode-geosciences
     #   opengeode-geosciencesio
     #   opengeode-inspector
     #   opengeode-io
-opengeode-geosciences==7.0.5
+opengeode-geosciences==7.0.6
     # via
     #   -r requirements.in
     #   opengeode-geosciencesio
     #   opengeode-inspector
-opengeode-geosciencesio==4.1.1
+opengeode-geosciencesio==4.1.2
     # via
     #   -r requirements.in
     #   opengeode-inspector
-opengeode-inspector==3.0.2
+opengeode-inspector==3.0.3
     # via -r requirements.in
-opengeode-io==6.0.3
+opengeode-io==6.0.4
     # via
     #   -r requirements.in
     #   opengeode-inspector
