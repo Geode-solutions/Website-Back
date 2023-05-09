@@ -8,9 +8,9 @@ import uuid
 import flask
 import pkg_resources
 
-import GeodeObjects
+import geode_objects
 
-def ListAllInputExtensions():
+def list_all_input_extensions():
     """
     Purpose:
         Function that returns a list of all input extensions
@@ -18,9 +18,9 @@ def ListAllInputExtensions():
         An ordered list of input file extensions
     """
     List = []
-    ObjectsList = GeodeObjects.ObjectsList()
+    objects_list = geode_objects.objects_list()
 
-    for Object in ObjectsList.values():
+    for Object in objects_list.values():
         values = Object['input']
         for value in values:
             list_creators = value.list_creators()
@@ -30,7 +30,7 @@ def ListAllInputExtensions():
     List.sort()
     return List
 
-def ListObjects(extension: str):
+def list_objects(extension: str):
     """
     Purpose:
         Function that returns a list of objects that can handle a file, given his extension
@@ -40,9 +40,9 @@ def ListObjects(extension: str):
         An ordered list of object's names
     """
     List = []
-    ObjectsList = GeodeObjects.ObjectsList()
+    objects_list = geode_objects.objects_list()
 
-    for Object, values in ObjectsList.items():
+    for Object, values in objects_list.items():
         list_values = values['input']
         for value in list_values:
             if value.has_creator(extension):
@@ -51,7 +51,7 @@ def ListObjects(extension: str):
     List.sort()
     return List
 
-def ListOutputFileExtensions(object: str):
+def list_output_file_extensions(object: str):
     """
     Purpose:
         Function that returns a list of output file extensions that can be handled by an object
@@ -61,9 +61,9 @@ def ListOutputFileExtensions(object: str):
         An ordered list of file extensions
     """
     List = []
-    ObjectsList = GeodeObjects.ObjectsList()
+    objects_list = geode_objects.objects_list()
 
-    values = ObjectsList[object]['output']
+    values = objects_list[object]['output']
     for value in values:
         list_creators = value.list_creators()
         for creator in list_creators:
@@ -73,41 +73,41 @@ def ListOutputFileExtensions(object: str):
     return List
 
 
-def GetVersions(list_packages: list):
+def get_versions(list_packages: list):
     list_with_versions = []
     for package in list_packages:
         list_with_versions.append({"package": package, "version": pkg_resources.get_distribution(package).version})
     return list_with_versions
 
-def UploadFile(file: str, filename: str, uploadFolder: str, filesize: int):
+def upload_file(file: str, filename: str, uploadFolder: str, filesize: int):
     if not os.path.exists(uploadFolder):
         os.mkdir(uploadFolder)
-    fileDecoded = base64.b64decode(file.split(',')[-1])
-    secureFilename = werkzeug.utils.secure_filename(filename)
-    filePath = os.path.join(uploadFolder, secureFilename)
-    f = open(filePath, "wb")
-    f.write(fileDecoded)
+    file_decoded = base64.b64decode(file.split(',')[-1])
+    secure_filename = werkzeug.utils.secure_filename(filename)
+    file_path = os.path.join(uploadFolder, secure_filename)
+    f = open(file_path, "wb")
+    f.write(file_decoded)
     f.close()
 
-    finalSize =  os.path.getsize(filePath)
-    return int(filesize) == int(finalSize)
+    final_size =  os.path.getsize(file_path)
+    return int(filesize) == int(final_size)
 
 def create_lock_file():
     LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
     flask.g.UUID = uuid.uuid4()
-    filePath = f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt'
-    f = open(filePath, 'a')
+    file_path = f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt'
+    f = open(file_path, 'a')
     f.close()
 
 def create_time_file():
     TIME_FOLDER = flask.current_app.config['TIME_FOLDER']
     if not os.path.exists(TIME_FOLDER):
         os.mkdir(TIME_FOLDER)
-    filePath = f'{TIME_FOLDER}/time.txt'
-    if not os.path.isfile(filePath):
-        f = open(filePath, 'w')
+    file_path = f'{TIME_FOLDER}/time.txt'
+    if not os.path.isfile(file_path):
+        f = open(file_path, 'w')
         f.close()
 
     f = open(TIME_FOLDER + '/time.txt', 'w')

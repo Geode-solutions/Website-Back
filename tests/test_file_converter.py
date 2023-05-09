@@ -2,18 +2,18 @@ import os
 import base64
 
 ID = os.environ.get('ID')
-baseRoute = f"/{ID}/fileconverter"
+base_route = f"/{ID}/fileconverter"
 
 def test_versions(client):
-    response = client.get(f'{baseRoute}/versions')
+    response = client.get(f'{base_route}/versions')
     assert response.status_code == 200
     versions = response.json['versions']
     assert type(versions) is list
     for version in versions:
         assert type(version) is dict
 
-def test_allowedfiles(client):
-    response = client.get(f'{baseRoute}/allowedfiles')
+def test_allowed_files(client):
+    response = client.get(f'{base_route}/allowed_files')
     assert response.status_code == 200
     extensions = response.json['extensions']
     assert type(extensions) is list
@@ -21,16 +21,16 @@ def test_allowedfiles(client):
     for extension in list_extensions:
         assert extension in extensions
 
-def test_allowedobjects(client):
+def test_allowed_objects(client):
     # Normal test with filename 'corbi.og_brep'
-    response = client.post(f'{baseRoute}/allowedobjects', data={'filename': 'corbi.og_brep'})
+    response = client.post(f'{base_route}/allowed_objects', data={'filename': 'corbi.og_brep'})
     assert response.status_code == 200
     objects = response.json['objects']
     assert type(objects) is list
     assert 'BRep' in objects
 
     # Normal test with filename .vtu
-    response = client.post(f'{baseRoute}/allowedobjects', data={'filename': 'toto.vtu'})
+    response = client.post(f'{base_route}/allowed_objects', data={'filename': 'toto.vtu'})
     assert response.status_code == 200
     objects = response.json['objects']
     list_objects = ['HybridSolid3D', 'PolyhedralSolid3D', 'TetrahedralSolid3D']
@@ -38,53 +38,53 @@ def test_allowedobjects(client):
         assert object in objects
 
     # Test with stupid filename
-    response = client.post(f'{baseRoute}/allowedobjects', data={'filename': 'toto.tutu'})
+    response = client.post(f'{base_route}/allowed_objects', data={'filename': 'toto.tutu'})
     assert response.status_code == 200
     objects = response.json['objects']
     assert type(objects) is list
     assert not objects
 
     # Test without filename
-    response = client.post(f'{baseRoute}/allowedobjects')
+    response = client.post(f'{base_route}/allowed_objects')
     assert response.status_code == 400
     error_message = response.json['error_message']
     assert error_message == 'No file sent'
 
-def test_outputfileextensions(client):
+def test_output_file_extensions(client):
     # Normal test with object
-    response = client.post(f'{baseRoute}/outputfileextensions', data={'object': 'BRep'})
+    response = client.post(f'{base_route}/output_file_extensions', data={'object': 'BRep'})
     assert response.status_code == 200
-    outputfileextensions = response.json['outputfileextensions']
-    assert type(outputfileextensions) is list
-    list_outputfileextensions = ['msh', 'og_brep']
-    for outputfileextension in list_outputfileextensions:
-        assert outputfileextension in outputfileextensions
+    output_file_extensions = response.json['output_file_extensions']
+    assert type(output_file_extensions) is list
+    list_output_file_extensions = ['msh', 'og_brep']
+    for output_file_extension in list_output_file_extensions:
+        assert output_file_extension in output_file_extensions
 
     # Normal test with object
-    response = client.post(f'{baseRoute}/outputfileextensions', data={'object': 'TriangulatedSurface3D'})
+    response = client.post(f'{base_route}/output_file_extensions', data={'object': 'TriangulatedSurface3D'})
     assert response.status_code == 200
-    outputfileextensions = response.json['outputfileextensions']
-    assert type(outputfileextensions) is list
-    list_outputfileextensions = ['obj', 'og_tsf3d', 'stl', 'vtp']
-    for outputfileextension in list_outputfileextensions:
-        assert outputfileextension in outputfileextensions
+    output_file_extensions = response.json['output_file_extensions']
+    assert type(output_file_extensions) is list
+    list_output_file_extensions = ['obj', 'og_tsf3d', 'stl', 'vtp']
+    for output_file_extension in list_output_file_extensions:
+        assert output_file_extension in output_file_extensions
 
     # Normal test with object
-    response = client.post(f'{baseRoute}/outputfileextensions', data={'object': 'StructuralModel'})
+    response = client.post(f'{base_route}/output_file_extensions', data={'object': 'StructuralModel'})
     assert response.status_code == 200
-    outputfileextensions = response.json['outputfileextensions']
-    assert type(outputfileextensions) is list
-    list_outputfileextensions = ['lso', 'ml', 'msh', 'og_brep', 'og_strm']
-    for outputfileextension in list_outputfileextensions:
-        assert outputfileextension in outputfileextensions
+    output_file_extensions = response.json['output_file_extensions']
+    assert type(output_file_extensions) is list
+    list_output_file_extensions = ['lso', 'ml', 'msh', 'og_brep', 'og_strm']
+    for output_file_extension in list_output_file_extensions:
+        assert output_file_extension in output_file_extensions
 
     # Test without object
-    response = client.post(f'{baseRoute}/outputfileextensions')
+    response = client.post(f'{base_route}/output_file_extensions')
     assert response.status_code == 400
     error_message = response.json['error_message']
-    assert error_message == 'No object sent'
+    assert error_message == 'No object sent.'
 
-def test_convertfile(client):
+def test_convert_file(client):
     # Normal test with object/file/filename/extension
     object = 'BRep'
     filename = 'corbi.og_brep'
@@ -92,7 +92,7 @@ def test_convertfile(client):
     filesize = int(os.path.getsize('./tests/corbi.og_brep'))
     extension = 'msh'
 
-    response = client.post(f'{baseRoute}/convertfile',
+    response = client.post(f'{base_route}/convert_file',
         data = {
             'object': object,
             'file': file,
@@ -107,7 +107,7 @@ def test_convertfile(client):
     assert len((response.data)) > 0
 
     # Test without object
-    response = client.post(f'{baseRoute}/convertfile',
+    response = client.post(f'{base_route}/convert_file',
         data = {
             'file': file,
             'filename': filename,
@@ -117,11 +117,11 @@ def test_convertfile(client):
     )
 
     assert response.status_code == 400
-    error_message = response.json['error_message']
-    assert error_message == 'No object sent'
+    error_description = response.json['description']
+    assert error_description == 'No object sent.'
 
     # Test without file
-    response = client.post(f'{baseRoute}/convertfile',
+    response = client.post(f'{base_route}/convert_file',
         data = {
             'object': object,
             'filename': filename,
@@ -131,11 +131,11 @@ def test_convertfile(client):
     )
 
     assert response.status_code == 400
-    error_message = response.json['error_message']
-    assert error_message == 'No file sent'
+    error_description = response.json['description']
+    assert error_description == 'No file sent.'
 
     # Test without filename
-    response = client.post(f'{baseRoute}/convertfile',
+    response = client.post(f'{base_route}/convert_file',
         data = {
             'object': object,
             'file': file,
@@ -145,11 +145,11 @@ def test_convertfile(client):
     )
 
     assert response.status_code == 400
-    error_message = response.json['error_message']
-    assert error_message == 'No filename sent'
+    error_description = response.json['description']
+    assert error_description == 'No filename sent.'
 
     # Test without filesize
-    response = client.post(f'{baseRoute}/convertfile',
+    response = client.post(f'{base_route}/convert_file',
         data = {
             'object': object,
             'file': file,
@@ -159,11 +159,11 @@ def test_convertfile(client):
     )
 
     assert response.status_code == 400
-    error_message = response.json['error_message']
-    assert error_message == 'No filesize sent'
+    error_description = response.json['description']
+    assert error_description == 'No filesize sent.'
 
     # Test without extension
-    response = client.post(f'{baseRoute}/convertfile',
+    response = client.post(f'{base_route}/convert_file',
         data = {
             'object': object,
             'file': file,
@@ -173,5 +173,5 @@ def test_convertfile(client):
     )
 
     assert response.status_code == 400
-    error_message = response.json['error_message']
-    assert error_message == 'No extension sent'
+    error_description = response.json['description']
+    assert error_description == 'No extension sent.'
