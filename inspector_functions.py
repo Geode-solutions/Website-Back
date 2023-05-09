@@ -178,24 +178,24 @@ def inspectors():
     VertexSet_Tests = [Result([], "VertexSet", value=True)]
 
     return {
-        "BRep": { "inspector": inspector.BRepinspector, "tests_names": BRep_Tests }
-        , "CrossSection": { "inspector": inspector.Sectioninspector, "tests_names": CrossSection_Tests }
-        , "EdgedCurve2D": { "inspector": inspector.EdgedCurveinspector2D, "tests_names": EdgedCurve2D_Tests }
-        , "EdgedCurve3D": { "inspector": inspector.EdgedCurveinspector3D, "tests_names": EdgedCurve3D_Tests }
+        "BRep": { "inspector": inspector.BRepInspector, "tests_names": BRep_Tests }
+        , "CrossSection": { "inspector": inspector.SectionInspector, "tests_names": CrossSection_Tests }
+        , "EdgedCurve2D": { "inspector": inspector.EdgedCurveInspector2D, "tests_names": EdgedCurve2D_Tests }
+        , "EdgedCurve3D": { "inspector": inspector.EdgedCurveInspector3D, "tests_names": EdgedCurve3D_Tests }
         , "Graph": { "inspector": "", "tests_names": Graph_Tests }
-        , "HybridSolid3D": { "inspector": inspector.SolidMeshinspector3D, "tests_names": HybridSolid3D_Tests }
-        , "PointSet2D": { "inspector": inspector.PointSetinspector2D, "tests_names": PointSet2D_Tests }
-        , "PointSet3D": { "inspector": inspector.PointSetinspector3D, "tests_names": PointSet3D_Tests }
-        , "PolygonalSurface2D": { "inspector": inspector.SurfaceMeshinspector2D, "tests_names": PolygonalSurface2D_Tests }
-        , "PolygonalSurface3D": { "inspector": inspector.SurfaceMeshinspector3D, "tests_names": PolygonalSurface3D_Tests }
-        , "PolyhedralSolid3D": { "inspector": inspector.SolidMeshinspector3D, "tests_names": PolyhedralSolid3D_Tests }
+        , "HybridSolid3D": { "inspector": inspector.SolidMeshInspector3D, "tests_names": HybridSolid3D_Tests }
+        , "PointSet2D": { "inspector": inspector.PointSetInspector2D, "tests_names": PointSet2D_Tests }
+        , "PointSet3D": { "inspector": inspector.PointSetInspector3D, "tests_names": PointSet3D_Tests }
+        , "PolygonalSurface2D": { "inspector": inspector.SurfaceMeshInspector2D, "tests_names": PolygonalSurface2D_Tests }
+        , "PolygonalSurface3D": { "inspector": inspector.SurfaceMeshInspector3D, "tests_names": PolygonalSurface3D_Tests }
+        , "PolyhedralSolid3D": { "inspector": inspector.SolidMeshInspector3D, "tests_names": PolyhedralSolid3D_Tests }
         , "RegularGrid2D": { "inspector": "", "tests_names": RegularGrid2D_Tests }
         , "RegularGrid3D": { "inspector": "", "tests_names": RegularGrid3D_Tests }
-        , "Section": { "inspector": inspector.Sectioninspector, "tests_names": Section_Tests }
-        , "StructuralModel": { "inspector": inspector.BRepinspector, "tests_names": StructuralModel_Tests }
-        , "TetrahedralSolid3D": { "inspector": inspector.SolidMeshinspector3D, "tests_names": TetrahedralSolid3D_Tests }
-        , "TriangulatedSurface2D": { "inspector": inspector.TriangulatedSurfaceinspector2D, "tests_names": TriangulatedSurface2D_Tests }
-        , "TriangulatedSurface3D": { "inspector": inspector.TriangulatedSurfaceinspector3D, "tests_names": TriangulatedSurface3D_Tests }
+        , "Section": { "inspector": inspector.SectionInspector, "tests_names": Section_Tests }
+        , "StructuralModel": { "inspector": inspector.BRepInspector, "tests_names": StructuralModel_Tests }
+        , "TetrahedralSolid3D": { "inspector": inspector.SolidMeshInspector3D, "tests_names": TetrahedralSolid3D_Tests }
+        , "TriangulatedSurface2D": { "inspector": inspector.TriangulatedSurfaceInspector2D, "tests_names": TriangulatedSurface2D_Tests }
+        , "TriangulatedSurface3D": { "inspector": inspector.TriangulatedSurfaceInspector3D, "tests_names": TriangulatedSurface3D_Tests }
         , "VertexSet": { "inspector": "", "tests_names": VertexSet_Tests }
     }
 
