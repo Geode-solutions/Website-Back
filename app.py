@@ -8,6 +8,7 @@ import time
 
 import blueprint_file_converter
 import blueprint_validity_checker
+import blueprint_crs_converter
 import blueprint_ID
 
 import functions
@@ -65,14 +66,14 @@ TIME_FOLDER = app.config.get('TIME_FOLDER')
 MINUTES_BEFORE_TIMEOUT = float(app.config.get('MINUTES_BEFORE_TIMEOUT'))
 SECONDS_BETWEEN_SHUTDOWNS = float(app.config.get('SECONDS_BETWEEN_SHUTDOWNS'))
 
-app.register_blueprint(blueprint_file_converter.file_converter_routes, url_prefix=f'/{ID}/fileconverter')
-app.register_blueprint(blueprint_validity_checker.validity_checker_routes, url_prefix=f'/{ID}/validitychecker')
+app.register_blueprint(blueprint_file_converter.file_converter_routes, url_prefix=f'/{ID}/file_converter')
+app.register_blueprint(blueprint_validity_checker.validity_checker_routes, url_prefix=f'/{ID}/validity_checker')
+app.register_blueprint(blueprint_crs_converter.crs_converter_routes, url_prefix=f'/{ID}/crs_converter')
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
 
 if FLASK_DEBUG == False:
     functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
 flask_cors.CORS(app, origins=ORIGINS)
-
 
 
 @app.errorhandler(HTTPException)
