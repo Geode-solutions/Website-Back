@@ -5,6 +5,7 @@ import os
 import werkzeug
 import functions
 import zipfile
+import geode_objects
 
 
 crs_converter_routes = flask.Blueprint('crs_converter_routes', __name__)
@@ -41,6 +42,11 @@ def crs_converter_allowed_objects():
     objects = functions.list_objects(file_extension)
     
     return flask.make_response({"objects": objects}, 200)
+
+@crs_converter_routes.route('/geographic_coordinate_systems', methods=['GET'])
+def crs_converter_crs():
+    geographic_coordinate_systems = geode_objects.get_geographic_coordinate_systems()
+    return flask.make_response({"geographic_coordinate_systems": str(geographic_coordinate_systems)}, 200)
 
 @crs_converter_routes.route('/convert_file', methods=['POST'])
 async def crs_converter_convert_file():

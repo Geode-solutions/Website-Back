@@ -2,7 +2,7 @@ import os
 import base64
 
 ID = os.environ.get('ID')
-base_route = f"/{ID}/validitychecker"
+base_route = f"/{ID}/validity_checker"
 
 def test_versions(client):
     response = client.get(f"{base_route}/versions")

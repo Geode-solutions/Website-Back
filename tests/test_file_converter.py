@@ -2,7 +2,7 @@ import os
 import base64
 
 ID = os.environ.get('ID')
-base_route = f"/{ID}/fileconverter"
+base_route = f"/{ID}/file_converter"
 
 def test_versions(client):
     response = client.get(f'{base_route}/versions')

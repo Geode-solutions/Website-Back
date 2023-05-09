@@ -23,3 +23,6 @@ def objects_list():
             "TriangulatedSurface2D": {"input": [ opengeode.TriangulatedSurfaceInputFactory2D ], "output": [ opengeode.TriangulatedSurfaceOutputFactory2D ], "load": opengeode.load_triangulated_surface2D, "save": opengeode.save_triangulated_surface2D},
             "TriangulatedSurface3D": {"input": [ opengeode.TriangulatedSurfaceInputFactory3D ], "output": [ opengeode.TriangulatedSurfaceOutputFactory3D ], "load": opengeode.load_triangulated_surface3D, "save": opengeode.save_triangulated_surface3D},
             "VertexSet": {"input": [ opengeode.VertexSetInputFactory ], "output": [ opengeode.VertexSetOutputFactory ], "load": opengeode.load_vertex_set, "save": opengeode.save_vertex_set}}
+
+def get_geographic_coordinate_systems():
+    return opengeode_geosciences.GeographicCoordinateSystem2D.geographic_coordinate_systems()
