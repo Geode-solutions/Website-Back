@@ -103,13 +103,14 @@ async def file_converter_convert_file():
         elif extension == 'vtm':
             generated_files = f"{UPLOAD_FOLDER}/{strict_file_name}"
             shutil.move(generated_files + '.vtm', sub_folder)
+            shutil.move(strict_file_name, subFolder)
         new_file_name = strict_file_name + '.zip'
         mimetype = 'application/zip'
         with zipfile.ZipFile(f'{UPLOAD_FOLDER}/{new_file_name}', 'w') as zipObj:
-                for folder_name, sub_folders, file_names in os.walk(sub_folder):
-                    for filename in file_names:
-                        file_path = os.path.join(folder_name, filename)
-                        zipObj.write(file_path, os.path.basename(file_path))
+            for folder_name, sub_folders, file_names in os.walk(sub_folder):
+                for filename in file_names:
+                    file_path = os.path.join(folder_name, filename)
+                    zipObj.write(file_path, os.path.basename(file_path))
 
     response = flask.send_from_directory(directory=UPLOAD_FOLDER, path=new_file_name, as_attachment=True, mimetype = mimetype)
     response.headers['new-file-name'] = new_file_name
