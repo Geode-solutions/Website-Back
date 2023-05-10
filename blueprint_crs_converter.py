@@ -45,8 +45,17 @@ def crs_converter_allowed_objects():
 
 @crs_converter_routes.route('/geographic_coordinate_systems', methods=['GET'])
 def crs_converter_crs():
-    geographic_coordinate_systems = geode_objects.get_geographic_coordinate_systems()
-    return flask.make_response({"geographic_coordinate_systems": str(geographic_coordinate_systems)}, 200)
+    infos = geode_objects.get_geographic_coordinate_systems()
+    crs_list = []
+
+    for info in infos:
+        crs = {}
+        crs['name'] = info.name
+        crs['code'] = info.code
+        crs['authority'] = info.authority
+        crs_list.append(crs)
+
+    return flask.make_response({ 'crs_list': crs_list}, 200)
 
 @crs_converter_routes.route('/convert_file', methods=['POST'])
 async def crs_converter_convert_file():
