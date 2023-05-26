@@ -26,3 +26,10 @@ def objects_list():
 
 def get_geographic_coordinate_systems():
     return opengeode_geosciences.GeographicCoordinateSystem2D.geographic_coordinate_systems()
+
+def convert_to_coordinate_system(input_crs, output_crs):
+    lambert_1 = geosciences.GeographicCoordinateSystem3D(manager, geosciences.GeographicCoordinateSystemInfo3D(input_crs.authority, input_crs.code, "I"))
+    lambert_2 = geosciences.GeographicCoordinateSystem3D(manager, geosciences.GeographicCoordinateSystemInfo3D(output_crs.authority, output_crs.code, "II"))
+    lambert_2.import_coordinates(lambert_1)
+    
+    return a
