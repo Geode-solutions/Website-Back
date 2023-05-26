@@ -90,6 +90,8 @@ def test_convert_file(client):
     filename = 'corbi.og_brep'
     file = base64.b64encode(open('./tests/corbi.og_brep', 'rb').read())
     filesize = int(os.path.getsize('./tests/corbi.og_brep'))
+    input_crs = { 'authority': 'EPSG', 'code': '2000' }
+    output_crs = { 'authority': 'EPSG', 'code': '2001' }
     extension = 'msh'
 
     response = client.post(f'{base_route}/convert_file',
@@ -98,6 +100,8 @@ def test_convert_file(client):
             'file': file,
             'filename': filename,
             'filesize': filesize,
+            'input_crs': input_crs,
+            'output_crs': output_crs,
             'extension': extension
         }
     )
@@ -112,6 +116,8 @@ def test_convert_file(client):
             'file': file,
             'filename': filename,
             'filesize': filesize,
+            'input_crs': input_crs,
+            'output_crs': output_crs,
             'extension': extension
         }
     )
@@ -126,6 +132,8 @@ def test_convert_file(client):
             'object': object,
             'filename': filename,
             'filesize': filesize,
+            'input_crs': input_crs,
+            'output_crs': output_crs,
             'extension': extension
         }
     )
@@ -140,6 +148,8 @@ def test_convert_file(client):
             'object': object,
             'file': file,
             'filesize': filesize,
+            'input_crs': input_crs,
+            'output_crs': output_crs,
             'extension': extension
         }
     )
@@ -154,6 +164,8 @@ def test_convert_file(client):
             'object': object,
             'file': file,
             'filename': filename,
+            'input_crs': input_crs,
+            'output_crs': output_crs,
             'extension': extension
         }
     )
@@ -162,13 +174,47 @@ def test_convert_file(client):
     error_description = response.json['description']
     assert error_description == 'No filesize sent.'
 
+    # Test without input_crs
+    response = client.post(f'{base_route}/convert_file',
+        data = {
+            'object': object,
+            'file': file,
+            'filename': filename,
+            'filesize': filesize,
+            'output_crs': output_crs,
+            'extension': extension
+        }
+    )
+
+    assert response.status_code == 400
+    error_description = response.json['description']
+    assert error_description == 'No input_crs sent.'
+
+    # Test without output_crs
+    response = client.post(f'{base_route}/convert_file',
+        data = {
+            'object': object,
+            'file': file,
+            'filename': filename,
+            'filesize': filesize,
+            'input_crs': input_crs,
+            'extension': extension
+        }
+    )
+
+    assert response.status_code == 400
+    error_description = response.json['description']
+    assert error_description == 'No output_crs sent.'
+
     # Test without extension
     response = client.post(f'{base_route}/convert_file',
         data = {
             'object': object,
             'file': file,
             'filename': filename,
-            'filesize': filesize
+            'filesize': filesize,
+            'input_crs': input_crs,
+            'output_crs': output_crs
         }
     )
 

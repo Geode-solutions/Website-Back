@@ -98,7 +98,5 @@ async def crs_converter_convert_file():
         flask.make_response({ 'name': 'Internal Server Error','description': 'File not uploaded.' }, 500)
 
 
-   
-    
-    return response
+    return flask.make_response({}, 200)
 
