@@ -4,7 +4,7 @@
 #
 #    pip-compile --resolver=backtracking requirements.in
 #
-asgiref==3.7.1
+asgiref==3.7.2
     # via flask
 blinker==1.6.2
     # via flask
