@@ -73,8 +73,10 @@ async def crs_converter_convert_file():
     file = flask.request.form.get('file')
     filename = flask.request.form.get('filename')
     filesize = flask.request.form.get('filesize')
-    input_crs = flask.request.form.get('input_crs')
-    output_crs = flask.request.form.get('output_crs')
+    input_crs_authority = flask.request.form.get('input_crs_authority')
+    input_crs_code = flask.request.form.get('input_crs_code')
+    output_crs_authority = flask.request.form.get('output_crs_authority')
+    output_crs_code = flask.request.form.get('output_crs_code')
     extension = flask.request.form.get('extension')
 
     if object is None:
@@ -85,18 +87,36 @@ async def crs_converter_convert_file():
         return flask.make_response({ 'name': 'Bad Request','description': 'No filename sent.' }, 400)
     if filesize is None:
         return flask.make_response({ 'name': 'Bad Request','description': 'No filesize sent.' }, 400)
-    if input_crs is None:
-        return flask.make_response({ 'name': 'Bad Request','description': 'No input_crs sent.' }, 400)
-    if output_crs is None:
-        return flask.make_response({ 'name': 'Bad Request','description': 'No output_crs sent.' }, 400)
+    if input_crs_authority is None:
+        return flask.make_response({ 'name': 'Bad Request','description': 'No input_crs_authority sent.' }, 400)
+    if input_crs_code is None:
+        return flask.make_response({ 'name': 'Bad Request','description': 'No input_crs_code sent.' }, 400)
+    if output_crs_authority is None:
+        return flask.make_response({ 'name': 'Bad Request','description': 'No output_crs_authority sent.' }, 400)
+    if output_crs_code is None:
+        return flask.make_response({ 'name': 'Bad Request','description': 'No output_crs_code sent.' }, 400)
     if extension is None:
         return flask.make_response({ 'name': 'Bad Request','description': 'No extension sent.' }, 400)
 
+    print(f'{object=}', flush=True)
+    print(f'{file=}', flush=True)
+    print(f'{filename=}', flush=True)
+    print(f'{filesize=}', flush=True)
+    print(f'{input_crs_authority=}', flush=True)
+    print(f'{input_crs_code=}', flush=True)
+    print(f'{output_crs_authority=}', flush=True)
+    print(f'{output_crs_code=}', flush=True)
+    print(f'{extension=}', flush=True)
 
     uploadedFile = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
     if not uploadedFile:
         flask.make_response({ 'name': 'Internal Server Error','description': 'File not uploaded.' }, 500)
 
+    secure_filename = werkzeug.utils.secure_filename(filename)
+    file_path = os.path.join(UPLOAD_FOLDER, secure_filename).replace("\\","/")
+    model = functions.geode_objects.objects_list()[object]['load'](file_path)
+    strict_file_name = os.path.splitext(secure_filename)[0]
+    new_file_name = strict_file_name + '.' + extension
 
     return flask.make_response({}, 200)
 
