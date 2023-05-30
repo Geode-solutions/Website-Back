@@ -118,5 +118,10 @@ async def crs_converter_convert_file():
     strict_file_name = os.path.splitext(secure_filename)[0]
     new_file_name = strict_file_name + '.' + extension
 
-    return flask.make_response({}, 200)
+    mimetype = 'application/octet-binary'
+    response = flask.send_from_directory(directory=UPLOAD_FOLDER, path=new_file_name, as_attachment=True, mimetype = mimetype)
+    response.headers['new-file-name'] = new_file_name
+    response.headers['Access-Control-Expose-Headers'] = 'new-file-name'
+    
+    return response
 
