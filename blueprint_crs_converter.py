@@ -50,10 +50,13 @@ def crs_converter_crs():
 
     for info in infos:
         crs = {}
+        # crs['id'] = index
+        # print(f'{index=}')
         crs['name'] = info.name
         crs['code'] = info.code
         crs['authority'] = info.authority
         crs_list.append(crs)
+
 
     return flask.make_response({'crs_list': crs_list}, 200)
 
