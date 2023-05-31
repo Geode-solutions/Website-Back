@@ -34,11 +34,11 @@ def validity_checker_allowed_files():
 def validity_checker_allowed_objects():
     filename = flask.request.form.get('filename')
     if filename is None:
-        return flask.make_response({'description': 'No file sent.'}, 400)
+        return flask.make_response({'description': 'No file sent'}, 400)
     file_extension = os.path.splitext(filename)[1][1:]
-    objects = functions.list_objects(file_extension)
+    allowed_objects = functions.list_objects(file_extension)
     
-    return flask.make_response({'objects': objects}, 200)
+    return flask.make_response({'allowed_objects': allowed_objects}, 200)
 
 @validity_checker_routes.route('/upload_file', methods=['POST'])
 def validity_checker_upload_file():
@@ -47,36 +47,36 @@ def validity_checker_upload_file():
     filename = flask.request.form.get('filename')
     filesize = flask.request.form.get('filesize')
     if file is None:
-        return flask.make_response({'description': 'No file sent.'}, 400)
+        return flask.make_response({'description': 'No file sent'}, 400)
     if filename is None:
-        return flask.make_response({'description': 'No filename sent.'}, 400)
+        return flask.make_response({'description': 'No filename sent'}, 400)
     if filesize is None:
-        return flask.make_response({'description': 'No filesize sent.'}, 400)
+        return flask.make_response({'description': 'No filesize sent'}, 400)
         
     uploadedFile = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
     if not uploadedFile:
-        flask.make_response({'description': 'File not uploaded.'}, 500)
+        flask.make_response({'description': 'File not uploaded'}, 500)
         
-    return flask.make_response({'message': 'File uploaded.'}, 200)
+    return flask.make_response({'message': 'File uploaded'}, 200)
 
 @validity_checker_routes.route('/tests_names', methods=['POST'])
 def validity_checker_test_names():
-    object = flask.request.form.get('object')
-    if object is None:
-        return flask.make_response({'description': 'No object sent.'}, 400)
-    model_checks = inspector_functions.json_return(inspector_functions.inspectors()[object]['tests_names'])
+    geode_object = flask.request.form.get('geode_object')
+    if geode_object is None:
+        return flask.make_response({'description': 'No geode_object sent'}, 400)
+    model_checks = inspector_functions.json_return(inspector_functions.inspectors()[geode_object]['tests_names'])
     
     return flask.make_response({'model_checks': model_checks}, 200)
 
 @validity_checker_routes.route('/inspect_file', methods=['POST'])
 def validity_checker_inspect_file():
     UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
-    object = flask.request.form.get('object')
+    geode_object = flask.request.form.get('geode_object')
     filename = flask.request.form.get('filename')
     test = flask.request.form.get('test')
 
-    if object is None:
-        return flask.make_response({'error_message': 'No object sent'}, 400)
+    if geode_object is None:
+        return flask.make_response({'error_message': 'No geode_object sent'}, 400)
     if filename is None:
         return flask.make_response({'error_message': 'No filename sent'}, 400)
     if test is None:
@@ -84,8 +84,8 @@ def validity_checker_inspect_file():
     
     secure_filename = werkzeug.utils.secure_filename(filename)
     file_path = os.path.join(UPLOAD_FOLDER, secure_filename)
-    model = geode_objects.objects_list()[object]['load'](file_path)
-    inspector = inspector_functions.inspectors()[object]['inspector'](model)
+    data = geode_objects.objects_list()[geode_object]['load'](file_path)
+    inspector = inspector_functions.inspectors()[geode_object]['inspector'](data)
     test_result = getattr(inspector, test)()
     expected_value = inspector_functions.expected_results()[test]
 

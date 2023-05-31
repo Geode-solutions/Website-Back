@@ -42,28 +42,28 @@ def list_objects(extension: str):
     List = []
     objects_list = geode_objects.objects_list()
 
-    for Object, values in objects_list.items():
+    for geode_object, values in objects_list.items():
         list_values = values['input']
         for value in list_values:
             if value.has_creator(extension):
-                if Object not in List:
-                    List.append(Object)
+                if geode_object not in List:
+                    List.append(geode_object)
     List.sort()
     return List
 
-def list_output_file_extensions(object: str):
+def list_output_file_extensions(geode_object: str):
     """
     Purpose:
         Function that returns a list of output file extensions that can be handled by an object
     Args:
-        object -- The name of the object
+        geode_object -- The name of the geode_object
     Returns:
         An ordered list of file extensions
     """
     List = []
     objects_list = geode_objects.objects_list()
 
-    values = objects_list[object]['output']
+    values = objects_list[geode_object]['output']
     for value in values:
         list_creators = value.list_creators()
         for creator in list_creators:
@@ -126,4 +126,6 @@ def set_interval(func, sec):
     t.daemon = True
     t.start()
     return t
+
+
     

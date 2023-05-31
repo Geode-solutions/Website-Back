@@ -2,7 +2,7 @@ import os
 import base64
 
 ID = os.environ.get('ID')
-base_route = f"/{ID}/crs_converter"
+base_route = f'/{ID}/crs_converter'
 
 def test_versions(client):
     response = client.get(f'{base_route}/versions')
@@ -17,20 +17,22 @@ def test_allowed_files(client):
     assert response.status_code == 200
     extensions = response.json['extensions']
     assert type(extensions) is list
-    list_extensions = ["dat", "dev", "dxf", "lso", "ml", "msh", "obj", "og_brep", "og_edc2d", "og_edc3d", "og_grp", "og_hso3d", "og_psf2d", "og_psf3d", "og_pso3d", "og_pts2d", "og_pts3d", "og_rgd2d", "og_rgd3d", "og_sctn", "og_strm", "og_tsf2d", "og_tsf3d", "og_tso3d", "og_vts", "og_xsctn", "ply", "smesh", "stl", "svg", "ts", "txt", "vtp", "vtu", "wl"]
+    list_extensions = ['dat', 'dev', 'dxf', 'lso', 'ml', 'msh', 'obj', 'og_brep', 'og_edc2d', 'og_edc3d', 'og_grp', 'og_hso3d', 'og_psf2d', 'og_psf3d', 'og_pso3d', 'og_pts2d', 'og_pts3d', 'og_rgd2d', 'og_rgd3d', 'og_sctn', 'og_strm', 'og_tsf2d', 'og_tsf3d', 'og_tso3d', 'og_vts', 'og_xsctn', 'ply', 'smesh', 'stl', 'svg', 'ts', 'txt', 'vtp', 'vtu', 'wl']
     for extension in list_extensions:
         assert extension in extensions
 
 def test_allowed_objects(client):
+    route = f'{base_route}/allowed_objects'
+
     # Normal test with filename 'corbi.og_brep'
-    response = client.post(f'{base_route}/allowed_objects', data={'filename': 'corbi.og_brep'})
+    response = client.post(route, data={'filename': 'corbi.og_brep'})
     assert response.status_code == 200
     objects = response.json['objects']
     assert type(objects) is list
     assert 'BRep' in objects
 
     # Normal test with filename .vtu
-    response = client.post(f'{base_route}/allowed_objects', data={'filename': 'toto.vtu'})
+    response = client.post(route, data={'filename': 'toto.vtu'})
     assert response.status_code == 200
     objects = response.json['objects']
     list_objects = ['HybridSolid3D', 'PolyhedralSolid3D', 'TetrahedralSolid3D']
@@ -38,21 +40,40 @@ def test_allowed_objects(client):
         assert object in objects
 
     # Test with stupid filename
-    response = client.post(f'{base_route}/allowed_objects', data={'filename': 'toto.tutu'})
+    response = client.post(route, data={'filename': 'toto.tutu'})
     assert response.status_code == 200
     objects = response.json['objects']
     assert type(objects) is list
     assert not objects
 
     # Test without filename
-    response = client.post(f'{base_route}/allowed_objects')
+    response = client.post(route)
     assert response.status_code == 400
     error_message = response.json['error_message']
     assert error_message == 'No file sent'
 
+def test_geographic_coordinate_systems(client):
+    route = f'{base_route}/geographic_coordinate_systems'
+
+    # Normal test with geode_object 'BRep'
+    response = client.post(route, data={'geode_object': 'BRep'})
+    assert response.status_code == 200
+    crs_list = response.json['crs_list']
+    assert type(crs_list) is list
+    for crs in crs_list:
+        assert type(crs) is dict
+
+    # Test without geode_object
+    response = client.post(route)
+    assert response.status_code == 400
+    error_message = response.json['error_message']
+    assert error_message == 'No geode_object sent'
+
 def test_output_file_extensions(client):
-    # Normal test with object
-    response = client.post(f'{base_route}/output_file_extensions', data={'object': 'BRep'})
+    route = f'{base_route}/output_file_extensions'
+
+    # Normal test with geode_object
+    response = client.post(route, data={'geode_object': 'BRep'})
     assert response.status_code == 200
     output_file_extensions = response.json['output_file_extensions']
     assert type(output_file_extensions) is list
@@ -60,8 +81,8 @@ def test_output_file_extensions(client):
     for output_file_extension in list_output_file_extensions:
         assert output_file_extension in output_file_extensions
 
-    # Normal test with object
-    response = client.post(f'{base_route}/output_file_extensions', data={'object': 'TriangulatedSurface3D'})
+    # Normal test with geode_object
+    response = client.post(route, data={'geode_object': 'TriangulatedSurface3D'})
     assert response.status_code == 200
     output_file_extensions = response.json['output_file_extensions']
     assert type(output_file_extensions) is list
@@ -69,8 +90,8 @@ def test_output_file_extensions(client):
     for output_file_extension in list_output_file_extensions:
         assert output_file_extension in output_file_extensions
 
-    # Normal test with object
-    response = client.post(f'{base_route}/output_file_extensions', data={'object': 'StructuralModel'})
+    # Normal test with geode_object
+    response = client.post(route, data={'geode_object': 'StructuralModel'})
     assert response.status_code == 200
     output_file_extensions = response.json['output_file_extensions']
     assert type(output_file_extensions) is list
@@ -79,14 +100,14 @@ def test_output_file_extensions(client):
         assert output_file_extension in output_file_extensions
 
     # Test without object
-    response = client.post(f'{base_route}/output_file_extensions')
+    response = client.post(route)
     assert response.status_code == 400
     error_message = response.json['error_message']
-    assert error_message == 'No object sent.'
+    assert error_message == 'No geode_object sent'
 
 def test_convert_file(client):
     # Normal test with object/file/filename/extension
-    object = 'BRep'
+    geode_object = 'BRep'
     filename = 'corbi.og_brep'
     file = base64.b64encode(open('./tests/corbi.og_brep', 'rb').read())
     filesize = int(os.path.getsize('./tests/corbi.og_brep'))
@@ -96,7 +117,7 @@ def test_convert_file(client):
 
     response = client.post(f'{base_route}/convert_file',
         data = {
-            'object': object,
+            'geode_object': geode_object,
             'file': file,
             'filename': filename,
             'filesize': filesize,
@@ -110,7 +131,7 @@ def test_convert_file(client):
     assert type((response.data)) is bytes
     assert len((response.data)) > 0
 
-    # Test without object
+    # Test without geode_object
     response = client.post(f'{base_route}/convert_file',
         data = {
             'file': file,
@@ -124,12 +145,12 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No object sent.'
+    assert error_description == 'No geode_object sent'
 
     # Test without file
     response = client.post(f'{base_route}/convert_file',
         data = {
-            'object': object,
+            'geode_object': geode_object,
             'filename': filename,
             'filesize': filesize,
             'input_crs': input_crs,
@@ -140,12 +161,12 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No file sent.'
+    assert error_description == 'No file sent'
 
     # Test without filename
     response = client.post(f'{base_route}/convert_file',
         data = {
-            'object': object,
+            'geode_object': geode_object,
             'file': file,
             'filesize': filesize,
             'input_crs': input_crs,
@@ -156,12 +177,12 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No filename sent.'
+    assert error_description == 'No filename sent'
 
     # Test without filesize
     response = client.post(f'{base_route}/convert_file',
         data = {
-            'object': object,
+            'geode_object': geode_object,
             'file': file,
             'filename': filename,
             'input_crs': input_crs,
@@ -172,12 +193,12 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No filesize sent.'
+    assert error_description == 'No filesize sent'
 
     # Test without input_crs
     response = client.post(f'{base_route}/convert_file',
         data = {
-            'object': object,
+            'geode_object': geode_object,
             'file': file,
             'filename': filename,
             'filesize': filesize,
@@ -188,12 +209,12 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No input_crs sent.'
+    assert error_description == 'No input_crs sent'
 
     # Test without output_crs
     response = client.post(f'{base_route}/convert_file',
         data = {
-            'object': object,
+            'geode_object': geode_object,
             'file': file,
             'filename': filename,
             'filesize': filesize,
@@ -204,12 +225,12 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No output_crs sent.'
+    assert error_description == 'No output_crs sent'
 
     # Test without extension
     response = client.post(f'{base_route}/convert_file',
         data = {
-            'object': object,
+            'geode_object': geode_object,
             'file': file,
             'filename': filename,
             'filesize': filesize,
@@ -220,4 +241,4 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No extension sent.'
+    assert error_description == 'No extension sent'
