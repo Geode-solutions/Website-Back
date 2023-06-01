@@ -230,7 +230,7 @@ def objects_list():
             'builder': og.TriangulatedSurfaceBuilder3D.create,
             'crs': {
                 'assign': og_gs.assign_surface_mesh_geographic_coordinate_system_info3D,
-                'convert': og_gs.convert_surface_mesh_coordinate_reference_system3D
+                'convert': og_gs.convert_surface_mesh_coordinate_reference_system3D()
             },
             'is_model': False,
             'is_3D': True
@@ -262,45 +262,10 @@ def get_geographic_coordinate_systems(geode_object):
         return og_gs.GeographicCoordinateSystem2D.geographic_coordinate_systems()
 
 
-def asign_geographic_coordinate_system_info(data, builder, crs_name, input_crs):
-    og_gs.assign_brep_geographic_coordinate_system_info(data, builder, crs_name, input_crs)
+def asign_geographic_coordinate_system_info(geode_object, data, input_crs_name, input_crs):
+    builder = get_builder(geode_object)
+    objects_list()[geode_object]['crs']['assign'](data, builder, crs_name, input_crs)
 
-def convert_geographic_coordinate_system_info():
-    og_gs.convert_brep_coordinate_reference_system()
-    return a
-
-
-def convert_to_coordinate_system(data, geode_object, input_crs, output_crs):
-    
-    if is_model(geode_object):
-        for corner in data.corners():
-            convert_mesh_coordinate_system(corner.mesh(), geode_object, input_crs, output_crs)
-        for line in data.lines():
-            convert_mesh_coordinate_system(line.mesh(), geode_object, input_crs, output_crs)
-        for surface in data.surfaces():
-            convert_mesh_coordinate_system(surface.mesh(), geode_object, input_crs, output_crs)
-        if is_3D(geode_object):
-            for block in data.blocks():
-                convert_mesh_coordinate_system(block.mesh(), geode_object, input_crs, output_crs)
-    else:
-        convert_mesh_coordinate_system(data, geode_object, input_crs, output_crs)
-    return data
-
-def convert_mesh_coordinate_system(mesh, geode_object, input_crs, output_crs):
-    print(f'{input_crs=}')
-    print(f'{output_crs=}')
-    manager = mesh.vertex_attribute_manager()
-
-    if is_3D(geode_object):
-        input_graphic_coodinates_system_info = og_gs.GeographicCoordinateSystemInfo3D(input_crs['authority'], input_crs['code'], input_crs['name'])
-        output_graphic_coodinates_system_info = og_gs.GeographicCoordinateSystemInfo3D(output_crs['authority'], output_crs['code'], output_crs['name'])
-    else:
-        input_graphic_coodinates_system_info = og_gs.GeographicCoordinateSystemInfo2D(input_crs['authority'], input_crs['code'], input_crs['name'])
-        output_graphic_coodinates_system_info = og_gs.GeographicCoordinateSystemInfo2D(output_crs['authority'], output_crs['code'], output_crs['name'])
-
-    crs_I = og_gs.GeographicCoordinateSystem3D(manager, input_graphic_coodinates_system_info)
-    crs_II = og_gs.GeographicCoordinateSystem3D(manager, output_graphic_coodinates_system_info)
-    crs_II.import_coordinates(crs_I)
-
-    return mesh
-
+def convert_geographic_coordinate_system_info(geode_object, data, output_crs_name, output_crs):
+    builder = get_builder(geode_object)
+    objects_list()[geode_object]['crs']['convert'](data, builder, crs_name, output_crs)

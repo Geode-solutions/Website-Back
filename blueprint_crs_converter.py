@@ -86,51 +86,51 @@ async def crs_converter_convert_file():
     extension = flask.request.form.get('extension')
 
     if geode_object is None:
-        print('geode_object', flush=True)
+        # print('geode_object', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No geode_object sent' }, 400)
     if file is None:
-        print('file', flush=True)
+        # print('file', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No file sent' }, 400)
     if filename is None:
-        print('filename', flush=True)
+        # print('filename', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No filename sent' }, 400)
     if filesize is None:
-        print('filesize', flush=True)
+        # print('filesize', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No filesize sent' }, 400)
     if input_crs_authority is None:
-        print('input_crs_authority', flush=True)
+        # print('input_crs_authority', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No input_crs_authority sent' }, 400)
     if input_crs_code is None:
-        print('input_crs_code', flush=True)
+        # print('input_crs_code', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No input_crs_code sent' }, 400)
     if input_crs_name is None:
-        print('input_crs_name', flush=True)
+        # print('input_crs_name', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No input_crs_name sent' }, 400)
     if output_crs_authority is None:
-        print('output_crs_authority', flush=True)
+        # print('output_crs_authority', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No output_crs_authority sent' }, 400)
     if output_crs_code is None:
-        print('output_crs_code', flush=True)
+        # print('output_crs_code', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No output_crs_code sent' }, 400)
     if output_crs_name is None:
-        print('output_crs_name', flush=True)
+        # print('output_crs_name', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No output_crs_name sent' }, 400)
     if extension is None:
-        print('extension', flush=True)
+        # print('extension', flush=True)
         return flask.make_response({ 'name': 'Bad Request','description': 'No extension sent' }, 400)
 
 
-    print(f'{geode_object=}', flush=True)
+    # print(f'{geode_object=}', flush=True)
     # print(f'{file=}', flush=True)
-    print(f'{filename=}', flush=True)
-    print(f'{filesize=}', flush=True)
-    print(f'{input_crs_authority=}', flush=True)
-    print(f'{input_crs_code=}', flush=True)
-    print(f'{input_crs_name=}', flush=True)
-    print(f'{output_crs_authority=}', flush=True)
-    print(f'{output_crs_code=}', flush=True)
-    print(f'{output_crs_name=}', flush=True)
-    print(f'{extension=}', flush=True)
+    # print(f'{filename=}', flush=True)
+    # print(f'{filesize=}', flush=True)
+    # print(f'{input_crs_authority=}', flush=True)
+    # print(f'{input_crs_code=}', flush=True)
+    # print(f'{input_crs_name=}', flush=True)
+    # print(f'{output_crs_authority=}', flush=True)
+    # print(f'{output_crs_code=}', flush=True)
+    # print(f'{output_crs_name=}', flush=True)
+    # print(f'{extension=}', flush=True)
 
     input_crs = {
         'authority': input_crs_authority,
@@ -150,13 +150,15 @@ async def crs_converter_convert_file():
 
     secure_filename = werkzeug.utils.secure_filename(filename)
     file_path = os.path.join(UPLOAD_FOLDER, secure_filename).replace('\\','/')
-    data = functions.geode_objects.objects_list()[geode_object]['load'](file_path)
-    builder = functions.geode_objects.objects_list()[geode_object]['builder'](data)
+    data = geode_objects.objects_list()[geode_object]['load'](file_path)
     strict_file_name = os.path.splitext(secure_filename)[0]
     new_file_name = strict_file_name + '.' + extension
 
-    converted_data = geode_objects.convert_to_coordinate_system(data, geode_object, input_crs, output_crs)
-    functions.geode_objects.objects_list()[geode_object]['save'](converted_data, os.path.join(UPLOAD_FOLDER, new_file_name))
+
+    geode_objects.asign_geographic_coordinate_system_info(geode_object, data, input_crs_name, input_crs)
+    geode_objects.convert_geographic_coordinate_system_info(geode_object, data, output_crs_name, output_crs)
+
+    functions.geode_objects.objects_list()[geode_object]['save'](data, os.path.join(UPLOAD_FOLDER, new_file_name))
 
     response = flask.send_from_directory(directory = UPLOAD_FOLDER, path = new_file_name, as_attachment = True, mimetype = 'application/octet-binary')
     response.headers['new-file-name'] = new_file_name
