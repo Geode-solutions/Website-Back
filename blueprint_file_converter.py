@@ -78,7 +78,7 @@ async def file_converter_convert_file():
 
     secure_filename = werkzeug.utils.secure_filename(filename)
     file_path = os.path.join(UPLOAD_FOLDER, secure_filename)
-    model = functions.geode_objects.objects_list()[geode_object]['load'](file_path)
+    data = functions.geode_objects.objects_list()[geode_object]['load'](file_path)
     strict_file_name = os.path.splitext(secure_filename)[0]
     new_file_name = strict_file_name + '.' + extension
 
@@ -86,7 +86,7 @@ async def file_converter_convert_file():
     if os.path.exists(sub_folder):
         shutil.rmtree(sub_folder)
 
-    functions.geode_objects.objects_list()[geode_object]['save'](model, os.path.join(UPLOAD_FOLDER, new_file_name))
+    functions.geode_objects.objects_list()[geode_object]['save'](data, os.path.join(UPLOAD_FOLDER, new_file_name))
     mimetype = 'application/octet-binary'
 
     list_exceptions = ['triangle', 'vtm']

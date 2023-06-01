@@ -1,159 +1,178 @@
-import opengeode
-import opengeode_io
-import opengeode_geosciences
-import opengeode_geosciencesio
+import opengeode as og
+import opengeode_io as og_io
+import opengeode_geosciences as og_gs
+import opengeode_geosciencesio as og_gs_io
 
 def objects_list():
     return {
         'BRep': {
-            'input': [ opengeode.BRepInputFactory ],
-            'output': [ opengeode.BRepOutputFactory ],
-            'load': opengeode.load_brep,
-            'save': opengeode.save_brep,
+            'input': [ og.BRepInputFactory ],
+            'output': [ og.BRepOutputFactory ],
+            'load': og.load_brep,
+            'save': og.save_brep,
+            'builder': og.BRepBuilder,
             'is_model': True,
             'is_3D': True
         },
         'CrossSection': {
-            'input': [ opengeode_geosciences.CrossSectionInputFactory ],
-            'output': [ opengeode.SectionOutputFactory, opengeode_geosciences.CrossSectionOutputFactory ],
-            'load': opengeode_geosciences.load_cross_section,
-            'save': opengeode_geosciences.save_cross_section,
+            'input': [ og_gs.CrossSectionInputFactory ],
+            'output': [ og.SectionOutputFactory, og_gs.CrossSectionOutputFactory ],
+            'load': og_gs.load_cross_section,
+            'save': og_gs.save_cross_section,
+            'builder': og_gs.CrossSectionBuilder,
             'is_model': True,
             'is_3D': False
         },
         'EdgedCurve2D': {
-            'input': [ opengeode.EdgedCurveInputFactory2D ],
-            'output': [ opengeode.EdgedCurveOutputFactory2D ],
-            'load': opengeode.load_edged_curve2D,
-            'save': opengeode.save_edged_curve2D,
+            'input': [ og.EdgedCurveInputFactory2D ],
+            'output': [ og.EdgedCurveOutputFactory2D ],
+            'load': og.load_edged_curve2D,
+            'save': og.save_edged_curve2D,
+            'builder': og.EdgedCurveBuilder2D.create,
             'is_model': False,
             'is_3D': False
         },
         'EdgedCurve3D': {
-            'input': [ opengeode.EdgedCurveInputFactory3D ],
-            'output': [ opengeode.EdgedCurveOutputFactory3D ],
-            'load': opengeode.load_edged_curve3D,
-            'save': opengeode.save_edged_curve3D,
+            'input': [ og.EdgedCurveInputFactory3D ],
+            'output': [ og.EdgedCurveOutputFactory3D ],
+            'load': og.load_edged_curve3D,
+            'save': og.save_edged_curve3D,
+            'builder': og.EdgedCurveBuilder3D.create,
             'is_model': False,
             'is_3D': True
         },
         'Graph': {
-            'input': [ opengeode.GraphInputFactory ],
-            'output': [ opengeode.GraphOutputFactory ],
-            'load': opengeode.load_graph,
-            'save': opengeode.save_graph,
+            'input': [ og.GraphInputFactory ],
+            'output': [ og.GraphOutputFactory ],
+            'load': og.load_graph,
+            'save': og.save_graph,
+            'builder': og.GraphBuilder.create,
             'is_model': False,
             'is_3D': False
         },
         'HybridSolid3D': {
-            'input': [ opengeode.HybridSolidInputFactory3D ],
-            'output': [ opengeode.HybridSolidOutputFactory3D ],
-            'load': opengeode.load_hybrid_solid3D,
-            'save': opengeode.save_hybrid_solid3D,
+            'input': [ og.HybridSolidInputFactory3D ],
+            'output': [ og.HybridSolidOutputFactory3D ],
+            'load': og.load_hybrid_solid3D,
+            'save': og.save_hybrid_solid3D,
+            'builder': og.HybridSolidBuilder3D.create,
             'is_model': False,
             'is_3D': True
         },
         'PointSet2D': {
-            'input': [ opengeode.PointSetInputFactory2D ],
-            'output': [ opengeode.PointSetOutputFactory2D ],
-            'load': opengeode.load_point_set2D,
-            'save': opengeode.save_point_set2D,
+            'input': [ og.PointSetInputFactory2D ],
+            'output': [ og.PointSetOutputFactory2D ],
+            'load': og.load_point_set2D,
+            'save': og.save_point_set2D,
+            'builder': og.PointSetBuilder2D.create,
             'is_model': False,
             'is_3D': False
         },
         'PointSet3D': {
-            'input': [ opengeode.PointSetInputFactory3D ],
-            'output': [ opengeode.PointSetOutputFactory3D ],
-            'loaDd': opengeode.load_point_set3D,
-            'save': opengeode.save_point_set3D,
+            'input': [ og.PointSetInputFactory3D ],
+            'output': [ og.PointSetOutputFactory3D ],
+            'loaDd': og.load_point_set3D,
+            'save': og.save_point_set3D,
+            'builder': og.PointSetBuilder3D.create,
             'is_model': False,
             'is_3D': True
         },
         'PolygonalSurface2D': {
-            'input': [ opengeode.PolygonalSurfaceInputFactory2D ],
-            'output': [ opengeode.PolygonalSurfaceOutputFactory2D ],
-            'load': opengeode.load_polygonal_surface2D,
-            'save': opengeode.save_polygonal_surface2D,
+            'input': [ og.PolygonalSurfaceInputFactory2D ],
+            'output': [ og.PolygonalSurfaceOutputFactory2D ],
+            'load': og.load_polygonal_surface2D,
+            'save': og.save_polygonal_surface2D,
+            'builder': og.PolygonalSurfaceBuilder2D.create,
             'is_model': False,
             'is_3D': False
         },
         'PolygonalSurface3D': {
-            'input': [ opengeode.PolygonalSurfaceInputFactory3D ],
-            'output': [ opengeode.PolygonalSurfaceOutputFactory3D ],
-            'load': opengeode.load_polygonal_surface3D,
-            'save': opengeode.save_polygonal_surface3D,
+            'input': [ og.PolygonalSurfaceInputFactory3D ],
+            'output': [ og.PolygonalSurfaceOutputFactory3D ],
+            'load': og.load_polygonal_surface3D,
+            'save': og.save_polygonal_surface3D,
+            'builder': og.PolygonalSurfaceBuilder3D.create,
             'is_model': False,
             'is_3D': True
         },
         'PolyhedralSolid3D': {
-            'input': [ opengeode.PolyhedralSolidInputFactory3D ],
-            'output': [ opengeode.PolyhedralSolidOutputFactory3D ],
-            'load': opengeode.load_polyhedral_solid3D,
-            'save': opengeode.save_polyhedral_solid3D,
+            'input': [ og.PolyhedralSolidInputFactory3D ],
+            'output': [ og.PolyhedralSolidOutputFactory3D ],
+            'load': og.load_polyhedral_solid3D,
+            'save': og.save_polyhedral_solid3D,
+            'builder': og.PolyhedralSolidBuilder3D.create,
             'is_model': False,
             'is_3D': True
         },
         'RegularGrid2D': {
-            'input': [ opengeode.RegularGridInputFactory2D ],
-            'output': [ opengeode.RegularGridOutputFactory2D ],
-            'load': opengeode.load_regular_grid2D,
-            'save': opengeode.save_regular_grid2D,
+            'input': [ og.RegularGridInputFactory2D ],
+            'output': [ og.RegularGridOutputFactory2D ],
+            'load': og.load_regular_grid2D,
+            'save': og.save_regular_grid2D,
+            'builder': og.RegularGridBuilder2D.create,
             'is_model': False,
             'is_3D': False
         },
         'RegularGrid3D': {
-            'input': [ opengeode.RegularGridInputFactory3D ],
-            'output': [ opengeode.RegularGridOutputFactory3D ],
-            'load': opengeode.load_regular_grid3D,
-            'save': opengeode.save_regular_grid3D,
+            'input': [ og.RegularGridInputFactory3D ],
+            'output': [ og.RegularGridOutputFactory3D ],
+            'load': og.load_regular_grid3D,
+            'save': og.save_regular_grid3D,
+            'builder': og.RegularGridBuilder3D.create,
             'is_model': False,
             'is_3D': True
         },
         'Section': {
-            'input': [ opengeode.SectionInputFactory ],
-            'output': [ opengeode.SectionOutputFactory ],
-            'load': opengeode.load_section,
-            'save': opengeode.save_section,
+            'input': [ og.SectionInputFactory ],
+            'output': [ og.SectionOutputFactory ],
+            'load': og.load_section,
+            'save': og.save_section,
+            'builder': og.SectionBuilder,
             'is_model': True,
             'is_3D': False
         },
         'StructuralModel': {
-            'input': [ opengeode_geosciences.StructuralModelInputFactory ],
-            'output': [ opengeode.BRepOutputFactory, opengeode_geosciences.StructuralModelOutputFactory ],
-            'load': opengeode_geosciences.load_structural_model,
-            'save': opengeode_geosciences.save_structural_model,
+            'input': [ og_gs.StructuralModelInputFactory ],
+            'output': [ og.BRepOutputFactory, og_gs.StructuralModelOutputFactory ],
+            'load': og_gs.load_structural_model,
+            'save': og_gs.save_structural_model,
+            'builder': og_gs.StructuralModelBuilder,
             'is_model': True,
             'is_3D': True
         },
         'TetrahedralSolid3D': {
-            'input': [ opengeode.TetrahedralSolidInputFactory3D ],
-            'output': [ opengeode.TetrahedralSolidOutputFactory3D ],
-            'load': opengeode.load_tetrahedral_solid3D,
-            'save': opengeode.save_tetrahedral_solid3D,
+            'input': [ og.TetrahedralSolidInputFactory3D ],
+            'output': [ og.TetrahedralSolidOutputFactory3D ],
+            'load': og.load_tetrahedral_solid3D,
+            'save': og.save_tetrahedral_solid3D,
+            'builder': og.TetrahedralSolidBuilder3D.create,
             'is_model': False,
             'is_3D': True
         },
         'TriangulatedSurface2D': {
-            'input': [ opengeode.TriangulatedSurfaceInputFactory2D ],
-            'output': [ opengeode.TriangulatedSurfaceOutputFactory2D ],
-            'load': opengeode.load_triangulated_surface2D,
-            'save': opengeode.save_triangulated_surface2D,
+            'input': [ og.TriangulatedSurfaceInputFactory2D ],
+            'output': [ og.TriangulatedSurfaceOutputFactory2D ],
+            'load': og.load_triangulated_surface2D,
+            'save': og.save_triangulated_surface2D,
+            'builder': og.TriangulatedSurfaceBuilder2D.create,
             'is_model': False,
             'is_3D': False
         },
         'TriangulatedSurface3D': {
-            'input': [ opengeode.TriangulatedSurfaceInputFactory3D ],
-            'output': [ opengeode.TriangulatedSurfaceOutputFactory3D ],
-            'load': opengeode.load_triangulated_surface3D,
-            'save': opengeode.save_triangulated_surface3D,
+            'input': [ og.TriangulatedSurfaceInputFactory3D ],
+            'output': [ og.TriangulatedSurfaceOutputFactory3D ],
+            'load': og.load_triangulated_surface3D,
+            'save': og.save_triangulated_surface3D,
+            'builder': og.TriangulatedSurfaceBuilder3D.create,
             'is_model': False,
             'is_3D': True
         },
         'VertexSet': {
-            'input': [ opengeode.VertexSetInputFactory ],
-            'output': [ opengeode.VertexSetOutputFactory ],
-            'load': opengeode.load_vertex_set,
-            'save': opengeode.save_vertex_set,
+            'input': [ og.VertexSetInputFactory ],
+            'output': [ og.VertexSetOutputFactory ],
+            'load': og.load_vertex_set,
+            'save': og.save_vertex_set,
+            'builder': og.VertexSetBuilder.create,
             'is_model': True,
             'is_3D': False
         }
@@ -167,38 +186,51 @@ def is_3D(geode_object):
 
 def get_geographic_coordinate_systems(geode_object):
     if is_3D(geode_object):
-        return opengeode_geosciences.GeographicCoordinateSystem3D.geographic_coordinate_systems()
+        return og_gs.GeographicCoordinateSystem3D.geographic_coordinate_systems()
     else:
-        return opengeode_geosciences.GeographicCoordinateSystem2D.geographic_coordinate_systems()
+        return og_gs.GeographicCoordinateSystem2D.geographic_coordinate_systems()
+
+
+def asign_geographic_coordinate_system_info():
+
+    return a
+
+def convert_geographic_coordinate_system_info():
+
+    return a
+
 
 def convert_to_coordinate_system(data, geode_object, input_crs, output_crs):
     
     if is_model(geode_object):
         for corner in data.corners():
-            mesh = corner.mesh()
-            convert_mesh_coordinate_system(mesh)
+            convert_mesh_coordinate_system(corner.mesh(), geode_object, input_crs, output_crs)
         for line in data.lines():
-            mesh = line.mesh()
-            convert_mesh_coordinate_system(mesh)
+            convert_mesh_coordinate_system(line.mesh(), geode_object, input_crs, output_crs)
         for surface in data.surfaces():
-            mesh = surface.mesh()
-            convert_mesh_coordinate_system(mesh)
+            convert_mesh_coordinate_system(surface.mesh(), geode_object, input_crs, output_crs)
         if is_3D(geode_object):
             for block in data.blocks():
-                mesh = block.mesh()
-                convert_mesh_coordinate_system(mesh)
+                convert_mesh_coordinate_system(block.mesh(), geode_object, input_crs, output_crs)
     else:
-        mesh = data
-        convert_mesh_coordinate_system(mesh)
+        convert_mesh_coordinate_system(data, geode_object, input_crs, output_crs)
+    return data
 
-    return output_crs
-
-def convert_mesh_coordinate_system(mesh, input_crs, output_crs):
+def convert_mesh_coordinate_system(mesh, geode_object, input_crs, output_crs):
+    print(f'{input_crs=}')
+    print(f'{output_crs=}')
     manager = mesh.vertex_attribute_manager()
 
-    input_crs = geosciences.GeographicCoordinateSystem3D(manager, geosciences.GeographicCoordinateSystemInfo3D(input_crs_authority, input_crs_code, input_crs_name))
-    output_crs = geosciences.GeographicCoordinateSystem3D(manager, geosciences.GeographicCoordinateSystemInfo3D(output_crs_authority, output_crs_code, output_crs_name))
-    output_crs.import_coordinates(input_crs)
+    if is_3D(geode_object):
+        input_graphic_coodinates_system_info = og_gs.GeographicCoordinateSystemInfo3D(input_crs['authority'], input_crs['code'], input_crs['name'])
+        output_graphic_coodinates_system_info = og_gs.GeographicCoordinateSystemInfo3D(output_crs['authority'], output_crs['code'], output_crs['name'])
+    else:
+        input_graphic_coodinates_system_info = og_gs.GeographicCoordinateSystemInfo2D(input_crs['authority'], input_crs['code'], input_crs['name'])
+        output_graphic_coodinates_system_info = og_gs.GeographicCoordinateSystemInfo2D(output_crs['authority'], output_crs['code'], output_crs['name'])
 
-    return output_crs
+    crs_I = og_gs.GeographicCoordinateSystem3D(manager, input_graphic_coodinates_system_info)
+    crs_II = og_gs.GeographicCoordinateSystem3D(manager, output_graphic_coodinates_system_info)
+    crs_II.import_coordinates(crs_I)
+
+    return mesh
 
