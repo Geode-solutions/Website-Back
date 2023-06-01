@@ -11,6 +11,10 @@ def objects_list():
             'load': og.load_brep,
             'save': og.save_brep,
             'builder': og.BRepBuilder,
+            'crs': {
+                'assign': og_gs.assign_brep_geographic_coordinate_system_info,
+                'convert': og_gs.convert_brep_coordinate_reference_system
+            },
             'is_model': True,
             'is_3D': True
         },
@@ -20,6 +24,10 @@ def objects_list():
             'load': og_gs.load_cross_section,
             'save': og_gs.save_cross_section,
             'builder': og_gs.CrossSectionBuilder,
+            'crs': {
+                'assign': og_gs.assign_section_geographic_coordinate_system_info,
+                'convert': og_gs.convert_section_coordinate_reference_system
+            },
             'is_model': True,
             'is_3D': False
         },
@@ -29,6 +37,10 @@ def objects_list():
             'load': og.load_edged_curve2D,
             'save': og.save_edged_curve2D,
             'builder': og.EdgedCurveBuilder2D.create,
+            'crs': {
+                'assign': og_gs.assign_edged_curve_geographic_coordinate_system_info2D,
+                'convert': og_gs.convert_edged_curve_coordinate_reference_system2D
+            },
             'is_model': False,
             'is_3D': False
         },
@@ -38,6 +50,10 @@ def objects_list():
             'load': og.load_edged_curve3D,
             'save': og.save_edged_curve3D,
             'builder': og.EdgedCurveBuilder3D.create,
+            'crs': {
+                'assign': og_gs.assign_edged_curve_geographic_coordinate_system_info3D,
+                'convert': og_gs.convert_edged_curve_coordinate_reference_system3D
+            },
             'is_model': False,
             'is_3D': True
         },
@@ -56,6 +72,10 @@ def objects_list():
             'load': og.load_hybrid_solid3D,
             'save': og.save_hybrid_solid3D,
             'builder': og.HybridSolidBuilder3D.create,
+            'crs': {
+                'assign': og_gs.assign_solid_mesh_geographic_coordinate_system_info3D,
+                'convert': og_gs.convert_solid_mesh_coordinate_reference_system3D
+            },
             'is_model': False,
             'is_3D': True
         },
@@ -65,6 +85,10 @@ def objects_list():
             'load': og.load_point_set2D,
             'save': og.save_point_set2D,
             'builder': og.PointSetBuilder2D.create,
+            'crs': {
+                'assign': og_gs.assign_point_set_geographic_coordinate_system_info2D,
+                'convert': og_gs.convert_point_set_coordinate_reference_system2D
+            },
             'is_model': False,
             'is_3D': False
         },
@@ -74,6 +98,10 @@ def objects_list():
             'loaDd': og.load_point_set3D,
             'save': og.save_point_set3D,
             'builder': og.PointSetBuilder3D.create,
+            'crs': {
+                'assign': og_gs.assign_point_set_geographic_coordinate_system_info3D,
+                'convert': og_gs.convert_point_set_coordinate_reference_system3D
+            },
             'is_model': False,
             'is_3D': True
         },
@@ -83,6 +111,10 @@ def objects_list():
             'load': og.load_polygonal_surface2D,
             'save': og.save_polygonal_surface2D,
             'builder': og.PolygonalSurfaceBuilder2D.create,
+            'crs': {
+                'assign': og_gs.assign_surface_mesh_geographic_coordinate_system_info2D,
+                'convert': og_gs.convert_surface_mesh_coordinate_reference_system2D
+            },
             'is_model': False,
             'is_3D': False
         },
@@ -92,6 +124,10 @@ def objects_list():
             'load': og.load_polygonal_surface3D,
             'save': og.save_polygonal_surface3D,
             'builder': og.PolygonalSurfaceBuilder3D.create,
+            'crs': {
+                'assign': og_gs.assign_surface_mesh_geographic_coordinate_system_info3D,
+                'convert': og_gs.convert_surface_mesh_coordinate_reference_system3D
+            },
             'is_model': False,
             'is_3D': True
         },
@@ -101,6 +137,10 @@ def objects_list():
             'load': og.load_polyhedral_solid3D,
             'save': og.save_polyhedral_solid3D,
             'builder': og.PolyhedralSolidBuilder3D.create,
+            'crs': {
+                'assign': og_gs.assign_solid_mesh_geographic_coordinate_system_info3D,
+                'convert': og_gs.convert_solid_mesh_coordinate_reference_system3D
+            },
             'is_model': False,
             'is_3D': True
         },
@@ -110,6 +150,10 @@ def objects_list():
             'load': og.load_regular_grid2D,
             'save': og.save_regular_grid2D,
             'builder': og.RegularGridBuilder2D.create,
+            'crs': {
+                'assign': og_gs.assign_surface_mesh_geographic_coordinate_system_info2D,
+                'convert': og_gs.convert_surface_mesh_coordinate_reference_system2D
+            },
             'is_model': False,
             'is_3D': False
         },
@@ -119,6 +163,10 @@ def objects_list():
             'load': og.load_regular_grid3D,
             'save': og.save_regular_grid3D,
             'builder': og.RegularGridBuilder3D.create,
+            'crs': {
+                'assign': og_gs.assign_solid_mesh_geographic_coordinate_system_info3D,
+                'convert': og_gs.convert_solid_mesh_coordinate_reference_system3D
+            },
             'is_model': False,
             'is_3D': True
         },
@@ -128,6 +176,10 @@ def objects_list():
             'load': og.load_section,
             'save': og.save_section,
             'builder': og.SectionBuilder,
+            'crs': {
+                'assign': og_gs.assign_section_geographic_coordinate_system_info,
+                'convert': og_gs.convert_section_coordinate_reference_system
+            },
             'is_model': True,
             'is_3D': False
         },
@@ -137,6 +189,10 @@ def objects_list():
             'load': og_gs.load_structural_model,
             'save': og_gs.save_structural_model,
             'builder': og_gs.StructuralModelBuilder,
+            'crs': {
+                'assign': og_gs.assign_brep_geographic_coordinate_system_info,
+                'convert': og_gs.convert_brep_coordinate_reference_system
+            },
             'is_model': True,
             'is_3D': True
         },
@@ -146,6 +202,10 @@ def objects_list():
             'load': og.load_tetrahedral_solid3D,
             'save': og.save_tetrahedral_solid3D,
             'builder': og.TetrahedralSolidBuilder3D.create,
+            'crs': {
+                'assign': og_gs.assign_solid_mesh_geographic_coordinate_system_info3D,
+                'convert': og_gs.convert_solid_mesh_coordinate_reference_system3D
+            },
             'is_model': False,
             'is_3D': True
         },
@@ -155,6 +215,10 @@ def objects_list():
             'load': og.load_triangulated_surface2D,
             'save': og.save_triangulated_surface2D,
             'builder': og.TriangulatedSurfaceBuilder2D.create,
+            'crs': {
+                'assign': og_gs.assign_surface_mesh_geographic_coordinate_system_info2D,
+                'convert': og_gs.convert_surface_mesh_coordinate_reference_system2D
+            },
             'is_model': False,
             'is_3D': False
         },
@@ -164,6 +228,10 @@ def objects_list():
             'load': og.load_triangulated_surface3D,
             'save': og.save_triangulated_surface3D,
             'builder': og.TriangulatedSurfaceBuilder3D.create,
+            'crs': {
+                'assign': og_gs.assign_surface_mesh_geographic_coordinate_system_info3D,
+                'convert': og_gs.convert_surface_mesh_coordinate_reference_system3D
+            },
             'is_model': False,
             'is_3D': True
         },
@@ -184,6 +252,9 @@ def is_model(geode_object):
 def is_3D(geode_object):
     return objects_list()[geode_object]['is_3D']
 
+def get_builder(geode_object):
+    return objects_list()[geode_object]['builder']
+
 def get_geographic_coordinate_systems(geode_object):
     if is_3D(geode_object):
         return og_gs.GeographicCoordinateSystem3D.geographic_coordinate_systems()
@@ -191,12 +262,11 @@ def get_geographic_coordinate_systems(geode_object):
         return og_gs.GeographicCoordinateSystem2D.geographic_coordinate_systems()
 
 
-def asign_geographic_coordinate_system_info():
-
-    return a
+def asign_geographic_coordinate_system_info(data, builder, crs_name, input_crs):
+    og_gs.assign_brep_geographic_coordinate_system_info(data, builder, crs_name, input_crs)
 
 def convert_geographic_coordinate_system_info():
-
+    og_gs.convert_brep_coordinate_reference_system()
     return a
 
 
