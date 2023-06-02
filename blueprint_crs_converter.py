@@ -131,10 +131,10 @@ async def crs_converter_convert_file():
     strict_file_name = os.path.splitext(secure_filename)[0]
     new_file_name = strict_file_name + '.' + extension
 
-    geode_objects.asign_geographic_coordinate_system_info(geode_object, data, input_crs)
-    geode_objects.convert_geographic_coordinate_system_info(geode_object, data, output_crs)
+    functions.asign_geographic_coordinate_system_info(geode_object, data, input_crs)
+    functions.convert_geographic_coordinate_system_info(geode_object, data, output_crs)
 
-    functions.geode_objects.objects_list()[geode_object]['save'](data, os.path.join(UPLOAD_FOLDER, new_file_name))
+    geode_objects.objects_list()[geode_object]['save'](data, os.path.join(UPLOAD_FOLDER, new_file_name))
 
     response = flask.send_from_directory(directory = UPLOAD_FOLDER, path = new_file_name, as_attachment = True, mimetype = 'application/octet-binary')
     response.headers['new-file-name'] = new_file_name

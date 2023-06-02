@@ -245,37 +245,3 @@ def objects_list():
             'is_3D': False
         }
     }
-
-def is_model(geode_object):
-    return objects_list()[geode_object]['is_model']
-
-def is_3D(geode_object):
-    print(f'{geode_object=}')
-    list = objects_list()
-    return list[geode_object]['is_3D']
-
-def get_builder(geode_object, data):
-    return objects_list()[geode_object]['builder'](data)
-
-def get_geographic_coordinate_systems(geode_object):
-    if is_3D(geode_object):
-        return og_gs.GeographicCoordinateSystem3D.geographic_coordinate_systems()
-    else:
-        return og_gs.GeographicCoordinateSystem2D.geographic_coordinate_systems()
-
-def get_geographic_coordinate_systems_info(geode_object, crs):
-    if is_3D(geode_object):
-        return og_gs.GeographicCoordinateSystemInfo3D(crs['authority'], crs['code'], crs['name'])
-    else:
-        return og_gs.GeographicCoordinateSystemInfo2D(crs['authority'], crs['code'], crs['name'])
-
-def asign_geographic_coordinate_system_info(geode_object, data, input_crs):
-    builder = get_builder(geode_object, data)
-    info = get_geographic_coordinate_systems_info(geode_object, input_crs)
-    objects_list()[geode_object]['crs']['assign'](data, builder, input_crs['name'], info)
-
-def convert_geographic_coordinate_system_info(geode_object, data, output_crs):
-    builder = get_builder(geode_object, data)
-    info = get_geographic_coordinate_systems_info(geode_object, output_crs)
-    objects_list()[geode_object]['crs']['convert'](data, builder, output_crs['name'], info)
-
