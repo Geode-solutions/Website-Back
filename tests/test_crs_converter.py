@@ -27,24 +27,24 @@ def test_allowed_objects(client):
     # Normal test with filename 'corbi.og_brep'
     response = client.post(route, data={'filename': 'corbi.og_brep'})
     assert response.status_code == 200
-    objects = response.json['objects']
-    assert type(objects) is list
-    assert 'BRep' in objects
+    allowed_objects = response.json['allowed_objects']
+    assert type(allowed_objects) is list
+    assert 'BRep' in allowed_objects
 
     # Normal test with filename .vtu
     response = client.post(route, data={'filename': 'toto.vtu'})
     assert response.status_code == 200
-    objects = response.json['objects']
+    allowed_objects = response.json['allowed_objects']
     list_objects = ['HybridSolid3D', 'PolyhedralSolid3D', 'TetrahedralSolid3D']
-    for object in list_objects:
-        assert object in objects
+    for geode_object in list_objects:
+        assert geode_object in allowed_objects
 
     # Test with stupid filename
     response = client.post(route, data={'filename': 'toto.tutu'})
     assert response.status_code == 200
-    objects = response.json['objects']
-    assert type(objects) is list
-    assert not objects
+    allowed_objects = response.json['allowed_objects']
+    assert type(allowed_objects) is list
+    assert not allowed_objects
 
     # Test without filename
     response = client.post(route)
@@ -111,8 +111,13 @@ def test_convert_file(client):
     filename = 'corbi.og_brep'
     file = base64.b64encode(open('./tests/corbi.og_brep', 'rb').read())
     filesize = int(os.path.getsize('./tests/corbi.og_brep'))
-    input_crs = { 'authority': 'EPSG', 'code': '2000' }
-    output_crs = { 'authority': 'EPSG', 'code': '2001' }
+    input_crs_authority = 'EPSG'
+    input_crs_code = '2000'
+    input_crs_name = 'Anguilla 1957 / British West Indies Grid'
+    output_crs_authority = 'EPSG'
+    output_crs_code = '2001'
+    output_crs_name = 'Antigua 1943 / British West Indies Grid'
+
     extension = 'msh'
 
     response = client.post(f'{base_route}/convert_file',
@@ -121,8 +126,12 @@ def test_convert_file(client):
             'file': file,
             'filename': filename,
             'filesize': filesize,
-            'input_crs': input_crs,
-            'output_crs': output_crs,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
             'extension': extension
         }
     )
@@ -137,8 +146,12 @@ def test_convert_file(client):
             'file': file,
             'filename': filename,
             'filesize': filesize,
-            'input_crs': input_crs,
-            'output_crs': output_crs,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
             'extension': extension
         }
     )
@@ -153,8 +166,12 @@ def test_convert_file(client):
             'geode_object': geode_object,
             'filename': filename,
             'filesize': filesize,
-            'input_crs': input_crs,
-            'output_crs': output_crs,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
             'extension': extension
         }
     )
@@ -169,8 +186,12 @@ def test_convert_file(client):
             'geode_object': geode_object,
             'file': file,
             'filesize': filesize,
-            'input_crs': input_crs,
-            'output_crs': output_crs,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
             'extension': extension
         }
     )
@@ -185,8 +206,12 @@ def test_convert_file(client):
             'geode_object': geode_object,
             'file': file,
             'filename': filename,
-            'input_crs': input_crs,
-            'output_crs': output_crs,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
             'extension': extension
         }
     )
@@ -195,37 +220,125 @@ def test_convert_file(client):
     error_description = response.json['description']
     assert error_description == 'No filesize sent'
 
-    # Test without input_crs
+    # Test without input_crs_authority
     response = client.post(f'{base_route}/convert_file',
         data = {
             'geode_object': geode_object,
             'file': file,
             'filename': filename,
             'filesize': filesize,
-            'output_crs': output_crs,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
             'extension': extension
         }
     )
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No input_crs sent'
+    assert error_description == 'No input_crs_authority sent'
 
-    # Test without output_crs
+    # Test without input_crs_code
     response = client.post(f'{base_route}/convert_file',
         data = {
             'geode_object': geode_object,
             'file': file,
             'filename': filename,
             'filesize': filesize,
-            'input_crs': input_crs,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
             'extension': extension
         }
     )
 
     assert response.status_code == 400
     error_description = response.json['description']
-    assert error_description == 'No output_crs sent'
+    assert error_description == 'No input_crs_code sent'
+
+    # Test without input_crs_name
+    response = client.post(f'{base_route}/convert_file',
+        data = {
+            'geode_object': geode_object,
+            'file': file,
+            'filename': filename,
+            'filesize': filesize,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
+            'extension': extension
+        }
+    )
+
+    assert response.status_code == 400
+    error_description = response.json['description']
+    assert error_description == 'No input_crs_name sent'
+
+    # Test without output_crs_authority
+    response = client.post(f'{base_route}/convert_file',
+        data = {
+            'geode_object': geode_object,
+            'file': file,
+            'filename': filename,
+            'filesize': filesize,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name,
+            'extension': extension
+        }
+    )
+
+    assert response.status_code == 400
+    error_description = response.json['description']
+    assert error_description == 'No output_crs_authority sent'
+
+    # Test without output_crs_code
+    response = client.post(f'{base_route}/convert_file',
+        data = {
+            'geode_object': geode_object,
+            'file': file,
+            'filename': filename,
+            'filesize': filesize,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_name': output_crs_name,
+            'extension': extension
+        }
+    )
+
+    assert response.status_code == 400
+    error_description = response.json['description']
+    assert error_description == 'No output_crs_code sent'
+
+    # Test without output_crs_name
+    response = client.post(f'{base_route}/convert_file',
+        data = {
+            'geode_object': geode_object,
+            'file': file,
+            'filename': filename,
+            'filesize': filesize,
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'extension': extension
+        }
+    )
+
+    assert response.status_code == 400
+    error_description = response.json['description']
+    assert error_description == 'No output_crs_name sent'
 
     # Test without extension
     response = client.post(f'{base_route}/convert_file',
@@ -234,8 +347,12 @@ def test_convert_file(client):
             'file': file,
             'filename': filename,
             'filesize': filesize,
-            'input_crs': input_crs,
-            'output_crs': output_crs
+            'input_crs_authority': input_crs_authority,
+            'input_crs_code': input_crs_code,
+            'input_crs_name': input_crs_name,
+            'output_crs_authority': output_crs_authority,
+            'output_crs_code': output_crs_code,
+            'output_crs_name': output_crs_name
         }
     )
 
