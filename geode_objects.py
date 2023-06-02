@@ -230,7 +230,7 @@ def objects_list():
             'builder': og.TriangulatedSurfaceBuilder3D.create,
             'crs': {
                 'assign': og_gs.assign_surface_mesh_geographic_coordinate_system_info3D,
-                'convert': og_gs.convert_surface_mesh_coordinate_reference_system3D()
+                'convert': og_gs.convert_surface_mesh_coordinate_reference_system3D
             },
             'is_model': False,
             'is_3D': True
@@ -250,10 +250,12 @@ def is_model(geode_object):
     return objects_list()[geode_object]['is_model']
 
 def is_3D(geode_object):
-    return objects_list()[geode_object]['is_3D']
+    print(f'{geode_object=}')
+    list = objects_list()
+    return list[geode_object]['is_3D']
 
-def get_builder(geode_object):
-    return objects_list()[geode_object]['builder']
+def get_builder(geode_object, data):
+    return objects_list()[geode_object]['builder'](data)
 
 def get_geographic_coordinate_systems(geode_object):
     if is_3D(geode_object):
@@ -261,11 +263,18 @@ def get_geographic_coordinate_systems(geode_object):
     else:
         return og_gs.GeographicCoordinateSystem2D.geographic_coordinate_systems()
 
+def get_geographic_coordinate_systems_info(geode_object, crs):
+    if is_3D(geode_object):
+        return og_gs.GeographicCoordinateSystemInfo3D(crs['authority'], crs['code'], crs['name'])
+    else:
+        return og_gs.GeographicCoordinateSystemInfo2D(crs['authority'], crs['code'], crs['name'])
 
-def asign_geographic_coordinate_system_info(geode_object, data, input_crs_name, input_crs):
-    builder = get_builder(geode_object)
-    objects_list()[geode_object]['crs']['assign'](data, builder, crs_name, input_crs)
+def asign_geographic_coordinate_system_info(geode_object, data, input_crs):
+    builder = get_builder(geode_object, data)
+    info = get_geographic_coordinate_systems_info(geode_object, input_crs)
+    objects_list()[geode_object]['crs']['assign'](data, builder, input_crs['name'], info)
 
-def convert_geographic_coordinate_system_info(geode_object, data, output_crs_name, output_crs):
-    builder = get_builder(geode_object)
-    objects_list()[geode_object]['crs']['convert'](data, builder, crs_name, output_crs)
+def convert_geographic_coordinate_system_info(geode_object, data, output_crs):
+    builder = get_builder(geode_object, data)
+    info = get_geographic_coordinate_systems_info(geode_object, output_crs)
+    objects_list()[geode_object]['crs']['convert'](data, builder, output_crs['name'], info)
