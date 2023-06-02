@@ -50,7 +50,6 @@ def file_converter_output_file_extensions():
     
     return flask.make_response({'output_file_extensions': list}, 200)
 
-
 @file_converter_routes.route('/convert_file', methods=['POST'])
 async def file_converter_convert_file():
     UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
@@ -70,10 +69,9 @@ async def file_converter_convert_file():
         return flask.make_response({ 'name': 'Bad Request','description': 'No filesize sent' }, 400)
     if extension is None:
         return flask.make_response({ 'name': 'Bad Request','description': 'No extension sent' }, 400)
-
     
-    uploadedFile = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
-    if not uploadedFile:
+    uploaded_file = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
+    if not uploaded_file:
         flask.make_response({ 'name': 'Internal Server Error','description': 'File not uploaded' }, 500)
 
     secure_filename = werkzeug.utils.secure_filename(filename)

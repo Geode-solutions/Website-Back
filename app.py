@@ -75,7 +75,6 @@ if FLASK_DEBUG == False:
     functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
 flask_cors.CORS(app, origins=ORIGINS)
 
-
 @app.errorhandler(HTTPException)
 def handle_exception(e):
     response = e.get_response()

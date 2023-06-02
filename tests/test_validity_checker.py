@@ -115,6 +115,7 @@ def test_test_names(client):
         response = client.post(f'{base_route}/tests_names', data={'geode_object': geode_object})
         assert response.status_code == 200
         model_checks = response.json['model_checks']
+
         assert type(model_checks) is list
         for model_check in model_checks:
             assert type(model_check) is dict
