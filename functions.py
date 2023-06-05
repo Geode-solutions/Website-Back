@@ -159,7 +159,4 @@ def convert_geographic_coordinate_system_info(geode_object, data, output_crs):
     builder = get_builder(geode_object, data)
     info = get_geographic_coordinate_systems_info(geode_object, output_crs)
     geode_objects.objects_list()[geode_object]['crs']['convert'](data, builder, output_crs['name'], info)
-
-
-
     
