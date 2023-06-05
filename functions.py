@@ -11,18 +11,24 @@ import pkg_resources
 import geode_objects
 import opengeode_geosciences as og_gs
 
-def list_all_input_extensions():
+def list_all_input_extensions(crs=False):
     """
     Purpose:
         Function that returns a list of all input extensions
+    Args:
+        crs -- Tells the function if we want the geode_objects that have a crs
     Returns:
         An ordered list of input file extensions
     """
     List = []
     objects_list = geode_objects.objects_list()
 
-    for Object in objects_list.values():
-        values = Object['input']
+    for geode_object in objects_list.values():
+        values = geode_object['input']
+
+        if crs == True:
+            if 'crs' not in geode_object:
+                continue
         for value in values:
             list_creators = value.list_creators()
             for creator in list_creators:
@@ -31,12 +37,13 @@ def list_all_input_extensions():
     List.sort()
     return List
 
-def list_objects(extension: str):
+def list_objects(extension: str, crs = False):
     """
     Purpose:
         Function that returns a list of objects that can handle a file, given his extension
     Args:
         extension -- The extension of the file
+        crs -- Tells the function if we want the geode_objects that have a crs
     Returns:
         An ordered list of object's names
     """
@@ -44,6 +51,9 @@ def list_objects(extension: str):
     objects_list = geode_objects.objects_list()
 
     for geode_object, values in objects_list.items():
+        if crs == True:
+            if 'crs' not in values:
+                continue
         list_values = values['input']
         for value in list_values:
             if value.has_creator(extension):
@@ -159,4 +169,3 @@ def convert_geographic_coordinate_system_info(geode_object, data, output_crs):
     builder = get_builder(geode_object, data)
     info = get_geographic_coordinate_systems_info(geode_object, output_crs)
     geode_objects.objects_list()[geode_object]['crs']['convert'](data, builder, output_crs['name'], info)
-    
