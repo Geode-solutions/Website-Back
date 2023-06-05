@@ -108,17 +108,27 @@ def test_output_file_extensions(client):
 def test_convert_file(client):
     # Normal test with object/file/filename/extension
     geode_object = 'BRep'
-    filename = 'corbi.og_brep'
-    file = base64.b64encode(open('./tests/corbi.og_brep', 'rb').read())
-    filesize = int(os.path.getsize('./tests/corbi.og_brep'))
+    filenames = ['corbi.og_brep', 'cube.vtp']
+    files = [
+        base64.b64encode(open('./tests/corbi.og_brep', 'rb').read())
+    ]
+    filesize = [
+        int(os.path.getsize('./tests/corbi.og_brep')),
+        abs(1)
+    ]
     input_crs_authority = 'EPSG'
     input_crs_code = '2000'
     input_crs_name = 'Anguilla 1957 / British West Indies Grid'
     output_crs_authority = 'EPSG'
     output_crs_code = '2001'
     output_crs_name = 'Antigua 1943 / British West Indies Grid'
-
     extension = 'msh'
+
+    for filename in filenames:
+        files = [
+        base64.b64encode(open('./tests/corbi.og_brep', 'rb').read())
+        ]
+        filesize = int(os.path.getsize('./tests/corbi.og_brep'))
 
     response = client.post(f'{base_route}/convert_file',
         data = {

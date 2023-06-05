@@ -32,14 +32,14 @@ markupsafe==2.1.2
     # via
     #   jinja2
     #   werkzeug
-opengeode-core==14.1.11-rc1
+opengeode-core==14.1.11rc1
     # via
     #   -r requirements.in
     #   opengeode-geosciences
     #   opengeode-geosciencesio
     #   opengeode-inspector
     #   opengeode-io
-opengeode-geosciences==7.0.9rc1
+opengeode-geosciences==7.0.10-rc1
     # via
     #   -r requirements.in
     #   opengeode-geosciencesio

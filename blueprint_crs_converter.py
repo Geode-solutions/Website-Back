@@ -49,7 +49,7 @@ def crs_converter_geographic_coordinate_systems():
     if geode_object is None:
         return flask.make_response({'error_message': 'No geode_object sent'}, 400)
         
-    infos = geode_objects.get_geographic_coordinate_systems(geode_object)
+    infos = functions.get_geographic_coordinate_systems(geode_object)
     crs_list = []
 
     for info in infos:
@@ -107,7 +107,6 @@ async def crs_converter_convert_file():
         return flask.make_response({ 'name': 'Bad Request','description': 'No output_crs_name sent' }, 400)
     if extension is None:
         return flask.make_response({ 'name': 'Bad Request','description': 'No extension sent' }, 400)
-
 
     input_crs = {
         'authority': input_crs_authority,
