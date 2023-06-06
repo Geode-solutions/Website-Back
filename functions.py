@@ -8,20 +8,27 @@ import uuid
 import flask
 import pkg_resources
 
-import GeodeObjects
+import geode_objects
+import opengeode_geosciences as og_gs
 
-def ListAllInputExtensions():
+def list_all_input_extensions(crs=False):
     """
     Purpose:
         Function that returns a list of all input extensions
+    Args:
+        crs -- Tells the function if we want the geode_objects that have a crs
     Returns:
         An ordered list of input file extensions
     """
     List = []
-    ObjectsList = GeodeObjects.ObjectsList()
+    objects_list = geode_objects.objects_list()
 
-    for Object in ObjectsList.values():
-        values = Object['input']
+    for geode_object in objects_list.values():
+        values = geode_object['input']
+
+        if crs == True:
+            if 'crs' not in geode_object:
+                continue
         for value in values:
             list_creators = value.list_creators()
             for creator in list_creators:
@@ -30,40 +37,44 @@ def ListAllInputExtensions():
     List.sort()
     return List
 
-def ListObjects(extension: str):
+def list_objects(extension: str, crs = False):
     """
     Purpose:
         Function that returns a list of objects that can handle a file, given his extension
     Args:
         extension -- The extension of the file
+        crs -- Tells the function if we want the geode_objects that have a crs
     Returns:
         An ordered list of object's names
     """
     List = []
-    ObjectsList = GeodeObjects.ObjectsList()
+    objects_list = geode_objects.objects_list()
 
-    for Object, values in ObjectsList.items():
+    for geode_object, values in objects_list.items():
+        if crs == True:
+            if 'crs' not in values:
+                continue
         list_values = values['input']
         for value in list_values:
             if value.has_creator(extension):
-                if Object not in List:
-                    List.append(Object)
+                if geode_object not in List:
+                    List.append(geode_object)
     List.sort()
     return List
 
-def ListOutputFileExtensions(object: str):
+def list_output_file_extensions(geode_object: str):
     """
     Purpose:
         Function that returns a list of output file extensions that can be handled by an object
     Args:
-        object -- The name of the object
+        geode_object -- The name of the geode_object
     Returns:
         An ordered list of file extensions
     """
     List = []
-    ObjectsList = GeodeObjects.ObjectsList()
+    objects_list = geode_objects.objects_list()
 
-    values = ObjectsList[object]['output']
+    values = objects_list[geode_object]['output']
     for value in values:
         list_creators = value.list_creators()
         for creator in list_creators:
@@ -73,41 +84,41 @@ def ListOutputFileExtensions(object: str):
     return List
 
 
-def GetVersions(list_packages: list):
+def get_versions(list_packages: list):
     list_with_versions = []
     for package in list_packages:
         list_with_versions.append({"package": package, "version": pkg_resources.get_distribution(package).version})
     return list_with_versions
 
-def UploadFile(file: str, filename: str, uploadFolder: str, filesize: int):
+def upload_file(file: str, filename: str, uploadFolder: str, filesize: int):
     if not os.path.exists(uploadFolder):
         os.mkdir(uploadFolder)
-    fileDecoded = base64.b64decode(file.split(',')[-1])
-    secureFilename = werkzeug.utils.secure_filename(filename)
-    filePath = os.path.join(uploadFolder, secureFilename)
-    f = open(filePath, "wb")
-    f.write(fileDecoded)
+    file_decoded = base64.b64decode(file.split(',')[-1])
+    secure_filename = werkzeug.utils.secure_filename(filename)
+    file_path = os.path.join(uploadFolder, secure_filename)
+    f = open(file_path, "wb")
+    f.write(file_decoded)
     f.close()
 
-    finalSize =  os.path.getsize(filePath)
-    return int(filesize) == int(finalSize)
+    final_size =  os.path.getsize(file_path)
+    return int(filesize) == int(final_size)
 
 def create_lock_file():
     LOCK_FOLDER = flask.current_app.config['LOCK_FOLDER']
     if not os.path.exists(LOCK_FOLDER):
         os.mkdir(LOCK_FOLDER)
     flask.g.UUID = uuid.uuid4()
-    filePath = f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt'
-    f = open(filePath, 'a')
+    file_path = f'{LOCK_FOLDER}/{str(flask.g.UUID)}.txt'
+    f = open(file_path, 'a')
     f.close()
 
 def create_time_file():
     TIME_FOLDER = flask.current_app.config['TIME_FOLDER']
     if not os.path.exists(TIME_FOLDER):
         os.mkdir(TIME_FOLDER)
-    filePath = f'{TIME_FOLDER}/time.txt'
-    if not os.path.isfile(filePath):
-        f = open(filePath, 'w')
+    file_path = f'{TIME_FOLDER}/time.txt'
+    if not os.path.isfile(file_path):
+        f = open(file_path, 'w')
         f.close()
 
     f = open(TIME_FOLDER + '/time.txt', 'w')
@@ -126,4 +137,35 @@ def set_interval(func, sec):
     t.daemon = True
     t.start()
     return t
-    
+
+
+def is_model(geode_object):
+    return geode_objects.objects_list()[geode_object]['is_model']
+
+def is_3D(geode_object):
+    return geode_objects.objects_list()[geode_object]['is_3D']
+
+def get_builder(geode_object, data):
+    return geode_objects.objects_list()[geode_object]['builder'](data)
+
+def get_geographic_coordinate_systems(geode_object):
+    if is_3D(geode_object):
+        return og_gs.GeographicCoordinateSystem3D.geographic_coordinate_systems()
+    else:
+        return og_gs.GeographicCoordinateSystem2D.geographic_coordinate_systems()
+
+def get_geographic_coordinate_systems_info(geode_object, crs):
+    if is_3D(geode_object):
+        return og_gs.GeographicCoordinateSystemInfo3D(crs['authority'], crs['code'], crs['name'])
+    else:
+        return og_gs.GeographicCoordinateSystemInfo2D(crs['authority'], crs['code'], crs['name'])
+
+def asign_geographic_coordinate_system_info(geode_object, data, input_crs):
+    builder = get_builder(geode_object, data)
+    info = get_geographic_coordinate_systems_info(geode_object, input_crs)
+    geode_objects.objects_list()[geode_object]['crs']['assign'](data, builder, input_crs['name'], info)
+
+def convert_geographic_coordinate_system_info(geode_object, data, output_crs):
+    builder = get_builder(geode_object, data)
+    info = get_geographic_coordinate_systems_info(geode_object, output_crs)
+    geode_objects.objects_list()[geode_object]['crs']['convert'](data, builder, output_crs['name'], info)
