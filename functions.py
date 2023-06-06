@@ -9,19 +9,26 @@ import flask
 import pkg_resources
 
 import geode_objects
+import opengeode_geosciences as og_gs
 
-def list_all_input_extensions():
+def list_all_input_extensions(crs=False):
     """
     Purpose:
         Function that returns a list of all input extensions
+    Args:
+        crs -- Tells the function if we want the geode_objects that have a crs
     Returns:
         An ordered list of input file extensions
     """
     List = []
     objects_list = geode_objects.objects_list()
 
-    for Object in objects_list.values():
-        values = Object['input']
+    for geode_object in objects_list.values():
+        values = geode_object['input']
+
+        if crs == True:
+            if 'crs' not in geode_object:
+                continue
         for value in values:
             list_creators = value.list_creators()
             for creator in list_creators:
@@ -30,40 +37,44 @@ def list_all_input_extensions():
     List.sort()
     return List
 
-def list_objects(extension: str):
+def list_objects(extension: str, crs = False):
     """
     Purpose:
         Function that returns a list of objects that can handle a file, given his extension
     Args:
         extension -- The extension of the file
+        crs -- Tells the function if we want the geode_objects that have a crs
     Returns:
         An ordered list of object's names
     """
     List = []
     objects_list = geode_objects.objects_list()
 
-    for Object, values in objects_list.items():
+    for geode_object, values in objects_list.items():
+        if crs == True:
+            if 'crs' not in values:
+                continue
         list_values = values['input']
         for value in list_values:
             if value.has_creator(extension):
-                if Object not in List:
-                    List.append(Object)
+                if geode_object not in List:
+                    List.append(geode_object)
     List.sort()
     return List
 
-def list_output_file_extensions(object: str):
+def list_output_file_extensions(geode_object: str):
     """
     Purpose:
         Function that returns a list of output file extensions that can be handled by an object
     Args:
-        object -- The name of the object
+        geode_object -- The name of the geode_object
     Returns:
         An ordered list of file extensions
     """
     List = []
     objects_list = geode_objects.objects_list()
 
-    values = objects_list[object]['output']
+    values = objects_list[geode_object]['output']
     for value in values:
         list_creators = value.list_creators()
         for creator in list_creators:
@@ -126,4 +137,35 @@ def set_interval(func, sec):
     t.daemon = True
     t.start()
     return t
-    
+
+
+def is_model(geode_object):
+    return geode_objects.objects_list()[geode_object]['is_model']
+
+def is_3D(geode_object):
+    return geode_objects.objects_list()[geode_object]['is_3D']
+
+def get_builder(geode_object, data):
+    return geode_objects.objects_list()[geode_object]['builder'](data)
+
+def get_geographic_coordinate_systems(geode_object):
+    if is_3D(geode_object):
+        return og_gs.GeographicCoordinateSystem3D.geographic_coordinate_systems()
+    else:
+        return og_gs.GeographicCoordinateSystem2D.geographic_coordinate_systems()
+
+def get_geographic_coordinate_systems_info(geode_object, crs):
+    if is_3D(geode_object):
+        return og_gs.GeographicCoordinateSystemInfo3D(crs['authority'], crs['code'], crs['name'])
+    else:
+        return og_gs.GeographicCoordinateSystemInfo2D(crs['authority'], crs['code'], crs['name'])
+
+def asign_geographic_coordinate_system_info(geode_object, data, input_crs):
+    builder = get_builder(geode_object, data)
+    info = get_geographic_coordinate_systems_info(geode_object, input_crs)
+    geode_objects.objects_list()[geode_object]['crs']['assign'](data, builder, input_crs['name'], info)
+
+def convert_geographic_coordinate_system_info(geode_object, data, output_crs):
+    builder = get_builder(geode_object, data)
+    info = get_geographic_coordinate_systems_info(geode_object, output_crs)
+    geode_objects.objects_list()[geode_object]['crs']['convert'](data, builder, output_crs['name'], info)
