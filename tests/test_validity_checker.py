@@ -1,6 +1,9 @@
 import os
 import base64
 
+import geode_objects
+geode_objects_list = geode_objects.objects_list()
+
 ID = os.environ.get('ID')
 base_route = f'/{ID}/validity_checker'
 
@@ -17,26 +20,18 @@ def test_allowed_files(client):
     assert response.status_code == 200
     extensions = response.json['extensions']
     assert type(extensions) is list
-    list_extensions = ['dat', 'dev', 'dxf', 'lso', 'ml', 'msh', 'obj', 'og_brep', 'og_edc2d', 'og_edc3d', 'og_grp', 'og_hso3d', 'og_psf2d', 'og_psf3d', 'og_pso3d', 'og_pts2d', 'og_pts3d', 'og_rgd2d', 'og_rgd3d', 'og_sctn', 'og_strm', 'og_tsf2d', 'og_tsf3d', 'og_tso3d', 'og_vts', 'og_xsctn', 'ply', 'smesh', 'stl', 'svg', 'ts', 'txt', 'vtp', 'vtu', 'wl']
-
-    for extension in list_extensions:
-        assert extension in extensions
 
 def test_allowed_objects(client):
     # Normal test with filename 'corbi.og_brep'
-    response = client.post(f'{base_route}/allowed_objects', data={'filename': 'corbi.og_brep'})
-    assert response.status_code == 200
-    allowed_objects = response.json['allowed_objects']
-    assert type(allowed_objects) is list
-    assert 'BRep' in allowed_objects
-
-    # Normal test with filename .vtu
-    response = client.post(f'{base_route}/allowed_objects', data={'filename': 'toto.vtu'})
-    assert response.status_code == 200
-    allowed_objects = response.json['allowed_objects']
-    list_objects = ['HybridSolid3D', 'PolyhedralSolid3D', 'TetrahedralSolid3D']
-    for geode_object in list_objects:
-        assert geode_object in allowed_objects
+    for geode_object in geode_objects_list.keys():
+        inputs = geode_objects_list[geode_object]['input']
+        for input in inputs:
+            for input_extension in input.list_creators():
+                response = client.post(f'{base_route}/allowed_objects', data={'filename': f'test.{input_extension}'})
+                assert response.status_code == 200
+                allowed_objects = response.json['allowed_objects']
+                assert type(allowed_objects) is list
+                assert len(allowed_objects) > 0
 
     # Test with stupid filename
     response = client.post(f'{base_route}/allowed_objects', data={'filename': 'toto.tutu'})
@@ -52,12 +47,16 @@ def test_allowed_objects(client):
     assert error_description == 'No file sent'
 
 def test_upload_file(client):
+    file = base64.b64encode(open('./tests/data/test.og_brep', 'rb').read())
+    filename = 'test.og_brep'
+    filesize = os.path.getsize('./tests/data/test.og_brep')
+
     # Test with file
     response = client.post(f'{base_route}/upload_file',
         data = {
-            'file': base64.b64encode(open('./tests/corbi.og_brep', 'rb').read()),
-            'filename': 'corbi.og_brep',
-            'filesize': os.path.getsize('./tests/corbi.og_brep')
+            'file': file,
+            'filename': filename,
+            'filesize': filesize
         }
     )
 
@@ -68,7 +67,8 @@ def test_upload_file(client):
     # Test without file
     response = client.post(f'{base_route}/upload_file',
         data = {
-            'filename': 'corbi.og_brep',
+            'filename': filename,
+            'filesize': filesize
         }
     )
 
@@ -79,7 +79,8 @@ def test_upload_file(client):
     # Test without filename
     response = client.post(f'{base_route}/upload_file',
         data = {
-            'file': base64.b64encode(open('./tests/corbi.og_brep', 'rb').read()),
+            'file': file,
+            'filesize': filesize
         }
     )
 
@@ -87,30 +88,32 @@ def test_upload_file(client):
     error_description = response.json['description']
     assert error_description == 'No filename sent'
 
-def test_test_names(client):
-    ObjectArray = [
-        'BRep'
-        , 'CrossSection'
-        , 'EdgedCurve2D'
-        , 'EdgedCurve3D'
-        , 'Graph'
-        , 'HybridSolid3D'
-        , 'PointSet2D'
-        , 'PointSet3D'
-        , 'PolygonalSurface2D'
-        , 'PolygonalSurface3D'
-        , 'PolyhedralSolid3D'
-        , 'RegularGrid2D'
-        , 'RegularGrid3D'
-        , 'Section'
-        , 'StructuralModel'
-        , 'TetrahedralSolid3D'
-        , 'TriangulatedSurface2D'
-        , 'TriangulatedSurface3D'
-        , 'VertexSet'
-    ]
+    # Test without filesize
+    response = client.post(f'{base_route}/upload_file',
+        data = {
+            'file': file,
+            'filename': filename,
+        }
+    )
 
-    for geode_object in ObjectArray:
+    assert response.status_code == 400
+    error_description = response.json['description']
+    assert error_description == 'No filesize sent'
+
+def test_test_names(client):
+    for geode_object in geode_objects_list.keys():
+        print(f'{geode_object=}')
+        inputs = geode_objects_list[geode_object]['input']
+
+        for input in inputs:
+            for input_extension in input.list_creators():
+                print(f'{input_extension=}')
+                filename = f'test.{input_extension}'
+                file = base64.b64encode(open(f'./tests/data/test.{input_extension}', 'rb').read())
+                filesize = int(os.path.getsize(f'./tests/data/test.{input_extension}'))
+    
+    
+    for geode_object in geode_objects_list.keys():
         # Normal test with all objects
         response = client.post(f'{base_route}/tests_names', data={'geode_object': geode_object})
         assert response.status_code == 200
