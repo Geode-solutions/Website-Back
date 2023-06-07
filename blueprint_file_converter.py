@@ -104,7 +104,7 @@ async def file_converter_convert_file():
         elif extension == 'vtm':
             generated_files = f'{UPLOAD_FOLDER}/{strict_file_name}'
             shutil.move(generated_files + '.vtm', sub_folder)
-            shutil.move(strict_file_name, subFolder)
+            shutil.move(strict_file_name, sub_folder)
         new_file_name = strict_file_name + '.zip'
         mimetype = 'application/zip'
         with zipfile.ZipFile(f'{UPLOAD_FOLDER}/{new_file_name}', 'w') as zipObj:
