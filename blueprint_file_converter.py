@@ -28,6 +28,10 @@ def file_converter_versions():
 @file_converter_routes.route('/allowed_files', methods=['GET'])
 def file_converter_allowed_files():
     extensions = functions.list_all_input_extensions()
+    print(f'{extensions=}')
+
+    for el in functions.geode_objects.objects_list()['PolygonalSurface2D']['input']:
+        print(el.list_creators())
     
     return {'status': 200, 'extensions': extensions}
 
