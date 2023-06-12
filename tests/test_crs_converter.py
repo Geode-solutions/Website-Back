@@ -1,6 +1,9 @@
 import os
 import base64
 
+import geode_objects
+geode_objects_list = geode_objects.objects_list()
+
 ID = os.environ.get('ID')
 base_route = f'/{ID}/crs_converter'
 
@@ -106,257 +109,270 @@ def test_output_file_extensions(client):
     assert error_message == 'No geode_object sent'
 
 def test_convert_file(client):
-    # Normal test with object/file/filename/extension
-    geode_object = ['BRep', 'PolyhedralSolid3D']
-    filenames = ['corbi.og_brep', 'cube.vtu']
+
     input_crs_authority = 'EPSG'
     input_crs_code = '2000'
     input_crs_name = 'Anguilla 1957 / British West Indies Grid'
     output_crs_authority = 'EPSG'
-    output_crs_code = '2001'
-    output_crs_name = 'Antigua 1943 / British West Indies Grid'
-    extension = ['msh', 'vtu']
+    output_crs_code = '3000'
+    output_crs_name = 'Segara / NEIEZ'
 
-    for index, filename in enumerate(filenames):
-        file = base64.b64encode(open(f'./tests/{filename}', 'rb').read())
-        filesize = int(os.path.getsize(f'./tests/{filename}'))
+    for geode_object in geode_objects_list.keys():
+        if 'crs' in geode_objects_list[geode_object]:
+            print(f'{geode_object=}')
+            inputs = geode_objects_list[geode_object]['input']
 
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+            for input in inputs:
+                for input_extension in input.list_creators():
+                    print(f'{input_extension=}')
+                    filename = f'corbi.{input_extension}'
+                    file = base64.b64encode(open(f'./tests/data/test.{input_extension}', 'rb').read())
+                    filesize = int(os.path.getsize(f'./tests/data/test.{input_extension}'))
 
-        assert response.status_code == 200
-        assert type((response.data)) is bytes
-        assert len((response.data)) > 0
+                    outputs = geode_objects_list[geode_object]['output']
 
-        # Test without geode_object
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                    for output in outputs:
+                        for output_extension in output.list_creators():
+                            # if geode_object != 'BRep' and geode_object != 'CrossSection':
+                            print(f'{output_extension=}')
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No geode_object sent'
+                            # Normal test
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without file
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 200
+                            assert type((response.data)) is bytes
+                            assert len((response.data)) > 0
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No file sent'
+                            # Test without geode_object
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without filename
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No geode_object sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No filename sent'
+                            # Test without file
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without filesize
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No file sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No filesize sent'
+                            # Test without filename
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without input_crs_authority
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No filename sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No input_crs_authority sent'
+                            # Test without filesize
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without input_crs_code
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No filesize sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No input_crs_code sent'
+                            # Test without input_crs_authority
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without input_crs_name
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No input_crs_authority sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No input_crs_name sent'
+                            # Test without input_crs_code
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without output_crs_authority
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No input_crs_code sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No output_crs_authority sent'
+                            # Test without input_crs_name
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without output_crs_code
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_name': output_crs_name,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No input_crs_name sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No output_crs_code sent'
+                            # Test without output_crs_authority
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without output_crs_name
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'extension': extension[index]
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No output_crs_authority sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No output_crs_name sent'
+                            # Test without output_crs_code
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_name': output_crs_name,
+                                    'extension': output_extension
+                                }
+                            )
 
-        # Test without extension
-        response = client.post(f'{base_route}/convert_file',
-            data = {
-                'geode_object': geode_object[index],
-                'file': file,
-                'filename': filename,
-                'filesize': filesize,
-                'input_crs_authority': input_crs_authority,
-                'input_crs_code': input_crs_code,
-                'input_crs_name': input_crs_name,
-                'output_crs_authority': output_crs_authority,
-                'output_crs_code': output_crs_code,
-                'output_crs_name': output_crs_name
-            }
-        )
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No output_crs_code sent'
 
-        assert response.status_code == 400
-        error_description = response.json['description']
-        assert error_description == 'No extension sent'
+                            # Test without output_crs_name
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'extension': output_extension
+                                }
+                            )
+
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No output_crs_name sent'
+
+                            # Test without extension
+                            response = client.post(f'{base_route}/convert_file',
+                                data = {
+                                    'geode_object': geode_object,
+                                    'file': file,
+                                    'filename': filename,
+                                    'filesize': filesize,
+                                    'input_crs_authority': input_crs_authority,
+                                    'input_crs_code': input_crs_code,
+                                    'input_crs_name': input_crs_name,
+                                    'output_crs_authority': output_crs_authority,
+                                    'output_crs_code': output_crs_code,
+                                    'output_crs_name': output_crs_name
+                                }
+                            )
+
+                            assert response.status_code == 400
+                            error_description = response.json['description']
+                            assert error_description == 'No extension sent'

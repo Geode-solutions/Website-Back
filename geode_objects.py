@@ -95,7 +95,7 @@ def objects_list():
         'PointSet3D': {
             'input': [ og.PointSetInputFactory3D ],
             'output': [ og.PointSetOutputFactory3D ],
-            'loaDd': og.load_point_set3D,
+            'load': og.load_point_set3D,
             'save': og.save_point_set3D,
             'builder': og.PointSetBuilder3D.create,
             'crs': {

@@ -78,90 +78,89 @@ def test_convert_file(client):
 
                 for output in outputs:
                     for output_extension in output.list_creators():
-                        if output_extension != 'ml':
-                            print(f'{output_extension=}')
+                        print(f'{output_extension=}')
 
-                            # Normal test with object/file/filename/filesize/extension
-                            response = client.post(f'{base_route}/convert_file',
-                                data = {
-                                    'geode_object': geode_object,
-                                    'file': file,
-                                    'filename': filename,
-                                    'filesize': filesize,
-                                    'extension': output_extension
-                                }
-                            )
+                        # Normal test with object/file/filename/filesize/extension
+                        response = client.post(f'{base_route}/convert_file',
+                            data = {
+                                'geode_object': geode_object,
+                                'file': file,
+                                'filename': filename,
+                                'filesize': filesize,
+                                'extension': output_extension
+                            }
+                        )
 
-                            assert response.status_code == 200
-                            assert type((response.data)) is bytes
-                            assert len((response.data)) > 0
+                        assert response.status_code == 200
+                        assert type((response.data)) is bytes
+                        assert len((response.data)) > 0
 
-                            # Test without object
-                            response = client.post(f'{base_route}/convert_file',
-                                data = {
-                                    'file': file,
-                                    'filename': filename,
-                                    'filesize': filesize,
-                                    'extension': output_extension
-                                }
-                            )
+                        # Test without object
+                        response = client.post(f'{base_route}/convert_file',
+                            data = {
+                                'file': file,
+                                'filename': filename,
+                                'filesize': filesize,
+                                'extension': output_extension
+                            }
+                        )
 
-                            assert response.status_code == 400
-                            error_description = response.json['description']
-                            assert error_description == 'No geode_object sent'
+                        assert response.status_code == 400
+                        error_description = response.json['description']
+                        assert error_description == 'No geode_object sent'
 
-                            # Test without file
-                            response = client.post(f'{base_route}/convert_file',
-                                data = {
-                                    'geode_object': geode_object,
-                                    'filename': filename,
-                                    'filesize': filesize,
-                                    'extension': output_extension
-                                }
-                            )
+                        # Test without file
+                        response = client.post(f'{base_route}/convert_file',
+                            data = {
+                                'geode_object': geode_object,
+                                'filename': filename,
+                                'filesize': filesize,
+                                'extension': output_extension
+                            }
+                        )
 
-                            assert response.status_code == 400
-                            error_description = response.json['description']
-                            assert error_description == 'No file sent'
+                        assert response.status_code == 400
+                        error_description = response.json['description']
+                        assert error_description == 'No file sent'
 
-                            # Test without filename
-                            response = client.post(f'{base_route}/convert_file',
-                                data = {
-                                    'geode_object': geode_object,
-                                    'file': file,
-                                    'filesize': filesize,
-                                    'extension': output_extension
-                                }
-                            )
+                        # Test without filename
+                        response = client.post(f'{base_route}/convert_file',
+                            data = {
+                                'geode_object': geode_object,
+                                'file': file,
+                                'filesize': filesize,
+                                'extension': output_extension
+                            }
+                        )
 
-                            assert response.status_code == 400
-                            error_description = response.json['description']
-                            assert error_description == 'No filename sent'
+                        assert response.status_code == 400
+                        error_description = response.json['description']
+                        assert error_description == 'No filename sent'
 
-                            # Test without filesize
-                            response = client.post(f'{base_route}/convert_file',
-                                data = {
-                                    'geode_object': geode_object,
-                                    'file': file,
-                                    'filename': filename,
-                                    'extension': output_extension
-                                }
-                            )
+                        # Test without filesize
+                        response = client.post(f'{base_route}/convert_file',
+                            data = {
+                                'geode_object': geode_object,
+                                'file': file,
+                                'filename': filename,
+                                'extension': output_extension
+                            }
+                        )
 
-                            assert response.status_code == 400
-                            error_description = response.json['description']
-                            assert error_description == 'No filesize sent'
+                        assert response.status_code == 400
+                        error_description = response.json['description']
+                        assert error_description == 'No filesize sent'
 
-                            # Test without extension
-                            response = client.post(f'{base_route}/convert_file',
-                                data = {
-                                    'geode_object': geode_object,
-                                    'file': file,
-                                    'filename': filename,
-                                    'filesize': filesize
-                                }
-                            )
+                        # Test without extension
+                        response = client.post(f'{base_route}/convert_file',
+                            data = {
+                                'geode_object': geode_object,
+                                'file': file,
+                                'filename': filename,
+                                'filesize': filesize
+                            }
+                        )
 
-                            assert response.status_code == 400
-                            error_description = response.json['description']
-                            assert error_description == 'No extension sent'
+                        assert response.status_code == 400
+                        error_description = response.json['description']
+                        assert error_description == 'No extension sent'

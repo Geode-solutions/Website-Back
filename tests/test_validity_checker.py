@@ -148,9 +148,9 @@ def test_inspect_file(client):
     # Test with file
     response = client.post(f'{base_route}/inspect_file',
         data = {
-            'file': base64.b64encode(open('./tests/corbi.og_brep', 'rb').read()),
+            'file': base64.b64encode(open('./tests/data/test.og_brep', 'rb').read()),
             'filename': 'corbi.og_brep',
-            'filesize': os.path.getsize('./tests/corbi.og_brep')
+            'filesize': os.path.getsize('./tests/data/test.og_brep')
         }
     )
                     
