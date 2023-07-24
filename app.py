@@ -10,6 +10,9 @@ import blueprint_file_converter
 import blueprint_validity_checker
 import blueprint_crs_converter
 import blueprint_ID
+import blueprint_workflow_ong
+import blueprint_simplex_remesh
+import blueprint_explicit_modeling
 
 import functions
 
@@ -70,6 +73,9 @@ app.register_blueprint(blueprint_file_converter.file_converter_routes, url_prefi
 app.register_blueprint(blueprint_validity_checker.validity_checker_routes, url_prefix=f'/{ID}/validity_checker')
 app.register_blueprint(blueprint_crs_converter.crs_converter_routes, url_prefix=f'/{ID}/crs_converter')
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
+app.register_blueprint(blueprint_workflow_ong.workflow_ong_routes, url_prefix=f'/{ID}/ong')
+app.register_blueprint(blueprint_simplex_remesh.simplex_remesh_routes, url_prefix=f'/{ID}/simplexRemesh')
+app.register_blueprint(blueprint_explicit_modeling.explicit_modeling_routes, url_prefix=f'/{ID}/explicitModeling')
 
 if FLASK_DEBUG == False:
     functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
