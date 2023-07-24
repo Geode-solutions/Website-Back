@@ -8,3 +8,8 @@ OpenGeode-IO
 OpenGeode-Geosciences
 OpenGeode-GeosciencesIO
 OpenGeode-Inspector
+geode-numerics
+geode-simplex
+geode-explicit
+geode-implicit
+geode-common
