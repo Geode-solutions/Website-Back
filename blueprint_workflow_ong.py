@@ -11,16 +11,20 @@ import geode_common
 import flask
 import flask_cors
 
+import logging
+logging.basicConfig(level=logging.INFO)
+
 
 workflow_ong_routes = flask.Blueprint('workflow_ong_routes', __name__)
 flask_cors.CORS(workflow_ong_routes)
 
 def restoreBboxPoints(bbox_points):
-    for i in range(len(bbox_points)):
-        bbox_points[i] = eval(bbox_points[i])
-        bbox_points[i]["x"] = float(bbox_points[i]["x"])
-        bbox_points[i]["y"] = float(bbox_points[i]["y"])
-        bbox_points[i]["z"] = float(bbox_points[i]["z"])
+    bbox_points["x_min"] = float(bbox_points["x_min"])
+    bbox_points["y_min"] = float(bbox_points["y_min"])
+    bbox_points["z_min"] = float(bbox_points["z_min"])
+    bbox_points["x_max"] = float(bbox_points["x_max"])
+    bbox_points["y_max"] = float(bbox_points["y_max"])
+    bbox_points["z_max"] = float(bbox_points["z_max"])
     return bbox_points
 
 def restoreConstraints(constraints):
@@ -46,8 +50,8 @@ def restoreIsovalues(isovalues):
 
 @workflow_ong_routes.route('/step1',methods = ['POST'])
 def step1():
-    bbox_points_input = eval(flask.request.form.get('bbox_points'))
-    bbox_points = restoreBboxPoints(bbox_points_input)
+    bbox_points_input = eval(flask.request.form.get('bbox_points').replace('""', '"0"'))
+    bbox_points = restoreBboxPoints(eval(bbox_points_input))
     constraints_input = eval(flask.request.form.get('constraints'))
     constraints = restoreConstraints(constraints_input)
     isovalues_input = flask.request.form.get('isovalues')
@@ -72,11 +76,9 @@ def step1():
 
     # configuring bbox
     bbox = geode.BoundingBox3D()
-    for point in bbox_points:
-        bbox.add_point(geode.Point3D( [ point["x"], point["y"], point["z"]]))
-    if len(bbox_points) < 2:
-        bbox.add_point(geode.Point3D( [ 0, 0, 0 ] ))
-        bbox.add_point(geode.Point3D( [ 8, 17, 11 ] ))
+    bbox.add_point(geode.Point3D( [ bbox_points["x_min"], bbox_points["y_min"], bbox_points["z_min"]]))
+    bbox.add_point(geode.Point3D( [ bbox_points["x_max"], bbox_points["y_max"], bbox_points["z_max"]]))
+
 
 
     # processing depending on function type
