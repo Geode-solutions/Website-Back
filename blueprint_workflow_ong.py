@@ -50,9 +50,15 @@ def restoreIsovalues(isovalues):
 
 @workflow_ong_routes.route('/step1',methods = ['POST'])
 def step1():
-    bbox_points_input = eval(flask.request.form.get('bbox_points').replace('""', '"0"'))
-    bbox_points = restoreBboxPoints(eval(bbox_points_input))
-    constraints_input = eval(flask.request.form.get('constraints'))
+    bbox_points_input = flask.request.form.get('bbox_points')
+    if bbox_points_input == 'undefined':
+        bbox_points = {"x_min":0., "y_min":0., "z_min":0., "x_max":8., "y_max":11., "z_max":17.}
+        logging.info(bbox_points)
+    else:
+        bbox_points = restoreBboxPoints(eval(eval(bbox_points_input).replace('""','"0"')))
+        logging.info(bbox_points)
+
+    constraints_input = eval(flask.request.form.get('constraints').replace('""','"0"'))
     constraints = restoreConstraints(constraints_input)
     isovalues_input = flask.request.form.get('isovalues')
     isovalues = restoreIsovalues(eval(isovalues_input.replace('null', 'None')))
