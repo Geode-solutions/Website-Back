@@ -93,7 +93,7 @@ def test_allowed_objects(client):
     response = client.post(route)
     assert response.status_code == 400
     error_message = response.json["error_message"]
-    assert error_message == "No file sent"
+    assert error_message == "No filename sent"
 
 
 def test_geographic_coordinate_systems(client):

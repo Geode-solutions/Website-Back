@@ -36,20 +36,14 @@ def file_converter_versions():
 @file_converter_routes.route("/allowed_files", methods=["GET"])
 def file_converter_allowed_files():
     extensions = functions.list_all_input_extensions()
-    print(f"{extensions=}")
-
-    for el in functions.geode_objects.objects_list()["PolygonalSurface2D"]["input"]:
-        print(el.list_creators())
-
     return {"status": 200, "extensions": extensions}
 
 
 @file_converter_routes.route("/allowed_objects", methods=["POST"])
 def file_converter_allowed_objects():
-    filename = flask.request.form.get("filename")
-    if filename is None:
-        return flask.make_response({"error_message": "No file sent"}, 400)
-    file_extension = os.path.splitext(filename)[1][1:]
+    array_variables = ["filename"]
+    variables_dict = functions.get_form_variables(flask.request.form, array_variables)
+    file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
     allowed_objects = functions.list_objects(file_extension)
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
@@ -57,68 +51,52 @@ def file_converter_allowed_objects():
 
 @file_converter_routes.route("/output_file_extensions", methods=["POST"])
 def file_converter_output_file_extensions():
-    geode_object = flask.request.form.get("geode_object")
-    if geode_object is None:
-        return flask.make_response({"error_message": "No geode_object sent"}, 400)
-    list = functions.list_output_file_extensions(geode_object)
-
-    return flask.make_response({"output_file_extensions": list}, 200)
+    array_variables = ["geode_object"]
+    variables_dict = functions.get_form_variables(flask.request.form, array_variables)
+    output_file_extensions = functions.list_output_file_extensions(
+        variables_dict["geode_object"]
+    )
+    return flask.make_response({"output_file_extensions": output_file_extensions}, 200)
 
 
 @file_converter_routes.route("/convert_file", methods=["POST"])
 async def file_converter_convert_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
-    geode_object = flask.request.form.get("geode_object")
-    file = flask.request.form.get("file")
-    filename = flask.request.form.get("filename")
-    filesize = flask.request.form.get("filesize")
-    extension = flask.request.form.get("extension")
 
-    if geode_object is None:
-        return flask.make_response(
-            {"name": "Bad Request", "description": "No geode_object sent"}, 400
-        )
-    if file is None:
-        return flask.make_response(
-            {"name": "Bad Request", "description": "No file sent"}, 400
-        )
-    if filename is None:
-        return flask.make_response(
-            {"name": "Bad Request", "description": "No filename sent"}, 400
-        )
-    if filesize is None:
-        return flask.make_response(
-            {"name": "Bad Request", "description": "No filesize sent"}, 400
-        )
-    if extension is None:
-        return flask.make_response(
-            {"name": "Bad Request", "description": "No extension sent"}, 400
-        )
+    array_variables = ["geode_object", "file", "filename", "filesize", "extension"]
+    variables_dict = functions.get_form_variables(flask.request.form, array_variables)
 
-    uploaded_file = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
+    uploaded_file = functions.upload_file(
+        variables_dict["file"],
+        variables_dict["filename"],
+        UPLOAD_FOLDER,
+        variables_dict["filesize"],
+    )
     if not uploaded_file:
         flask.make_response(
             {"name": "Internal Server Error", "description": "File not uploaded"}, 500
         )
 
-    secure_filename = werkzeug.utils.secure_filename(filename)
+    secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])
     file_path = os.path.join(UPLOAD_FOLDER, secure_filename)
-    data = functions.geode_objects.objects_list()[geode_object]["load"](file_path)
+    data = functions.geode_objects.objects_list()[variables_dict["geode_object"]][
+        "load"
+    ](file_path)
     strict_file_name = os.path.splitext(secure_filename)[0]
-    new_file_name = strict_file_name + "." + extension
+    new_file_name = strict_file_name + "." + variables_dict["extension"]
 
     sub_folder = f"{UPLOAD_FOLDER}/{strict_file_name}/"
     if os.path.exists(sub_folder):
         shutil.rmtree(sub_folder)
 
-    functions.geode_objects.objects_list()[geode_object]["save"](
+    functions.geode_objects.objects_list()[variables_dict["geode_object"]]["save"](
         data, os.path.join(UPLOAD_FOLDER, new_file_name).replace("\\", "/")
     )
     mimetype = "application/octet-binary"
 
     list_exceptions = ["triangle", "vtm"]
-    if extension in list_exceptions:
-        if extension == "triangle":
+    if variables_dict["extension"] in list_exceptions:
+        if variables_dict["extension"] == "triangle":
             os.mkdir(sub_folder)
             os.chdir(sub_folder)
             generated_files = f"{UPLOAD_FOLDER}/{strict_file_name}"
@@ -126,7 +104,7 @@ async def file_converter_convert_file():
             shutil.move(generated_files + ".neigh", sub_folder)
             shutil.move(generated_files + ".node", sub_folder)
             os.chdir("..")
-        elif extension == "vtm":
+        elif variables_dict["extension"] == "vtm":
             generated_files = f"{UPLOAD_FOLDER}/{strict_file_name}"
             print(f"{generated_files=}")
             shutil.move(generated_files + ".vtm", sub_folder)
@@ -136,8 +114,8 @@ async def file_converter_convert_file():
         mimetype = "application/zip"
         with zipfile.ZipFile(f"{UPLOAD_FOLDER}/{new_file_name}", "w") as zipObj:
             for folder_name, sub_folders, file_names in os.walk(sub_folder):
-                for filename in file_names:
-                    file_path = os.path.join(folder_name, filename)
+                for variables_dict["filename"] in file_names:
+                    file_path = os.path.join(folder_name, variables_dict["filename"])
                     zipObj.write(file_path, os.path.basename(file_path))
 
     response = flask.send_from_directory(
