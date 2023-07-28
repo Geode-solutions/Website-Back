@@ -99,33 +99,44 @@ async def crs_converter_convert_file():
     variables_dict = functions.get_form_variables(flask.request.form, array_variables)
 
     input_crs = {
-        "authority": input_crs_authority,
-        "code": input_crs_code,
-        "name": input_crs_name,
+        "authority": variables_dict["input_crs_authority"],
+        "code": variables_dict["input_crs_code"],
+        "name": variables_dict["input_crs_name"],
     }
 
     output_crs = {
-        "authority": output_crs_authority,
-        "code": output_crs_code,
-        "name": output_crs_name,
+        "authority": variables_dict["output_crs_authority"],
+        "code": variables_dict["output_crs_code"],
+        "name": variables_dict["output_crs_name"],
     }
 
-    uploaded_file = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
+    uploaded_file = functions.upload_file(
+        variables_dict["file"],
+        variables_dict["filename"],
+        UPLOAD_FOLDER,
+        variables_dict["filesize"],
+    )
     if not uploaded_file:
         flask.make_response(
             {"name": "Internal Server Error", "description": "File not uploaded"}, 500
         )
 
-    secure_filename = werkzeug.utils.secure_filename(filename)
+    secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])
     file_path = os.path.join(UPLOAD_FOLDER, secure_filename).replace("\\", "/")
-    data = geode_objects.objects_list()[geode_object]["load"](file_path)
+    data = geode_objects.objects_list()[variables_dict["geode_object"]]["load"](
+        file_path
+    )
     strict_file_name = os.path.splitext(secure_filename)[0]
-    new_file_name = strict_file_name + "." + extension
+    new_file_name = strict_file_name + "." + variables_dict["extension"]
 
-    functions.asign_geographic_coordinate_system_info(geode_object, data, input_crs)
-    functions.convert_geographic_coordinate_system_info(geode_object, data, output_crs)
+    functions.asign_geographic_coordinate_system_info(
+        variables_dict["geode_object"], data, input_crs
+    )
+    functions.convert_geographic_coordinate_system_info(
+        variables_dict["geode_object"], data, output_crs
+    )
 
-    geode_objects.objects_list()[geode_object]["save"](
+    geode_objects.objects_list()[variables_dict["geode_object"]]["save"](
         data, os.path.join(UPLOAD_FOLDER, new_file_name)
     )
 

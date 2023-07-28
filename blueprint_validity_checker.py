@@ -56,7 +56,12 @@ def validity_checker_upload_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     array_variables = ["file", "filename", "filesize"]
     variables_dict = functions.get_form_variables(flask.request.form, array_variables)
-    uploadedFile = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
+    uploadedFile = functions.upload_file(
+        variables_dict["file"],
+        variables_dict["filename"],
+        UPLOAD_FOLDER,
+        variables_dict["filesize"],
+    )
     if not uploadedFile:
         flask.make_response({"description": "File not uploaded"}, 500)
 

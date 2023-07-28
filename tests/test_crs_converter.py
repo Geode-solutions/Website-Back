@@ -92,8 +92,8 @@ def test_allowed_objects(client):
     # Test without filename
     response = client.post(route)
     assert response.status_code == 400
-    error_message = response.json["error_message"]
-    assert error_message == "No filename sent"
+    description = response.json["description"]
+    assert description == "No filename sent"
 
 
 def test_geographic_coordinate_systems(client):
@@ -110,8 +110,8 @@ def test_geographic_coordinate_systems(client):
     # Test without geode_object
     response = client.post(route)
     assert response.status_code == 400
-    error_message = response.json["error_message"]
-    assert error_message == "No geode_object sent"
+    description = response.json["description"]
+    assert description == "No geode_object sent"
 
 
 def test_output_file_extensions(client):
@@ -147,8 +147,8 @@ def test_output_file_extensions(client):
     # Test without object
     response = client.post(route)
     assert response.status_code == 400
-    error_message = response.json["error_message"]
-    assert error_message == "No geode_object sent"
+    description = response.json["description"]
+    assert description == "No geode_object sent"
 
 
 def test_convert_file(client):

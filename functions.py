@@ -187,9 +187,7 @@ def get_form_variables(form, variables_array):
 
     for variable in variables_array:
         if form.get(variable) is None:
-            raise Exception(
-                name="Bad Request", description=f"No {variable} sent", code=400
-            )
+            flask.abort(400, f"No {variable} sent")
         else:
             variables_dict[variable] = form.get(variable)
     return variables_dict

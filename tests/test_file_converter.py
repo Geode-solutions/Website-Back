@@ -52,8 +52,8 @@ def test_allowed_objects(client):
     # Test without filename
     response = client.post(f"{base_route}/allowed_objects")
     assert response.status_code == 400
-    error_message = response.json["error_message"]
-    assert error_message == "No file sent"
+    description = response.json["description"]
+    assert description == "No filename sent"
 
 
 def test_output_file_extensions(client):
@@ -70,8 +70,8 @@ def test_output_file_extensions(client):
     # Test without object
     response = client.post(f"{base_route}/output_file_extensions")
     assert response.status_code == 400
-    error_message = response.json["error_message"]
-    assert error_message == "No geode_object sent"
+    description = response.json["description"]
+    assert description == "No geode_object sent"
 
 
 def test_convert_file(client):
