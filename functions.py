@@ -10,7 +10,6 @@ import pkg_resources
 
 import geode_objects
 import opengeode_geosciences as og_gs
-import json
 
 
 def list_all_input_extensions(crs=False):

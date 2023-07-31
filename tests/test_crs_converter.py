@@ -472,3 +472,4 @@ def test_convert_file(client):
                                     assert response.status_code == 400
                                     error_description = response.json["description"]
                                     assert error_description == "No extension sent"
+

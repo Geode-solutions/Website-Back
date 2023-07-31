@@ -16,7 +16,7 @@ def test_versions(client):
     assert type(versions) is list
     for version in versions:
         assert type(version) is dict
-
+        
 
 def test_allowed_files(client):
     response = client.get(f"{base_route}/allowed_files")
