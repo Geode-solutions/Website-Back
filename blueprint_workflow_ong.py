@@ -89,43 +89,43 @@ def step1():
     variables = geode_functions.get_form_variables(flask.request.form,['bbox_points','constraints','isovalues','function_type','cell_size'])
 
     if variables['bbox_points'] == 'undefined':
-        variables['bbox_points'] = {"x_min":0., "y_min":0., "z_min":0., "x_max":8., "y_max":11., "z_max":17.}
+        bbox_points = {"x_min":0., "y_min":0., "z_min":0., "x_max":8., "y_max":11., "z_max":17.}
     else:
-        variables['bbox_points'] = restoreBboxPoints(eval(eval(variables['bbox_points']).replace('""','"0"')))
-    variables['constraints'] = restoreConstraints(eval(variables['constraints']))
-    variables['isovalues'] = restoreIsovalues(eval(variables['isovalues'].replace('null', '"0"')))
+        bbox_points = restoreBboxPoints(eval(eval(variables['bbox_points']).replace('""','"0"')))
+    constraints = restoreConstraints(eval(variables['constraints']))
+    isovalues = restoreIsovalues(eval(variables['isovalues'].replace('null', '"0"')))
     if variables['cell_size'] == '':
-        variables['cell_size'] = 1.
+        cell_size = 1.
     else:
-        variables['cell_size'] = float(variables['cell_size'])
+        cell_size = float(variables['cell_size'])
     
     data_folder = "/server/data/"
 
     data_constraints = geode_num.DataPointsManager3D()
 
-    for constraint in variables['constraints']:
+    for constraint in constraints:
         data_constraints.add_data_point( geode.Point3D( [ constraint["x"], constraint["y"], constraint["z"] ] ), constraint["value"], constraint["weight"] )
 
     # configuring bbox
     bbox = geode.BoundingBox3D()
-    bbox.add_point(geode.Point3D( [ variables['bbox_points']["x_min"], variables['bbox_points']["y_min"], variables['bbox_points']["z_min"]]))
-    bbox.add_point(geode.Point3D( [ variables['bbox_points']["x_max"], variables['bbox_points']["y_max"], variables['bbox_points']["z_max"]]))
+    bbox.add_point(geode.Point3D( [ bbox_points["x_min"], bbox_points["y_min"], bbox_points["z_min"]]))
+    bbox.add_point(geode.Point3D( [ bbox_points["x_max"], bbox_points["y_max"], bbox_points["z_max"]]))
 
 
 
     # processing depending on function type
     if variables['function_type'] == "Laplacian":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_laplacian_minimization )
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_laplacian_minimization )
     elif variables['function_type'] ==  "Hessian":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_hessian_minimization )
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_hessian_minimization )
     elif variables['function_type'] ==  "Curvature":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_curvature_minimization )
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_curvature_minimization )
     elif variables['function_type'] ==  "Boundary free - Laplacian":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_laplacian_minimization )
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_laplacian_minimization )
     elif variables['function_type'] ==  "Boundary free - Hessian":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_hessian_minimization )
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_hessian_minimization )
     elif variables['function_type'] == "Boundary free - Curvature":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_curvature_minimization )
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_curvature_minimization )
     else:
         return flask.make_response({ 'name': 'Bad Request','description': 'Wrong scalar function type' }, 400)
 
@@ -135,7 +135,7 @@ def step1():
     expliciter = geode_imp.RegularGridScalarFunctionExpliciter3D( function_computer.grid_with_functions(), scalar_function_name )
 
     # adding isovalues
-    expliciter.add_scalar_isovalues( variables['isovalues'] )
+    expliciter.add_scalar_isovalues( isovalues )
 
     # computing implicit model
     brep = expliciter.build_brep()
@@ -153,19 +153,19 @@ def step2():
 
     variables = geode_functions.get_form_variables(flask.request.form,['axis','direction'])
     if variables['axis'] == '':
-        variables['axis'] = 0.
+        axis = 0.
     else:
-        variables['axis'] = int(variables['axis'])
+        axis = int(variables['axis'])
     if variables['direction'] == '':
-        variables['direction'] = 2.
+        direction = 2.
     else:
-        variables['direction'] = float(variables['direction'])
+        direction = float(variables['direction'])
 
     data_folder = "/server/data/"
 
     implicit_model = og_geosciences.ImplicitStructuralModel( geode_functions.load("StructuralModel", data_folder + "implicit.og_strm"))
 
-    extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,variables['axis'],variables['direction'])
+    extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,axis,direction)
 
     geode_functions.save(extracted_cross_section, "CrossSection", data_folder, "cross_section.og_xsctn")
 
@@ -176,16 +176,16 @@ def step2():
 def step3():
     variables = geode_functions.get_form_variables(flask.request.form,['metric'])
     if variables['metric'] == '':
-        variables['metric'] = 1.
+        metric = 1.
     else:
-        variables['metric'] = float(variables['metric'])
+        metric = float(variables['metric'])
 
     data_folder = "/server/data/"
 
     extracted_cross_section = og_geosciences.load_cross_section(data_folder + "cross_section.og_xsctn")
 
-    metric = geode_common.ConstantMetric2D( metric )
-    remeshed_section,_ = geode_simp.simplex_remesh_section(extracted_cross_section,metric)
+    constant_metric = geode_common.ConstantMetric2D( metric )
+    remeshed_section,_ = geode_simp.simplex_remesh_section(extracted_cross_section,constant_metric)
 
     geode_functions.save(remeshed_section, "Section", data_folder, "section.vtm")
 

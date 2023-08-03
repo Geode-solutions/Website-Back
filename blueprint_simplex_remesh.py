@@ -37,8 +37,8 @@ def sendBRep():
 @simplex_remesh_routes.route('/remesh',methods=['POST'])
 def remesh():
     variables = geode_functions.get_form_variables(flask.request.form,['globalMetric','surfaceMetrics','blockMetrics'])
-    variables['surfaceMetrics'] = eval(variables['surfaceMetrics'])
-    variables['blockMetrics'] = eval(variables['blockMetrics'])
+    surfaceMetrics = eval(variables['surfaceMetrics'])
+    blockMetrics = eval(variables['blockMetrics'])
 
     data_folder = "/server/data/"
 
@@ -54,12 +54,12 @@ def remesh():
 
     
 
-    for id in list(variables['surfaceMetrics'].keys()):
+    for id in list(surfaceMetrics.keys()):
         tmp_surface = brep.surface(geode.uuid(id))
-        brep_metric.set_surface_metric(tmp_surface,float(variables['surfaceMetrics'][id]))
-    for id in list(variables['blockMetrics'].keys()):
+        brep_metric.set_surface_metric(tmp_surface,float(surfaceMetrics[id]))
+    for id in list(blockMetrics.keys()):
         tmp_block = brep.block(geode.uuid(id))
-        brep_metric.set_block_metric(tmp_block,float(variables['blockMetrics'][id]))
+        brep_metric.set_block_metric(tmp_block,float(blockMetrics[id]))
     
     metric = brep_metric.build_metric()
 
