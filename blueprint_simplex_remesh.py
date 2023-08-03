@@ -6,7 +6,7 @@ import opengeode_geosciences as og_geosciences
 import geode_numerics as geode_num
 import geode_implicit as geode_imp
 import geode_simplex as geode_simp
-import geode_common
+from opengeodeweb_back import geode_functions, geode_objects
 
 import flask
 import flask_cors
@@ -39,6 +39,11 @@ def remesh():
     globalMetric = flask.request.form.get("globalMetric")
     surfaceMetrics = eval(flask.request.form.get("surfaceMetrics"))
     blockMetrics = eval(flask.request.form.get("blockMetrics"))
+
+    variables = geode_functions.get_form_variables(flask.request.form,['globalMetric','surfaceMetrics','blockMetrics'])
+    variables['surfaceMetrics'] = eval(variables['surfaceMetrics'])
+    variables['blockMetrics'] = eval(variables['blockMetrics'])
+
     output_folder = "./data/"
 
     brep_input = geode.load_brep(output_folder + "corbi.og_brep")
