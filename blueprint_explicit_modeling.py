@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 explicit_modeling_routes = flask.Blueprint('explicit_modeling_routes', __name__)
 flask_cors.CORS(explicit_modeling_routes)
-@explicit_modeling_routes.route('/',methods=['POST'])
+@explicit_modeling_routes.route('/get_brep_stats',methods=['POST'])
 def sendBRepStats():
     data_folder = "/server/data/"
     id1 = geode_functions.load("TriangulatedSurface3D", data_folder + 'ID1.og_tsf3d')
