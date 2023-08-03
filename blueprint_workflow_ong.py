@@ -94,7 +94,7 @@ def step1():
     variables['isovalues'] = restoreIsovalues(eval(variables['isovalues'].replace('null', 'None')))
     variables['cell_size'] = float(variables['cell_size'])
 
-    output_folder = "./data/"
+    data_folder = "/server/data/"
 
     data_constraints = geode_num.DataPointsManager3D()
 
@@ -138,7 +138,7 @@ def step1():
 
 
     # saving implicit model
-    og_geosciences.save_structural_model(implicit_model,output_folder + "implicit.og_strm")
+    geode_functions.save(implicit_model, "StructuralModel", data_folder, "implicit.og_strm")
     
     return flask.make_response({'stepOneSuccessful': "yes" }, 200)
 
@@ -150,14 +150,13 @@ def step2():
     variables['axis'] = int(variables['axis'])
     variables['direction'] = float(variables['direction'])
 
-    output_folder = "./data/"
+    data_folder = "/server/data/"
 
-    # loading implicit model
-    implicit_model = og_geosciences.ImplicitStructuralModel( og_geosciences.load_structural_model(output_folder + "implicit.og_strm"))
+    implicit_model = og_geosciences.ImplicitStructuralModel( geode_functions.load("StructuralModel", data_folder + "implicit.og_strm"))
 
     extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,variables['axis'],variables['direction'])
 
-    og_geosciences.save_cross_section(extracted_cross_section,output_folder + "cross_section.og_xsctn")
+    geode_functions.save(extracted_cross_section, "CrossSection", data_folder, "cross_section.og_xsctn")
 
     return flask.make_response({'stepTwoSuccessful': "yes" }, 200)
 
@@ -167,17 +166,13 @@ def step3():
     variables = geode_functions.get_form_variables(flask.request.form,['metric'])
     variables['metric'] = float(variables['metric'])
 
-    output_folder = "./data/"
+    data_folder = "./data/"
 
-    if metric is None or metric < 0 or metric > 5:
-        return flask.make_response({ 'name': 'Bad Request','description': 'Wrong metric posted' }, 400)
-
-    extracted_cross_section = og_geosciences.load_cross_section(output_folder + "cross_section.og_xsctn")
+    extracted_cross_section = og_geosciences.load_cross_section(data_folder + "cross_section.og_xsctn")
 
     metric = geode_common.ConstantMetric2D( metric )
     remeshed_section,_ = geode_simp.simplex_remesh_section(extracted_cross_section,metric)
 
-    # saving objects
-    geode.save_section(remeshed_section,output_folder + 'section.vtm')
+    geode_functions.save(remeshed_section, "Section", data_folder, "section.vtm")
 
     return flask.make_response({'stepThreeSuccessful': "yes" }, 200)

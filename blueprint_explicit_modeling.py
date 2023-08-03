@@ -18,11 +18,11 @@ explicit_modeling_routes = flask.Blueprint('explicit_modeling_routes', __name__)
 flask_cors.CORS(explicit_modeling_routes)
 @explicit_modeling_routes.route('/',methods=['POST'])
 def sendBRepStats():
-    data_folder = "./data/"
-    id1 = geode.load_triangulated_surface3D(data_folder + 'ID1.og_tsf3d')
-    id2 = geode.load_triangulated_surface3D(data_folder + 'ID2.og_tsf3d')
-    id3 = geode.load_triangulated_surface3D(data_folder + 'ID3.og_tsf3d')
-
+    data_folder = "/server/data/"
+    id1 = geode_functions.load("TriangulatedSurface3D", data_folder + 'ID1.og_tsf3d')
+    id2 = geode_functions.load("TriangulatedSurface3D", data_folder + 'ID2.og_tsf3d')
+    id3 = geode_functions.load("TriangulatedSurface3D", data_folder + 'ID3.og_tsf3d')
+    
     bbox = id1.bounding_box()
     bbox.add_box(id2.bounding_box())
     bbox.add_box(id3.bounding_box())
@@ -40,6 +40,6 @@ def sendBRepStats():
     nb_surfaces = brep_explicit.nb_surfaces()
     nb_blocks = brep_explicit.nb_blocks()
 
-    geode.save_brep(brep_explicit,data_folder + 'explicit_brep.og_brep')
+    geode_functions.save(brep_explicit, "BRep", data_folder, "explicit_brep.og_brep")
 
     return flask.jsonify(nb_corners=nb_corners, nb_lines=nb_lines, nb_surfaces=nb_surfaces, nb_blocks=nb_blocks)
