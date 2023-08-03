@@ -3,10 +3,8 @@ import flask
 import flask_cors
 import os
 import werkzeug
-import functions
 import zipfile
-import geode_objects
-
+from opengeodeweb_back import geode_functions, geode_objects
 
 crs_converter_routes = flask.Blueprint('crs_converter_routes', __name__)
 flask_cors.CORS(crs_converter_routes)
@@ -14,22 +12,22 @@ flask_cors.CORS(crs_converter_routes)
 
 @crs_converter_routes.before_request
 def before_request():
-    functions.create_lock_file()
+    geode_functions.create_lock_file()
 
 @crs_converter_routes.teardown_request
 def teardown_request(exception):
-    functions.remove_lock_file()
-    functions.create_time_file()
+    geode_functions.remove_lock_file()
+    geode_functions.create_time_file()
 
 @crs_converter_routes.route('/versions', methods=['GET'])
 def crs_converter_versions():
     list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO']
     
-    return flask.make_response({'versions': functions.get_versions(list_packages)}, 200)
+    return flask.make_response({'versions': geode_functions.get_versions(list_packages)}, 200)
 
 @crs_converter_routes.route('/allowed_files', methods=['GET'])
 def crs_converter_allowed_files():
-    extensions = functions.list_all_input_extensions()
+    extensions = geode_functions.list_all_input_extensions()
     
     return {'status': 200, 'extensions': extensions}
 
@@ -39,7 +37,7 @@ def crs_converter_allowed_objects():
     if filename is None:
         return flask.make_response({'error_message': 'No file sent'}, 400)
     file_extension = os.path.splitext(filename)[1][1:]
-    allowed_objects = functions.list_objects(file_extension)
+    allowed_objects = geode_functions.list_objects(file_extension)
     
     return flask.make_response({'allowed_objects': allowed_objects}, 200)
 
@@ -49,7 +47,7 @@ def crs_converter_geographic_coordinate_systems():
     if geode_object is None:
         return flask.make_response({'error_message': 'No geode_object sent'}, 400)
         
-    infos = functions.get_geographic_coordinate_systems(geode_object)
+    infos = geode_functions.get_geographic_coordinate_systems(geode_object)
     crs_list = []
 
     for info in infos:
@@ -66,7 +64,7 @@ def crs_converter_output_file_extensions():
     geode_object = flask.request.form.get('geode_object')
     if geode_object is None:
         return flask.make_response({'error_message': 'No geode_object sent'}, 400)
-    output_file_extensions = functions.list_output_file_extensions(geode_object)
+    output_file_extensions = geode_functions.list_output_file_extensions(geode_object)
 
     return flask.make_response({'output_file_extensions': output_file_extensions}, 200)
 
@@ -120,7 +118,7 @@ async def crs_converter_convert_file():
         'name': output_crs_name
     }
 
-    uploaded_file = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
+    uploaded_file = geode_functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
     if not uploaded_file:
         flask.make_response({ 'name': 'Internal Server Error','description': 'File not uploaded' }, 500)
 
@@ -130,8 +128,8 @@ async def crs_converter_convert_file():
     strict_file_name = os.path.splitext(secure_filename)[0]
     new_file_name = strict_file_name + '.' + extension
 
-    functions.asign_geographic_coordinate_system_info(geode_object, data, input_crs)
-    functions.convert_geographic_coordinate_system_info(geode_object, data, output_crs)
+    geode_functions.asign_geographic_coordinate_system_info(geode_object, data, input_crs)
+    geode_functions.convert_geographic_coordinate_system_info(geode_object, data, output_crs)
 
     geode_objects.objects_list()[geode_object]['save'](data, os.path.join(UPLOAD_FOLDER, new_file_name))
 

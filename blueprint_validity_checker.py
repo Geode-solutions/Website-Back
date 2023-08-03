@@ -1,9 +1,7 @@
 import flask
 import flask_cors
 import os
-import functions
-import geode_objects
-import inspector_functions
+from opengeodeweb_back import geode_functions, geode_objects, inspector_functions
 import werkzeug
 
 validity_checker_routes = flask.Blueprint('validity_checker_routes', __name__)
@@ -11,22 +9,22 @@ flask_cors.CORS(validity_checker_routes)
 
 @validity_checker_routes.before_request
 def before_request():
-    functions.create_lock_file()
+    geode_functions.create_lock_file()
 
 @validity_checker_routes.teardown_request
 def teardown_request(exception):
-    functions.remove_lock_file()
-    functions.create_time_file()
+    geode_functions.remove_lock_file()
+    geode_functions.create_time_file()
 
 @validity_checker_routes.route('/versions', methods=['GET'])
 def validity_checker_versions():
     list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO', 'OpenGeode-Inspector']
     
-    return flask.make_response({'versions': functions.get_versions(list_packages)}, 200)
+    return flask.make_response({'versions': geode_functions.get_versions(list_packages)}, 200)
 
 @validity_checker_routes.route('/allowed_files', methods=['GET'])
 def validity_checker_allowed_files():
-    extensions = functions.list_all_input_extensions()
+    extensions = geode_functions.list_all_input_extensions()
     
     return flask.make_response({'extensions': extensions}, 200)
 
@@ -36,7 +34,7 @@ def validity_checker_allowed_objects():
     if filename is None:
         return flask.make_response({'description': 'No file sent'}, 400)
     file_extension = os.path.splitext(filename)[1][1:]
-    allowed_objects = functions.list_objects(file_extension)
+    allowed_objects = geode_functions.list_objects(file_extension)
     
     return flask.make_response({'allowed_objects': allowed_objects}, 200)
 
@@ -53,7 +51,7 @@ def validity_checker_upload_file():
     if filesize is None:
         return flask.make_response({'description': 'No filesize sent'}, 400)
         
-    uploadedFile = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
+    uploadedFile = geode_functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
     if not uploadedFile:
         flask.make_response({'description': 'File not uploaded'}, 500)
         

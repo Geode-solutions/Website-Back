@@ -14,7 +14,7 @@ import blueprint_workflow_ong
 import blueprint_simplex_remesh
 import blueprint_explicit_modeling
 
-import functions
+from opengeodeweb_back import geode_functions
 
 from werkzeug.exceptions import HTTPException
 
@@ -78,7 +78,7 @@ app.register_blueprint(blueprint_simplex_remesh.simplex_remesh_routes, url_prefi
 app.register_blueprint(blueprint_explicit_modeling.explicit_modeling_routes, url_prefix=f'/{ID}/explicitModeling')
 
 if FLASK_DEBUG == False:
-    functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
+    geode_functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
 flask_cors.CORS(app, origins=ORIGINS)
 
 @app.errorhandler(HTTPException)

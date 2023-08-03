@@ -3,7 +3,7 @@ import flask
 import flask_cors
 import os
 import werkzeug
-import functions
+from opengeodeweb_back import geode_functions
 import zipfile
 
 file_converter_routes = flask.Blueprint('file_converter_routes', __name__)
@@ -12,22 +12,22 @@ flask_cors.CORS(file_converter_routes)
 
 @file_converter_routes.before_request
 def before_request():
-    functions.create_lock_file()
+    geode_functions.create_lock_file()
 
 @file_converter_routes.teardown_request
 def teardown_request(exception):
-    functions.remove_lock_file()
-    functions.create_time_file()
+    geode_functions.remove_lock_file()
+    geode_functions.create_time_file()
 
 @file_converter_routes.route('/versions', methods=['GET'])
 def file_converter_versions():
     list_packages = ['OpenGeode-core', 'OpenGeode-IO', 'OpenGeode-Geosciences', 'OpenGeode-GeosciencesIO']
     
-    return flask.make_response({'versions': functions.get_versions(list_packages)}, 200)
+    return flask.make_response({'versions': geode_functions.get_versions(list_packages)}, 200)
 
 @file_converter_routes.route('/allowed_files', methods=['GET'])
 def file_converter_allowed_files():
-    extensions = functions.list_all_input_extensions()
+    extensions = geode_functions.list_all_input_extensions()
     
     return {'status': 200, 'extensions': extensions}
 
@@ -37,7 +37,7 @@ def file_converter_allowed_objects():
     if filename is None:
         return flask.make_response({'error_message': 'No file sent'}, 400)
     file_extension = os.path.splitext(filename)[1][1:]
-    allowed_objects = functions.list_objects(file_extension)
+    allowed_objects = geode_functions.list_objects(file_extension)
     
     return flask.make_response({'allowed_objects': allowed_objects}, 200)
 
@@ -46,7 +46,7 @@ def file_converter_output_file_extensions():
     geode_object = flask.request.form.get('geode_object')
     if geode_object is None:
         return flask.make_response({'error_message': 'No geode_object sent'}, 400)
-    list = functions.list_output_file_extensions(geode_object)
+    list = geode_functions.list_output_file_extensions(geode_object)
     
     return flask.make_response({'output_file_extensions': list}, 200)
 
@@ -70,13 +70,13 @@ async def file_converter_convert_file():
     if extension is None:
         return flask.make_response({ 'name': 'Bad Request','description': 'No extension sent' }, 400)
     
-    uploaded_file = functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
+    uploaded_file = geode_functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
     if not uploaded_file:
         flask.make_response({ 'name': 'Internal Server Error','description': 'File not uploaded' }, 500)
 
     secure_filename = werkzeug.utils.secure_filename(filename)
     file_path = os.path.join(UPLOAD_FOLDER, secure_filename)
-    data = functions.geode_objects.objects_list()[geode_object]['load'](file_path)
+    data = geode_functions.geode_objects.objects_list()[geode_object]['load'](file_path)
     strict_file_name = os.path.splitext(secure_filename)[0]
     new_file_name = strict_file_name + '.' + extension
 
@@ -84,7 +84,7 @@ async def file_converter_convert_file():
     if os.path.exists(sub_folder):
         shutil.rmtree(sub_folder)
 
-    functions.geode_objects.objects_list()[geode_object]['save'](data, os.path.join(UPLOAD_FOLDER, new_file_name))
+    geode_functions.geode_objects.objects_list()[geode_object]['save'](data, os.path.join(UPLOAD_FOLDER, new_file_name))
     mimetype = 'application/octet-binary'
 
     list_exceptions = ['triangle', 'vtm']

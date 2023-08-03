@@ -86,67 +86,51 @@ def sendConstraints():
     return flask.jsonify(constraints=constraints)
 
 @workflow_ong_routes.route('/step1',methods = ['POST'])
-def step1():
-    bbox_points_input = flask.request.form.get('bbox_points')
-    if bbox_points_input == 'undefined':
-        bbox_points = {"x_min":0., "y_min":0., "z_min":0., "x_max":8., "y_max":11., "z_max":17.}
-    else:
-        bbox_points = restoreBboxPoints(eval(eval(bbox_points_input).replace('""','"0"')))
+def step1(): 
 
+    variables = geode_functions.get_form_variables(flask.request.form,['bbox_points','constraints','isovalues','function_type','cell_size'])
+    variables['bbox_points'] = restoreBboxPoints(eval(eval(variables['bbox_points'].replace('""','"0"'))))
+    variables['constraints'] = restoreConstraints(eval(variables['constraints'].replace('""','"0"')))
+    variables['isovalues'] = restoreIsovalues(eval(variables['isovalues'].replace('null', 'None')))
+    variables['cell_size'] = float(variables['cell_size'])
 
-    constraints_input = eval(flask.request.form.get('constraints').replace('""','"0"'))
-    constraints = restoreConstraints(constraints_input)
-
-    isovalues_input = flask.request.form.get('isovalues')
-    isovalues = restoreIsovalues(eval(isovalues_input.replace('null', 'None')))
-    if isovalues == -1:
-        return flask.make_response({ 'name': 'Bad Request','description': 'Isovalue field(s) unfilled' }, 400)
-    
-    function_type = flask.request.form.get('function_type')
-    if function_type == None:
-        return flask.make_response({ 'name': 'Bad Request','description': 'Wrong scalar function type' }, 400)
-
-    cell_size = float(flask.request.form.get('cell_size'))
-    if cell_size is None or cell_size < 0:
-        return flask.make_response({ 'name': 'Bad Request','description': 'Wrong cell size posted' }, 400)
-    
     output_folder = "./data/"
 
     data_constraints = geode_num.DataPointsManager3D()
 
-    for constraint in constraints:
+    for constraint in variables['constraints']:
         data_constraints.add_data_point( geode.Point3D( [ constraint["x"], constraint["y"], constraint["z"] ] ), constraint["value"], constraint["weight"] )
 
     # configuring bbox
     bbox = geode.BoundingBox3D()
-    bbox.add_point(geode.Point3D( [ bbox_points["x_min"], bbox_points["y_min"], bbox_points["z_min"]]))
-    bbox.add_point(geode.Point3D( [ bbox_points["x_max"], bbox_points["y_max"], bbox_points["z_max"]]))
+    bbox.add_point(geode.Point3D( [ variables['bbox_points']["x_min"], variables['bbox_points']["y_min"], variables['bbox_points']["z_min"]]))
+    bbox.add_point(geode.Point3D( [ variables['bbox_points']["x_max"], variables['bbox_points']["y_max"], variables['bbox_points']["z_max"]]))
 
 
 
     # processing depending on function type
-    if function_type == "Laplacian":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_laplacian_minimization )
-    elif function_type ==  "Hessian":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_hessian_minimization )
-    elif function_type ==  "Curvature":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_curvature_minimization )
-    elif function_type ==  "Boundary free - Laplacian":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_laplacian_minimization )
-    elif function_type ==  "Boundary free - Hessian":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_hessian_minimization )
-    elif function_type == "Boundary free - Curvature":
-        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_curvature_minimization )
+    if variables['function_type'] == "Laplacian":
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_laplacian_minimization )
+    elif variables['function_type'] ==  "Hessian":
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_hessian_minimization )
+    elif variables['function_type'] ==  "Curvature":
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_curvature_minimization )
+    elif variables['function_type'] ==  "Boundary free - Laplacian":
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_laplacian_minimization )
+    elif variables['function_type'] ==  "Boundary free - Hessian":
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_hessian_minimization )
+    elif variables['function_type'] == "Boundary free - Curvature":
+        function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, variables['cell_size'], geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_curvature_minimization )
     else:
         return flask.make_response({ 'name': 'Bad Request','description': 'Wrong scalar function type' }, 400)
 
-    scalar_function_name = function_type
+    scalar_function_name = variables['function_type']
     function_computer.compute_scalar_function(scalar_function_name)
     # computing expliciter
     expliciter = geode_imp.RegularGridScalarFunctionExpliciter3D( function_computer.grid_with_functions(), scalar_function_name )
 
     # adding isovalues
-    expliciter.add_scalar_isovalues( isovalues )
+    expliciter.add_scalar_isovalues( variables['isovalues'] )
 
     # computing implicit model
     brep = expliciter.build_brep()
@@ -161,21 +145,17 @@ def step1():
 
 @workflow_ong_routes.route('/step2',methods=['POST'])
 def step2():
-    axis = int(flask.request.form.get('axis'))
-    direction = float(flask.request.form.get('direction'))
 
+    variables = geode_functions.get_form_variables(flask.request.form,['axis','direction'])
+    variables['axis'] = int(variables['axis'])
+    variables['direction'] = float(variables['direction'])
 
     output_folder = "./data/"
-
-    if axis is None or axis < 0 or axis > 5:
-        return flask.make_response({ 'name': 'Bad Request','description': 'Wrong axis posted' }, 400)
-    if direction is None or direction < 0 or direction > 5:
-        return flask.make_response({ 'name': 'Bad Request','description': 'Wrong direction posted' }, 400)
 
     # loading implicit model
     implicit_model = og_geosciences.ImplicitStructuralModel( og_geosciences.load_structural_model(output_folder + "implicit.og_strm"))
 
-    extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,axis,direction)
+    extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,variables['axis'],variables['direction'])
 
     og_geosciences.save_cross_section(extracted_cross_section,output_folder + "cross_section.og_xsctn")
 
@@ -184,7 +164,9 @@ def step2():
 
 @workflow_ong_routes.route('/step3',methods=['POST'])
 def step3():
-    metric = float(flask.request.form.get("metric"))
+    variables = geode_functions.get_form_variables(flask.request.form,['metric'])
+    variables['metric'] = float(variables['metric'])
+
     output_folder = "./data/"
 
     if metric is None or metric < 0 or metric > 5:
