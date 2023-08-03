@@ -31,7 +31,7 @@ def restoreBboxPoints(bbox_points):
 
 def restoreConstraints(constraints):
     for i in range(len(constraints)):
-        constraints[i] = eval(constraints[i])
+        constraints[i] = eval(constraints[i].replace('""','"0"'))
         constraints[i]["x"] = float(constraints[i]["x"])
         constraints[i]["y"] = float(constraints[i]["y"])
         constraints[i]["z"] = float(constraints[i]["z"])
@@ -41,8 +41,6 @@ def restoreConstraints(constraints):
 
 def restoreIsovalues(isovalues):
     for i in range(len(isovalues)):
-        if isovalues[i] == None:
-            return -1
         isovalues[i] = float(isovalues[i])
     if len(isovalues)==0:
         return [0,1,2]
@@ -89,11 +87,18 @@ def sendConstraints():
 def step1(): 
 
     variables = geode_functions.get_form_variables(flask.request.form,['bbox_points','constraints','isovalues','function_type','cell_size'])
-    variables['bbox_points'] = restoreBboxPoints(eval(eval(variables['bbox_points'].replace('""','"0"'))))
-    variables['constraints'] = restoreConstraints(eval(variables['constraints'].replace('""','"0"')))
-    variables['isovalues'] = restoreIsovalues(eval(variables['isovalues'].replace('null', 'None')))
-    variables['cell_size'] = float(variables['cell_size'])
 
+    if variables['bbox_points'] == 'undefined':
+        variables['bbox_points'] = {"x_min":0., "y_min":0., "z_min":0., "x_max":8., "y_max":11., "z_max":17.}
+    else:
+        variables['bbox_points'] = restoreBboxPoints(eval(eval(variables['bbox_points']).replace('""','"0"')))
+    variables['constraints'] = restoreConstraints(eval(variables['constraints']))
+    variables['isovalues'] = restoreIsovalues(eval(variables['isovalues'].replace('null', '"0"')))
+    if variables['cell_size'] == '':
+        variables['cell_size'] = 1.
+    else:
+        variables['cell_size'] = float(variables['cell_size'])
+    
     data_folder = "/server/data/"
 
     data_constraints = geode_num.DataPointsManager3D()
@@ -147,8 +152,14 @@ def step1():
 def step2():
 
     variables = geode_functions.get_form_variables(flask.request.form,['axis','direction'])
-    variables['axis'] = int(variables['axis'])
-    variables['direction'] = float(variables['direction'])
+    if variables['axis'] == '':
+        variables['axis'] = 0.
+    else:
+        variables['axis'] = int(variables['axis'])
+    if variables['direction'] == '':
+        variables['direction'] = 2.
+    else:
+        variables['direction'] = float(variables['direction'])
 
     data_folder = "/server/data/"
 
@@ -164,9 +175,12 @@ def step2():
 @workflow_ong_routes.route('/step3',methods=['POST'])
 def step3():
     variables = geode_functions.get_form_variables(flask.request.form,['metric'])
-    variables['metric'] = float(variables['metric'])
+    if variables['metric'] == '':
+        variables['metric'] = 1.
+    else:
+        variables['metric'] = float(variables['metric'])
 
-    data_folder = "./data/"
+    data_folder = "/server/data/"
 
     extracted_cross_section = og_geosciences.load_cross_section(data_folder + "cross_section.og_xsctn")
 

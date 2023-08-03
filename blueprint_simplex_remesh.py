@@ -42,6 +42,8 @@ def remesh():
 
     data_folder = "/server/data/"
 
+    brep = geode_functions.load("BRep", data_folder + "corbi.og_brep")
+    brep_metric = geode_simp.BRepMetricConstraints(brep)
 
     if (variables['globalMetric'] != "undefined") and (10 <= float(variables['globalMetric']) <= 300):
         brep_metric.set_default_metric(float(variables['globalMetric']))
@@ -50,8 +52,7 @@ def remesh():
     else:
         return flask.make_response({ 'name': 'Bad Request','description': 'Wrong metric value, should be between 10 and 300' }, 400)
 
-    brep = geode_functions.load("BRep", data_folder + "corbi.og_brep")
-    brep_metric = geode_simp.BRepMetricConstraints(brep)
+    
 
     for id in list(variables['surfaceMetrics'].keys()):
         tmp_surface = brep.surface(geode.uuid(id))
