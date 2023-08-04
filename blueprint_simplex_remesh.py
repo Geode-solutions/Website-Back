@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 
 simplex_remesh_routes = flask.Blueprint('simplex_remesh_routes', __name__)
 flask_cors.CORS(simplex_remesh_routes)
-@simplex_remesh_routes.route('/get_brep_info',methods=['POST'])
+@simplex_remesh_routes.route('/get_brep_info',methods=['GET'])
 def sendBRepInfo():
     data_folder = "/server/data/"
     brep = geode_functions.load("BRep", data_folder + "corbi.og_brep")

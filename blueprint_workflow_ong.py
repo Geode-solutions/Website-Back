@@ -48,7 +48,7 @@ def restoreIsovalues(isovalues):
     return isovalues
 
 
-@workflow_ong_routes.route('/get_constraints',methods = ['POST'])
+@workflow_ong_routes.route('/get_constraints',methods = ['GET'])
 def sendConstraints():
     constraints = "["
     constraints += str( [ 2.5, 1, 2 , 0, 20 ]) + ","
