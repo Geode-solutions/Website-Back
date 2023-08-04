@@ -48,38 +48,28 @@ def restoreIsovalues(isovalues):
     return isovalues
 
 
-@workflow_ong_routes.route('/get_constraints',methods = ['GET'])
+@workflow_ong_routes.route('/get_constraints',methods = ['POST'])
 def sendConstraints():
     constraints = "["
-    constraints += str( [ 2.5, 1, 2 , 0, 20 ]) + ","
-    constraints += str( [ 3.5, 2, 3, 0, 20 ]) + ","
-    constraints += str( [ 6, 3.5, 6.5, 0, 20 ]) + ","
-    constraints += str( [ 4, 6.5, 5.9, 0, 20 ]) + ","  
-    constraints += str( [ 6, 12, 2.5, 0, 20 ]) + ","  
-    constraints += str( [ 3, 11.5, 2, 0, 20 ]) + ","  
-    constraints += str( [ 7, 16, 3, 0, 20 ]) + ","  
-    constraints += str( [ 3, 15.5, 3.5, 0, 20 ]) + ","  
-    constraints += str( [ 1, 14, 6, 0, 20 ]) + ","  
 
-    constraints += str( [ 3.5, 2, 4, 1, 20 ]) + ","  
-    constraints += str( [ 5.5, 3.5, 7.5, 1, 20 ]) + ","  
-    constraints += str( [ 2.5, 1, 3, 1, 20 ]) + ","  
-    constraints += str( [ 4, 6.5, 8, 1, 20 ]) + ","  
-    constraints += str( [ 7, 12, 3, 1, 20 ]) + ","  
-    constraints += str( [ 1, 11.5, 5, 1, 20 ]) + ","  
-    constraints += str( [ 7, 16, 4, 1, 20 ]) + ","  
-    constraints += str( [ 3, 15.5, 4.5, 1, 20 ]) + ","  
-    constraints += str( [ 1, 14, 7, 1, 20 ]) + ","  
+    data_constraints = geode_num.DataPointsManager3D()
+    constraint_file = '/server/data/3DBenchmark_implicit_data_constraints.og_pts3d'
+    data_constraints.load_data_points(constraint_file)
+    for i in range(data_constraints.nb_data_points()):
+        constraint = []
+        point = data_constraints.data_point_position(i).string().split(" ")
+        constraint.append(float(point[0]))
+        constraint.append(float(point[1]))
+        constraint.append(float(point[2]))
+        constraint.append(data_constraints.data_point_value(i))
+        constraint.append(data_constraints.data_point_weight(i))
 
-    constraints += str( [ 2.5, 1, 7, 2, 20 ]) + ","  
-    constraints += str( [ 3.5, 2, 9.7, 2, 20 ]) + ","  
-    constraints += str( [ 7, 3.5, 10.9, 2, 20 ]) + ","  
-    constraints += str( [ 4, 6.5, 10.5, 2, 20 ]) + ","  
-    constraints += str( [ 6, 12, 7, 2, 20 ]) + ","  
-    constraints += str( [ 3, 11.5, 6.9, 2, 20 ]) + ","  
-    constraints += str( [ 7, 16, 8, 2, 20 ]) + ","  
-    constraints += str( [ 3, 15.5, 8.5, 2, 20 ]) + ","  
-    constraints += str( [ 1, 14, 9, 2, 20 ]) + "]"
+        constraints += str(constraint) + ","
+    
+    constraints = constraints[:len(constraints)-1] + "]"
+
+    logging.info(constraints)
+    logging.info(type(constraints))
 
     return flask.jsonify(constraints=constraints)
 
