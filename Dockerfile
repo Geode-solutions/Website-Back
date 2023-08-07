@@ -1,11 +1,10 @@
-FROM python:3.9-slim-buster 
+FROM python:3.9-slim
 
 WORKDIR /server
 
 COPY . .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# pour installer libgomp - sinon problème d'importation louche
 RUN apt-get update 
 RUN apt-get install libgomp1
 
