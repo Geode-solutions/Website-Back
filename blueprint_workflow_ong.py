@@ -93,7 +93,12 @@ def step1():
     except NameError:
         flask.abort(400, "No BBox points filled")
 
-    constraints = restoreConstraints(eval(variables['constraints']))
+    try:
+        constraints = restoreConstraints(eval(variables['constraints']))
+    except NameError:
+        flask.abort(400, "Invalid constraints format")
+
+    
 
     isovalues = restoreIsovalues(eval(str(variables['isovalues']).replace('null', '"0"')))
 
@@ -129,7 +134,7 @@ def step1():
     elif variables['function_type'] == "Boundary free - Curvature":
         function_computer = geode_imp.RegularGridScalarFunctionComputer3D( data_constraints, bbox, cell_size, geode_num.GridScalarFunctionComputerType.FDM_boundaryfree_curvature_minimization )
     else:
-        return flask.make_response({ 'name': 'Bad Request','description': 'Wrong scalar function type' }, 400)
+        return flask.make_response({ 'name': 'Bad Request','description': 'Invalid minimization scheme value' }, 400)
 
     scalar_function_name = variables['function_type']
     function_computer.compute_scalar_function(scalar_function_name)

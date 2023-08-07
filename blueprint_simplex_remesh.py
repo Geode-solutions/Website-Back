@@ -58,6 +58,10 @@ def remesh():
             brep_metric.set_block_metric(tmp_block,float(blockMetrics[id]))
     except ValueError:
         flask.abort(400, "Invalid data format for an individual metric variable")
+    except RuntimeError:
+        flask.abort(400, "Invalid ID for an individual metric variable")
+    except IndexError:
+        flask.abort(400, "Invalid UUID for an individual metric variable")
 
     metric = brep_metric.build_metric()
 
