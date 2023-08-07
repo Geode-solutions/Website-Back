@@ -1,10 +1,7 @@
-import re
+import os
 
 import opengeode as geode
 import opengeode_io as og_io
-import opengeode_geosciences as og_geosciences
-import geode_numerics as geode_num
-import geode_implicit as geode_imp
 import geode_simplex as geode_simp
 from opengeodeweb_back import geode_functions, geode_objects
 
@@ -19,8 +16,8 @@ simplex_remesh_routes = flask.Blueprint('simplex_remesh_routes', __name__)
 flask_cors.CORS(simplex_remesh_routes)
 @simplex_remesh_routes.route('/get_brep_info',methods=['POST'])
 def sendBRepInfo():
-    data_folder = "/server/data/"
-    brep = geode_functions.load("BRep", data_folder + "corbi.og_brep")
+    data_folder = "./data/"
+    brep = geode_functions.load("BRep", os.path.abspath(data_folder + "corbi.og_brep"))
 
     surfacesID = []
     for surface in brep.surfaces():
@@ -32,41 +29,40 @@ def sendBRepInfo():
     return flask.jsonify(surfacesIDS=surfacesID, blocksIDS=blocksID)
 
 
-
-
 @simplex_remesh_routes.route('/remesh',methods=['POST'])
 def remesh():
     variables = geode_functions.get_form_variables(flask.request.form,['globalMetric','surfaceMetrics','blockMetrics'])
     surfaceMetrics = eval(variables['surfaceMetrics'])
     blockMetrics = eval(variables['blockMetrics'])
 
-    data_folder = "/server/data/"
+    data_folder = "./data/"
 
-    brep = geode_functions.load("BRep", data_folder + "corbi.og_brep")
+    brep = geode_functions.load("BRep", os.path.abspath(data_folder + "corbi.og_brep"))
     brep_metric = geode_simp.BRepMetricConstraints(brep)
 
-    if (variables['globalMetric'] != "undefined") and (10 <= float(variables['globalMetric']) <= 300):
-        brep_metric.set_default_metric(float(variables['globalMetric']))
-    elif variables['globalMetric'] == "undefined":
-        brep_metric.set_default_metric(50.0)  #better to set BRep current metric maybe
-    else:
-        return flask.make_response({ 'name': 'Bad Request','description': 'Wrong metric value, should be between 10 and 300' }, 400)
+    try:
+        if (10 <= float(variables['globalMetric']) <= 300):
+            brep_metric.set_default_metric(float(variables['globalMetric']))
+        else:
+            return flask.make_response({ 'name': 'Bad Request','description': 'Wrong metric value, should be between 10 and 300' }, 400)
+    except ValueError:
+        flask.abort(400, "Invalid data format for the global metric variable")
 
     
+    try:
+        for id in list(surfaceMetrics.keys()):
+            tmp_surface = brep.surface(geode.uuid(id))
+            brep_metric.set_surface_metric(tmp_surface,float(surfaceMetrics[id]))
+        for id in list(blockMetrics.keys()):
+            tmp_block = brep.block(geode.uuid(id))
+            brep_metric.set_block_metric(tmp_block,float(blockMetrics[id]))
+    except ValueError:
+        flask.abort(400, "Invalid data format for an individual metric variable")
 
-    for id in list(surfaceMetrics.keys()):
-        tmp_surface = brep.surface(geode.uuid(id))
-        brep_metric.set_surface_metric(tmp_surface,float(surfaceMetrics[id]))
-    for id in list(blockMetrics.keys()):
-        tmp_block = brep.block(geode.uuid(id))
-        brep_metric.set_block_metric(tmp_block,float(blockMetrics[id]))
-    
     metric = brep_metric.build_metric()
 
     brep_remeshed,_ = geode_simp.simplex_remesh_brep(brep, metric)
 
-
-    # saving objects
-    geode_functions.save(brep_remeshed, "BRep", data_folder, "remeshed_corbi.vtm")
+    geode_functions.save(brep_remeshed, "BRep", os.path.abspath(data_folder), "remeshed_corbi.vtm")
 
     return flask.make_response({'simplexRemeshSuccessful': "yes" }, 200)

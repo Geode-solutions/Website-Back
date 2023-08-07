@@ -1,4 +1,4 @@
-import re
+import os
 
 import flask
 import flask_cors
@@ -21,30 +21,38 @@ workflow_ong_routes = flask.Blueprint('workflow_ong_routes', __name__)
 flask_cors.CORS(workflow_ong_routes)
 
 def restoreBboxPoints(bbox_points):
-    bbox_points["x_min"] = float(bbox_points["x_min"])
-    bbox_points["y_min"] = float(bbox_points["y_min"])
-    bbox_points["z_min"] = float(bbox_points["z_min"])
-    bbox_points["x_max"] = float(bbox_points["x_max"])
-    bbox_points["y_max"] = float(bbox_points["y_max"])
-    bbox_points["z_max"] = float(bbox_points["z_max"])
+    try:
+        bbox_points["x_min"] = float(bbox_points["x_min"])
+        bbox_points["y_min"] = float(bbox_points["y_min"])
+        bbox_points["z_min"] = float(bbox_points["z_min"])
+        bbox_points["x_max"] = float(bbox_points["x_max"])
+        bbox_points["y_max"] = float(bbox_points["y_max"])
+        bbox_points["z_max"] = float(bbox_points["z_max"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the BBox points")
     return bbox_points
 
 def restoreConstraints(constraints):
-    for i in range(len(constraints)):
-        constraints[i] = eval(constraints[i].replace('""','"0"'))
-        constraints[i]["x"] = float(constraints[i]["x"])
-        constraints[i]["y"] = float(constraints[i]["y"])
-        constraints[i]["z"] = float(constraints[i]["z"])
-        constraints[i]["value"] = float(constraints[i]["value"])
-        constraints[i]["weight"] = float(constraints[i]["weight"])
+    try:
+        for i in range(len(constraints)):
+            constraints[i] = eval(str(constraints[i]).replace('""','"0"'))
+            constraints[i]["x"] = float(constraints[i]["x"])
+            constraints[i]["y"] = float(constraints[i]["y"])
+            constraints[i]["z"] = float(constraints[i]["z"])
+            constraints[i]["value"] = float(constraints[i]["value"])
+            constraints[i]["weight"] = float(constraints[i]["weight"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the constraints")
     return constraints
 
 def restoreIsovalues(isovalues):
-    for i in range(len(isovalues)):
-        isovalues[i] = float(isovalues[i])
-    if len(isovalues)==0:
-        return [0,1,2]
-    
+    try:
+        for i in range(len(isovalues)):
+            isovalues[i] = float(isovalues[i])
+        if len(isovalues)==0:
+            return [0,1,2]
+    except ValueError:
+        flask.abort(400, "Invalid data format for the isovalues")
     return isovalues
 
 
@@ -53,7 +61,7 @@ def sendConstraints():
     constraints = "["
 
     data_constraints = geode_num.DataPointsManager3D()
-    constraint_file = '/server/data/3DBenchmark_implicit_data_constraints.og_pts3d'
+    constraint_file = './data/3DBenchmark_implicit_data_constraints.og_pts3d'
     data_constraints.load_data_points(constraint_file)
     for i in range(data_constraints.nb_data_points()):
         constraint = []
@@ -68,9 +76,6 @@ def sendConstraints():
     
     constraints = constraints[:len(constraints)-1] + "]"
 
-    logging.info(constraints)
-    logging.info(type(constraints))
-
     return flask.jsonify(constraints=constraints)
 
 @workflow_ong_routes.route('/step1',methods = ['POST'])
@@ -78,19 +83,26 @@ def step1():
 
     variables = geode_functions.get_form_variables(flask.request.form,['bbox_points','constraints','isovalues','function_type','cell_size'])
 
-    if variables['bbox_points'] == 'undefined':
-        bbox_points = {"x_min":0., "y_min":0., "z_min":0., "x_max":8., "y_max":11., "z_max":17.}
-    else:
-        bbox_points = restoreBboxPoints(eval(eval(variables['bbox_points']).replace('""','"0"')))
-    constraints = restoreConstraints(eval(variables['constraints']))
-    isovalues = restoreIsovalues(eval(variables['isovalues'].replace('null', '"0"')))
-    if variables['cell_size'] == '':
-        cell_size = 1.
-    else:
-        cell_size = float(variables['cell_size'])
-    
-    data_folder = "/server/data/"
+    try:
+        bbox_replaced = str(variables['bbox_points']).replace('""','"0"')
+        if type(eval(bbox_replaced)) == str:
+            bbox_str = eval(bbox_replaced)
+        else:
+            bbox_str = bbox_replaced
+        bbox_points = restoreBboxPoints(eval(bbox_str))
+    except NameError:
+        flask.abort(400, "No BBox points filled")
 
+    constraints = restoreConstraints(eval(variables['constraints']))
+
+    isovalues = restoreIsovalues(eval(str(variables['isovalues']).replace('null', '"0"')))
+
+    try:
+        cell_size = float(variables['cell_size'])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the cell size")
+    
+    data_folder = "./data/"
     data_constraints = geode_num.DataPointsManager3D()
 
     for constraint in constraints:
@@ -133,7 +145,7 @@ def step1():
 
 
     # saving implicit model
-    geode_functions.save(implicit_model, "StructuralModel", data_folder, "implicit.og_strm")
+    geode_functions.save(implicit_model, "StructuralModel", os.path.abspath(data_folder), "implicit.og_strm")
     
     return flask.make_response({'stepOneSuccessful': "yes" }, 200)
 
@@ -142,22 +154,19 @@ def step1():
 def step2():
 
     variables = geode_functions.get_form_variables(flask.request.form,['axis','direction'])
-    if variables['axis'] == '':
-        axis = 0.
-    else:
+    try:
         axis = int(variables['axis'])
-    if variables['direction'] == '':
-        direction = 2.
-    else:
         direction = float(variables['direction'])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the 'axis' or 'metric' variables")
 
-    data_folder = "/server/data/"
+    data_folder = "./data/"
 
-    implicit_model = og_geosciences.ImplicitStructuralModel( geode_functions.load("StructuralModel", data_folder + "implicit.og_strm"))
+    implicit_model = og_geosciences.ImplicitStructuralModel( geode_functions.load("StructuralModel", os.path.abspath(data_folder + "implicit.og_strm")))
 
     extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,axis,direction)
 
-    geode_functions.save(extracted_cross_section, "CrossSection", data_folder, "cross_section.og_xsctn")
+    geode_functions.save(extracted_cross_section, "CrossSection", os.path.abspath(data_folder), "cross_section.og_xsctn")
 
     return flask.make_response({'stepTwoSuccessful': "yes" }, 200)
 
@@ -165,18 +174,17 @@ def step2():
 @workflow_ong_routes.route('/step3',methods=['POST'])
 def step3():
     variables = geode_functions.get_form_variables(flask.request.form,['metric'])
-    if variables['metric'] == '':
-        metric = 1.
-    else:
-        metric = float(variables['metric'])
+    try:
+        metric = int(variables['metric'])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the 'metric' variable")
 
-    data_folder = "/server/data/"
-
-    extracted_cross_section = og_geosciences.load_cross_section(data_folder + "cross_section.og_xsctn")
+    data_folder = "./data/"
+    extracted_cross_section = geode_functions.load('CrossSection', os.path.abspath(data_folder + "cross_section.og_xsctn"))
 
     constant_metric = geode_common.ConstantMetric2D( metric )
     remeshed_section,_ = geode_simp.simplex_remesh_section(extracted_cross_section,constant_metric)
 
-    geode_functions.save(remeshed_section, "Section", data_folder, "section.vtm")
+    geode_functions.save(remeshed_section, "Section", os.path.abspath(data_folder), "section.vtm")
 
     return flask.make_response({'stepThreeSuccessful': "yes" }, 200)

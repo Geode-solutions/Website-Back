@@ -5,9 +5,9 @@ ID = os.environ.get('ID')
 base_route = f"/{ID}/ong"
 
 def test_get_constraints(client):
-    response = client.get(f'{base_route}/get_constraints')
+    response = client.post(f'{base_route}/get_constraints')
     assert response.status_code == 200
-    constraints = response.json['constraints']
+    constraints = eval(response.json['constraints'])
     assert type(constraints) is list
     for constraint in constraints:
         assert type(constraint) is list
@@ -15,8 +15,8 @@ def test_get_constraints(client):
 def test_step1(client):
 
     bbox_points = '{"x_min":"0", "y_min":"0", "z_min":"0", "x_max":"8", "y_max":"11", "z_max":"17"}'
-    constraints = '[{"x":"0","y":"1","z":"2","value":4,"weight":"20"},{"x":"4","y":"5","z":"6","value":"9","weight":"20"}]'
-    isovalues = '["4","5","6"]'
+    constraints = '[{ "x": 5, "y": 6.25, "z": 9.5, "value": 0, "weight": 10 }, { "x": 29.5, "y": 30.3, "z": 9.5, "value": 0, "weight": 10 }, { "x": 12.1, "y": 24.9, "z": 9.5, "value": 0, "weight": 10 }, { "x": 27.3, "y": 17.9, "z": 9.5, "value": 0, "weight": 10 }, { "x": 14, "y": 14.6, "z": 9.5, "value": 0, "weight": 10 }, { "x": 17, "y": 21.95, "z": 9.5, "value": 0, "weight": 10 }, { "x": 22.14, "y": 14.22, "z": 9.5, "value": 0, "weight": 10 }, { "x": 17.2, "y": 5.5, "z": 9.5, "value": 0, "weight": 10 }, { "x": 26.6, "y": 9.27, "z": 9.5, "value": 0, "weight": 10 }, { "x": 23.9, "y": 24.5, "z": 9.5, "value": 0, "weight": 10 }, { "x": 8.6, "y": 27.2, "z": 25.5, "value": 1, "weight": 10 }, { "x": 13.6, "y": 15, "z": 25.5, "value": 1, "weight": 10 }, { "x": 13.7, "y": 6.55, "z": 25.5, "value": 1, "weight": 10 }, { "x": 23.1, "y": 26.98, "z": 25.5, "value": 1, "weight": 10 }, { "x": 24.1, "y": 10.2, "z": 25.5, "value": 1, "weight": 10 }, { "x": 16.3, "y": 25.7, "z": 25.5, "value": 1, "weight": 10 }, { "x": 35.1, "y": 34.9, "z": 25.5, "value": 1, "weight": 10 }]'
+    isovalues = '["0","1","2"]'
     function_type = "Laplacian"
     cell_size = "1"
 
