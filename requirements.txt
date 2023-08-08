@@ -106,7 +106,7 @@ opengeode-io==6.0.10
     #   geode-viewables
     #   opengeode-inspector
     #   opengeodeweb-back
-opengeodeweb-back==0.0.12
+opengeodeweb-back==0.0.13
     # via -r requirements.in
 pycparser==2.21
     # via cffi
