@@ -107,7 +107,7 @@ def test_upload_file(client):
     assert error_description == "No filesize sent"
 
 
-def test_test_names(client):
+def upload_files():
     for geode_object in geode_objects_list.keys():
         if "inspector" in geode_object:
             if geode_object != "RasterImage2D" and geode_object != "RasterImage3D":
@@ -134,6 +134,10 @@ def test_test_names(client):
                                 "filesize": filesize,
                             },
                         )
+
+
+def test_test_names(client):
+    upload_files()
 
     for geode_object in geode_objects_list.keys():
         if "inspector" in geode_objects_list[geode_object].keys():
@@ -173,6 +177,8 @@ def test_test_names(client):
 
 
 def test_inspect_file(client):
+    upload_files()
+
     def test_model_ckecks(client, geode_object, filename, model_checks):
         # Test with file
 
