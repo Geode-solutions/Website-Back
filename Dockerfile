@@ -11,7 +11,7 @@ RUN apt-get update
 RUN apt-get install libgomp1
 RUN apt-get install -y curl
 
-RUN curl --header 'Authorization: token ${TOKEN}' --header 'Accept: application/vnd.github.v3.raw' --location "https://api.github.com/repos/Geode-solutions/open-license-manager/contents/projects/geode/geode.lic\?ref\=master"
+RUN curl --header 'Authorization: token ${TOKEN}' --header 'Accept: application/vnd.github.v3.raw' --location "https://api.github.com/repos/Geode-solutions/open-license-manager/contents/projects/geode/geode.lic"
 
 ENV GEODE_LICENSE_LOCATION=/server/geode.lic
 
