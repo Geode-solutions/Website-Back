@@ -104,13 +104,17 @@ def validity_checker_inspect_file():
     secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
     data = geode_functions.load(variables_dict["geode_object"], file_path)
-    inspector = inspector_functions.inspectors()[variables_dict["geode_object"]][
-        "inspector"
-    ](data)
+    inspector = geode_functions.get_inspector(variables_dict["geode_object"], data)
     test_result = getattr(inspector, variables_dict["test"])()
-    expected_value = inspector_functions.expected_results()[variables_dict["test"]]
 
-    if test_result != expected_value or type(test_result) != type(expected_value):
+    if type(test_result) == int:
+        expected_result = 0
+    elif type(test_result) == list:
+        expected_result = []
+    elif type(test_result) == dict:
+        expected_result = {}
+
+    if test_result != expected_result or type(test_result) != type(expected_result):
         if type(test_result) is list:
             if type(test_result[0]) is tuple:
                 temp_test_result = []
@@ -120,7 +124,9 @@ def validity_checker_inspect_file():
                         temp_list.append(tuple_item[index].string())
                     temp_test_result.append(temp_list)
                 test_result = temp_test_result
-    result = test_result == expected_value and type(test_result) == type(expected_value)
+    result = test_result == expected_result and type(test_result) == type(
+        expected_result
+    )
 
     if result == False:
         test_name = variables_dict["test"]
