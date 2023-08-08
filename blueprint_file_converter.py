@@ -50,6 +50,25 @@ def file_converter_output_file_extensions():
     
     return flask.make_response({'output_file_extensions': list}, 200)
 
+@file_converter_routes.route('/upload_file', methods=['POST'])
+def file_converter_upload_file():
+    UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
+    file = flask.request.form.get('file')
+    filename = flask.request.form.get('filename')
+    filesize = flask.request.form.get('filesize')
+    if file is None:
+        return flask.make_response({'description': 'No file sent'}, 400)
+    if filename is None:
+        return flask.make_response({'description': 'No filename sent'}, 400)
+    if filesize is None:
+        return flask.make_response({'description': 'No filesize sent'}, 400)
+        
+    uploadedFile = geode_functions.upload_file(file, filename, UPLOAD_FOLDER, filesize)
+    if not uploadedFile:
+        flask.make_response({'description': 'File not uploaded'}, 500)
+        
+    return flask.make_response({'message': 'File uploaded'}, 200)
+
 @file_converter_routes.route('/convert_file', methods=['POST'])
 async def file_converter_convert_file():
     UPLOAD_FOLDER = flask.current_app.config['UPLOAD_FOLDER']
