@@ -7,6 +7,7 @@ import time
 import flask
 import flask_cors
 from werkzeug.exceptions import HTTPException
+from opengeodeweb_back import geode_functions
 
 # Local application imports
 import blueprint_file_converter
@@ -82,7 +83,7 @@ app.register_blueprint(
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f"/{ID}")
 
 if FLASK_DEBUG == False:
-    functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
+    geode_functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
 flask_cors.CORS(app, origins=ORIGINS)
 
 
