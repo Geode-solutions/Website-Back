@@ -125,6 +125,16 @@ def test_test_names(client):
                             os.path.getsize(f"./tests/data/test.{input_extension}")
                         )
 
+                        # Test with file
+                        response = client.post(
+                            f"{base_route}/upload_file",
+                            data={
+                                "file": file,
+                                "filename": filename,
+                                "filesize": filesize,
+                            },
+                        )
+
     for geode_object in geode_objects_list.keys():
         if "inspector" in geode_objects_list[geode_object].keys():
             if geode_object != "RasterImage2D" and geode_object != "RasterImage3D":
