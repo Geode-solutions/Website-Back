@@ -25,8 +25,7 @@ jobs:
     with:
       image_name: 'geode-backend'
       tag: ${{ github.ref_name }}
-      # args: --build-arg TOKEN= & ${{ secrets.TOKEN }}
     secrets: 
       TOKEN: ${{secrets.GITHUB_TOKEN}}
-      TEST_TOKEN: ${{ secrets.TOKEN }}
+      LICENSE_TOKEN: ${{ secrets.TOKEN }}
 
