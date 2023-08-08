@@ -173,7 +173,7 @@ def test_test_names(client):
 
 
 def test_inspect_file(client):
-    def test_model_ckecks(client, geode_object, model_checks):
+    def test_model_ckecks(client, geode_object, filename, model_checks):
         # Test with file
 
         for check in model_checks:
@@ -188,7 +188,7 @@ def test_inspect_file(client):
                 )
                 assert response.status_code == 200
             else:
-                test_model_ckecks(client, geode_object, check["children"])
+                test_model_ckecks(client, geode_object, filename, check["children"])
 
     for geode_object in geode_objects_list.keys():
         if "inspector" in geode_objects_list[geode_object].keys():
@@ -221,4 +221,4 @@ def test_inspect_file(client):
                         assert response.status_code == 200
                         model_checks = response.json["model_checks"]
 
-                        test_model_ckecks(client, geode_object, model_checks)
+                        test_model_ckecks(client, geode_object, filename, model_checks)
