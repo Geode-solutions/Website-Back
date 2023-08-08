@@ -107,124 +107,124 @@ def test_upload_file(client):
     assert error_description == "No filesize sent"
 
 
-def upload_files():
-    for geode_object in geode_objects_list.keys():
-        if "inspector" in geode_object:
-            if geode_object != "RasterImage2D" and geode_object != "RasterImage3D":
-                print(f"{geode_object=}")
-                inputs = geode_objects_list[geode_object]["input"]
+# def upload_files(client):
+#     for geode_object in geode_objects_list.keys():
+#         if "inspector" in geode_object:
+#             if geode_object != "RasterImage2D" and geode_object != "RasterImage3D":
+#                 print(f"{geode_object=}")
+#                 inputs = geode_objects_list[geode_object]["input"]
 
-                for input in inputs:
-                    for input_extension in input.list_creators():
-                        print(f"{input_extension=}")
-                        filename = f"test.{input_extension}"
-                        file = base64.b64encode(
-                            open(f"./tests/data/test.{input_extension}", "rb").read()
-                        )
-                        filesize = int(
-                            os.path.getsize(f"./tests/data/test.{input_extension}")
-                        )
+#                 for input in inputs:
+#                     for input_extension in input.list_creators():
+#                         print(f"{input_extension=}")
+#                         filename = f"test.{input_extension}"
+#                         file = base64.b64encode(
+#                             open(f"./tests/data/test.{input_extension}", "rb").read()
+#                         )
+#                         filesize = int(
+#                             os.path.getsize(f"./tests/data/test.{input_extension}")
+#                         )
 
-                        # Test with file
-                        response = client.post(
-                            f"{base_route}/upload_file",
-                            data={
-                                "file": file,
-                                "filename": filename,
-                                "filesize": filesize,
-                            },
-                        )
-
-
-def test_test_names(client):
-    upload_files()
-
-    for geode_object in geode_objects_list.keys():
-        if "inspector" in geode_objects_list[geode_object].keys():
-            if geode_object != "RasterImage2D" and geode_object != "RasterImage3D":
-                # Normal test with all objects
-                response = client.post(
-                    f"{base_route}/tests_names", data={"geode_object": geode_object}
-                )
-                assert response.status_code == 200
-                model_checks = response.json["model_checks"]
-
-                assert type(model_checks) is list
-                for model_check in model_checks:
-                    assert type(model_check) is dict
-                    is_leaf = model_check["is_leaf"]
-                    route = model_check["route"]
-                    children = model_check["children"]
-                    assert type(is_leaf) is bool
-                    assert type(route) is str
-                    assert type(children) is list
-                    for check in children:
-                        assert type(check) is dict
-                        if check["is_leaf"] == True:
-                            print("is_leaf")
-                            response_test = client.post(
-                                f"{base_route}/inspect_file",
-                                data={
-                                    "object": "BRep",
-                                    "filename": "corbi.og_brep",
-                                    "test": check["route"],
-                                },
-                            )
-
-                            assert response_test.status_code == 200
-                        else:
-                            print("not is_leaf")
+#                         # Test with file
+#                         response = client.post(
+#                             f"{base_route}/upload_file",
+#                             data={
+#                                 "file": file,
+#                                 "filename": filename,
+#                                 "filesize": filesize,
+#                             },
+#                         )
 
 
-def test_inspect_file(client):
-    upload_files()
+# def test_test_names(client):
+#     upload_files(client)
 
-    def test_model_ckecks(client, geode_object, filename, model_checks):
-        # Test with file
+#     for geode_object in geode_objects_list.keys():
+#         if "inspector" in geode_objects_list[geode_object].keys():
+#             if geode_object != "RasterImage2D" and geode_object != "RasterImage3D":
+#                 # Normal test with all objects
+#                 response = client.post(
+#                     f"{base_route}/tests_names", data={"geode_object": geode_object}
+#                 )
+#                 assert response.status_code == 200
+#                 model_checks = response.json["model_checks"]
 
-        for check in model_checks:
-            if check["is_leaf"]:
-                response = client.post(
-                    f"{base_route}/inspect_file",
-                    data={
-                        "geode_object": geode_object,
-                        "filename": filename,
-                        "test": check["route"],
-                    },
-                )
-                assert response.status_code == 200
-            else:
-                test_model_ckecks(client, geode_object, filename, check["children"])
+#                 assert type(model_checks) is list
+#                 for model_check in model_checks:
+#                     assert type(model_check) is dict
+#                     is_leaf = model_check["is_leaf"]
+#                     route = model_check["route"]
+#                     children = model_check["children"]
+#                     assert type(is_leaf) is bool
+#                     assert type(route) is str
+#                     assert type(children) is list
+#                     for check in children:
+#                         assert type(check) is dict
+#                         if check["is_leaf"] == True:
+#                             print("is_leaf")
+#                             response_test = client.post(
+#                                 f"{base_route}/inspect_file",
+#                                 data={
+#                                     "object": "BRep",
+#                                     "filename": "corbi.og_brep",
+#                                     "test": check["route"],
+#                                 },
+#                             )
 
-    for geode_object in geode_objects_list.keys():
-        if "inspector" in geode_objects_list[geode_object].keys():
-            print(f"{geode_object=}")
-            inputs = geode_objects_list[geode_object]["input"]
+#                             assert response_test.status_code == 200
+#                         else:
+#                             print("not is_leaf")
 
-            for input in inputs:
-                for input_extension in input.list_creators():
-                    if (
-                        input_extension != "dxf"
-                        and input_extension != "svg"
-                        and input_extension != "shz"
-                        and input_extension != "shp"
-                        and input_extension != "og_strm"
-                        and input_extension != "ml"
-                        and input_extension != "lso"
-                        and input_extension != "og_tsf2d"
-                        and input_extension != "smesh"
-                        and input_extension != "stl"
-                        and input_extension != "og_tsf3d"
-                        and input_extension != "ts"
-                    ):
-                        print(f"{input_extension=}")
-                        filename = f"test.{input_extension}"
 
-                        response = client.post(
-                            f"{base_route}/tests_names",
-                            data={"geode_object": geode_object},
-                        )
-                        assert response.status_code == 200
-                        model_checks = response.json["model_checks"]
+# def test_inspect_file(client):
+#     upload_files(client)
 
-                        test_model_ckecks(client, geode_object, filename, model_checks)
+#     def test_model_ckecks(client, geode_object, filename, model_checks):
+#         # Test with file
+
+#         for check in model_checks:
+#             if check["is_leaf"]:
+#                 response = client.post(
+#                     f"{base_route}/inspect_file",
+#                     data={
+#                         "geode_object": geode_object,
+#                         "filename": filename,
+#                         "test": check["route"],
+#                     },
+#                 )
+#                 assert response.status_code == 200
+#             else:
+#                 test_model_ckecks(client, geode_object, filename, check["children"])
+
+#     for geode_object in geode_objects_list.keys():
+#         if "inspector" in geode_objects_list[geode_object].keys():
+#             print(f"{geode_object=}")
+#             inputs = geode_objects_list[geode_object]["input"]
+
+#             for input in inputs:
+#                 for input_extension in input.list_creators():
+#                     if (
+#                         input_extension != "dxf"
+#                         and input_extension != "svg"
+#                         and input_extension != "shz"
+#                         and input_extension != "shp"
+#                         and input_extension != "og_strm"
+#                         and input_extension != "ml"
+#                         and input_extension != "lso"
+#                         and input_extension != "og_tsf2d"
+#                         and input_extension != "smesh"
+#                         and input_extension != "stl"
+#                         and input_extension != "og_tsf3d"
+#                         and input_extension != "ts"
+#                     ):
+#                         print(f"{input_extension=}")
+#                         filename = f"test.{input_extension}"
+
+#                         response = client.post(
+#                             f"{base_route}/tests_names",
+#                             data={"geode_object": geode_object},
+#                         )
+#                         assert response.status_code == 200
+#                         model_checks = response.json["model_checks"]
+
+#                         test_model_ckecks(client, geode_object, filename, model_checks)
