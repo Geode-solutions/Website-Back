@@ -9,12 +9,15 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 RUN apt-get update 
 RUN apt-get install libgomp1
-RUN apt-get install -y wget
+RUN apt-get install -y curl
 
-RUN wget --output-document=geode.lic "https://${TOKEN}@raw.githubusercontent.com/Geode-solutions/open-license-manager/master/projects/geode/geode.lic"
+RUN curl -H "Accept: application/vnd.github.VERSION.raw" -H "Authorization: token ${TOKEN}" https://api.github.com/repos/Geode-solutions/open-license-manager/projects/geode/geode.lic\?ref\=master > .clang-format
 
 ENV GEODE_LICENSE_LOCATION=/server/geode.lic
 
 CMD ["python3", "app.py"]
 
 EXPOSE 5000
+
+
+        
