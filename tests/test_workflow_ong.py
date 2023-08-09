@@ -2,7 +2,7 @@ import os
 import base64
 
 ID = os.environ.get('ID')
-base_route = f"/{ID}/ong"
+base_route = f"/{ID}/workflows/ong"
 
 def test_get_constraints(client):
     response = client.post(f'{base_route}/get_constraints')
