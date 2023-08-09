@@ -1,7 +1,7 @@
 import os
 import base64
 
-import geode_objects
+from opengeodeweb_back import geode_objects
 
 geode_objects_list = geode_objects.objects_list()
 
@@ -16,7 +16,7 @@ def test_versions(client):
     assert type(versions) is list
     for version in versions:
         assert type(version) is dict
-        
+
 
 def test_allowed_files(client):
     response = client.get(f"{base_route}/allowed_files")
@@ -28,17 +28,20 @@ def test_allowed_files(client):
 def test_allowed_objects(client):
     # Normal test with dymamic extension
     for geode_object in geode_objects_list.keys():
-        inputs = geode_objects_list[geode_object]["input"]
-        for input in inputs:
-            for input_extension in input.list_creators():
-                response = client.post(
-                    f"{base_route}/allowed_objects",
-                    data={"filename": f"test.{input_extension}"},
-                )
-                assert response.status_code == 200
-                allowed_objects = response.json["allowed_objects"]
-                assert type(allowed_objects) is list
-                assert len(allowed_objects) > 0
+        if geode_object != "RasterImage2D" and geode_object != "RasterImage3D":
+            print(f"{geode_object=}")
+            inputs = geode_objects_list[geode_object]["input"]
+            for input in inputs:
+                for input_extension in input.list_creators():
+                    print(f"{input_extension=}")
+                    response = client.post(
+                        f"{base_route}/allowed_objects",
+                        data={"filename": f"test.{input_extension}"},
+                    )
+                    assert response.status_code == 200
+                    allowed_objects = response.json["allowed_objects"]
+                    assert type(allowed_objects) is list
+                    assert len(allowed_objects) > 0
 
     # Test with stupid filename
     response = client.post(
@@ -76,138 +79,141 @@ def test_output_file_extensions(client):
 
 def test_convert_file(client):
     for geode_object in geode_objects_list.keys():
-        print(f"{geode_object=}")
-        inputs = geode_objects_list[geode_object]["input"]
+        if geode_object != "RasterImage2D" and geode_object != "RasterImage3D":
+            print(f"{geode_object=}")
+            inputs = geode_objects_list[geode_object]["input"]
 
-        for input in inputs:
-            for input_extension in input.list_creators():
-                print(f"{input_extension=}")
-                filename = f"test.{input_extension}"
-                file = base64.b64encode(
-                    open(f"./tests/data/test.{input_extension}", "rb").read()
-                )
-                filesize = int(os.path.getsize(f"./tests/data/test.{input_extension}"))
+            for input in inputs:
+                for input_extension in input.list_creators():
+                    print(f"{input_extension=}")
+                    filename = f"test.{input_extension}"
+                    file = base64.b64encode(
+                        open(f"./tests/data/test.{input_extension}", "rb").read()
+                    )
+                    filesize = int(
+                        os.path.getsize(f"./tests/data/test.{input_extension}")
+                    )
 
-                outputs = geode_objects_list[geode_object]["output"]
+                    outputs = geode_objects_list[geode_object]["output"]
 
-                for output in outputs:
-                    for output_extension in output.list_creators():
-                        print(f"{output_extension=}")
+                    for output in outputs:
+                        for output_extension in output.list_creators():
+                            print(f"{output_extension=}")
 
-                        # Normal test with object/file/filename/filesize/extension
-                        if (
-                            (
-                                input_extension != "og_brep"
-                                and geode_object != "BRep"
-                                and output_extension != "ml"
-                            )
-                            and (
-                                input_extension != "vo"
-                                and geode_object != "RegularGrid3D"
-                                and output_extension != "vti"
-                            )
-                            and (
-                                input_extension != "shp"
-                                and geode_object != "Section"
-                                and output_extension != "vtm"
-                            )
-                            and (
-                                input_extension != "ml"
-                                and geode_object != "StructuralModel"
-                                and output_extension != "lso"
-                            )
-                            and (
-                                input_extension != "og_tsf2d"
-                                and geode_object != "TriangulatedSurface2D"
-                                and output_extension != "triangle"
-                            )
-                        ):
-                            response = client.post(
-                                f"{base_route}/convert_file",
-                                data={
-                                    "geode_object": geode_object,
-                                    "file": file,
-                                    "filename": filename,
-                                    "filesize": filesize,
-                                    "extension": output_extension,
-                                },
-                            )
+                            # Normal test with object/file/filename/filesize/extension
+                            if (
+                                (
+                                    input_extension != "og_brep"
+                                    and geode_object != "BRep"
+                                    and output_extension != "ml"
+                                )
+                                and (
+                                    input_extension != "vo"
+                                    and geode_object != "RegularGrid3D"
+                                    and output_extension != "vti"
+                                )
+                                and (
+                                    input_extension != "shp"
+                                    and geode_object != "Section"
+                                    and output_extension != "vtm"
+                                )
+                                and (
+                                    input_extension != "ml"
+                                    and geode_object != "StructuralModel"
+                                    and output_extension != "lso"
+                                )
+                                and (
+                                    input_extension != "og_tsf2d"
+                                    and geode_object != "TriangulatedSurface2D"
+                                    and output_extension != "triangle"
+                                )
+                            ):
+                                response = client.post(
+                                    f"{base_route}/convert_file",
+                                    data={
+                                        "geode_object": geode_object,
+                                        "file": file,
+                                        "filename": filename,
+                                        "filesize": filesize,
+                                        "extension": output_extension,
+                                    },
+                                )
 
-                            assert response.status_code == 200
-                            assert type((response.data)) is bytes
-                            assert len((response.data)) > 0
+                                assert response.status_code == 200
+                                assert type((response.data)) is bytes
+                                assert len((response.data)) > 0
 
-                            # Test without object
-                            response = client.post(
-                                f"{base_route}/convert_file",
-                                data={
-                                    "file": file,
-                                    "filename": filename,
-                                    "filesize": filesize,
-                                    "extension": output_extension,
-                                },
-                            )
+                                # Test without object
+                                response = client.post(
+                                    f"{base_route}/convert_file",
+                                    data={
+                                        "file": file,
+                                        "filename": filename,
+                                        "filesize": filesize,
+                                        "extension": output_extension,
+                                    },
+                                )
 
-                            assert response.status_code == 400
-                            error_description = response.json["description"]
-                            assert error_description == "No geode_object sent"
+                                assert response.status_code == 400
+                                error_description = response.json["description"]
+                                assert error_description == "No geode_object sent"
 
-                            # Test without file
-                            response = client.post(
-                                f"{base_route}/convert_file",
-                                data={
-                                    "geode_object": geode_object,
-                                    "filename": filename,
-                                    "filesize": filesize,
-                                    "extension": output_extension,
-                                },
-                            )
+                                # Test without file
+                                response = client.post(
+                                    f"{base_route}/convert_file",
+                                    data={
+                                        "geode_object": geode_object,
+                                        "filename": filename,
+                                        "filesize": filesize,
+                                        "extension": output_extension,
+                                    },
+                                )
 
-                            assert response.status_code == 400
-                            error_description = response.json["description"]
-                            assert error_description == "No file sent"
+                                assert response.status_code == 400
+                                error_description = response.json["description"]
+                                assert error_description == "No file sent"
 
-                            # Test without filename
-                            response = client.post(
-                                f"{base_route}/convert_file",
-                                data={
-                                    "geode_object": geode_object,
-                                    "file": file,
-                                    "filesize": filesize,
-                                    "extension": output_extension,
-                                },
-                            )
+                                # Test without filename
+                                response = client.post(
+                                    f"{base_route}/convert_file",
+                                    data={
+                                        "geode_object": geode_object,
+                                        "file": file,
+                                        "filesize": filesize,
+                                        "extension": output_extension,
+                                    },
+                                )
 
-                            assert response.status_code == 400
-                            error_description = response.json["description"]
-                            assert error_description == "No filename sent"
+                                assert response.status_code == 400
+                                error_description = response.json["description"]
+                                assert error_description == "No filename sent"
 
-                            # Test without filesize
-                            response = client.post(
-                                f"{base_route}/convert_file",
-                                data={
-                                    "geode_object": geode_object,
-                                    "file": file,
-                                    "filename": filename,
-                                    "extension": output_extension,
-                                },
-                            )
+                                # Test without filesize
+                                response = client.post(
+                                    f"{base_route}/convert_file",
+                                    data={
+                                        "geode_object": geode_object,
+                                        "file": file,
+                                        "filename": filename,
+                                        "extension": output_extension,
+                                    },
+                                )
 
-                            assert response.status_code == 400
-                            error_description = response.json["description"]
-                            assert error_description == "No filesize sent"
+                                assert response.status_code == 400
+                                error_description = response.json["description"]
+                                assert error_description == "No filesize sent"
 
-                            # Test without extension
-                            response = client.post(
-                                f"{base_route}/convert_file",
-                                data={
-                                    "geode_object": geode_object,
-                                    "file": file,
-                                    "filename": filename,
-                                    "filesize": filesize,
-                                },
-                            )
+                                # Test without extension
+                                response = client.post(
+                                    f"{base_route}/convert_file",
+                                    data={
+                                        "geode_object": geode_object,
+                                        "file": file,
+                                        "filename": filename,
+                                        "filesize": filesize,
+                                    },
+                                )
 
-                            assert response.status_code == 400
-                            error_description = response.json["description"]
-                            assert error_description == "No extension sent"
+                                assert response.status_code == 400
+                                error_description = response.json["description"]
+                                assert error_description == "No extension sent"

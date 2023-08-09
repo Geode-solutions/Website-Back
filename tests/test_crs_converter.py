@@ -1,7 +1,7 @@
 import os
 import base64
 
-import geode_objects
+from opengeodeweb_back import geode_objects
 
 geode_objects_list = geode_objects.objects_list()
 
@@ -472,4 +472,3 @@ def test_convert_file(client):
                                     assert response.status_code == 400
                                     error_description = response.json["description"]
                                     assert error_description == "No extension sent"
-
