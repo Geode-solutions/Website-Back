@@ -6,13 +6,16 @@ import flask
 import flask_cors
 import time
 
+import blueprint_workflows
+import blueprint_tools
+import blueprint_ID
 import blueprint_file_converter
 import blueprint_validity_checker
 import blueprint_crs_converter
-import blueprint_ID
 import blueprint_workflow_ong
 import blueprint_simplex_remesh
 import blueprint_explicit_modeling
+
 
 from opengeodeweb_back import geode_functions
 
@@ -69,13 +72,29 @@ TIME_FOLDER = app.config.get('TIME_FOLDER')
 MINUTES_BEFORE_TIMEOUT = float(app.config.get('MINUTES_BEFORE_TIMEOUT'))
 SECONDS_BETWEEN_SHUTDOWNS = float(app.config.get('SECONDS_BETWEEN_SHUTDOWNS'))
 
-app.register_blueprint(blueprint_file_converter.file_converter_routes, url_prefix=f'/{ID}/file_converter')
-app.register_blueprint(blueprint_validity_checker.validity_checker_routes, url_prefix=f'/{ID}/validity_checker')
-app.register_blueprint(blueprint_crs_converter.crs_converter_routes, url_prefix=f'/{ID}/crs_converter')
+
+blueprint_tools = flask.Blueprint('tools', __name__)
+blueprint_workflows = flask.Blueprint('workflows', __name__)
+
+blueprint_file_converter = flask.Blueprint('file_converter', __name__)
+blueprint_validity_checker = flask.Blueprint('validity_checker', __name__)
+blueprint_crs_converter = flask.Blueprint('crs_converter', __name__)
+blueprint_workflow_ong = flask.Blueprint('workflow_ong', __name__)
+blueprint_simplex_remesh = flask.Blueprint('simplex_remesh', __name__)
+blueprint_explicit_modeling = flask.Blueprint('explicit_modeling', __name__)
+
+blueprint_tools.register_blueprint(blueprint_file_converter.file_converter_routes, url_prefix='/file_converter')
+blueprint_tools.register_blueprint(blueprint_validity_checker.validity_checker_routes, url_prefix='/validity_checker')
+blueprint_tools.register_blueprint(blueprint_crs_converter.crs_converter_routes, url_prefix='/crs_converter')
+
+blueprint_workflows.register_blueprint(blueprint_workflow_ong.workflow_ong_routes, url_prefix='/ong')
+blueprint_workflows.register_blueprint(blueprint_simplex_remesh.simplex_remesh_routes, url_prefix='/simplexRemesh')
+blueprint_workflows.register_blueprint(blueprint_explicit_modeling.explicit_modeling_routes, url_prefix='/explicitModeling')
+
+app.register_blueprint(blueprint_tools.tools_routes, url_prefix=f'/{ID}/tools')
+app.register_blueprint(blueprint_workflows.workflows_routes, url_prefix=f'/{ID}/workflows')
 app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
-app.register_blueprint(blueprint_workflow_ong.workflow_ong_routes, url_prefix=f'/{ID}/ong')
-app.register_blueprint(blueprint_simplex_remesh.simplex_remesh_routes, url_prefix=f'/{ID}/simplexRemesh')
-app.register_blueprint(blueprint_explicit_modeling.explicit_modeling_routes, url_prefix=f'/{ID}/explicitModeling')
+
 
 if FLASK_DEBUG == False:
     geode_functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
