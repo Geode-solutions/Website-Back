@@ -12,12 +12,12 @@ flask_cors.CORS(crs_converter_routes)
 
 @crs_converter_routes.before_request
 def before_request():
-    geode_functions.create_lock_file()
+    geode_functions.create_lock_file(os.path.abspath(flask.current_app.config["LOCK_FOLDER"]))
 
 @crs_converter_routes.teardown_request
 def teardown_request(exception):
-    geode_functions.remove_lock_file()
-    geode_functions.create_time_file()
+    geode_functions.remove_lock_file(os.path.abspath(flask.current_app.config["LOCK_FOLDER"]))
+    geode_functions.create_time_file(os.path.abspath(flask.current_app.config["TIME_FOLDER"]))
 
 @crs_converter_routes.route('/versions', methods=['GET'])
 def crs_converter_versions():
