@@ -6,15 +6,17 @@ import flask
 import flask_cors
 import time
 
-import blueprint_workflows
-import blueprint_tools
-import blueprint_ID
-import blueprint_file_converter
-import blueprint_validity_checker
-import blueprint_crs_converter
-import blueprint_workflow_ong
-import blueprint_simplex_remesh
-import blueprint_explicit_modeling
+
+
+import blueprints.blueprint_workflows as bp_workflows
+import blueprints.blueprint_tools as bp_tools
+import blueprints.blueprint_ID as bp_ID
+import blueprints.tools.blueprint_file_converter as bp_file_converter
+import blueprints.tools.blueprint_validity_checker as bp_validity_checker
+import blueprints.tools.blueprint_crs_converter as bp_crs_converter
+import blueprints.workflows.blueprint_workflow_ong as bp_workflow_ong
+import blueprints.workflows.blueprint_simplex_remesh as bp_simplex_remesh
+import blueprints.workflows.blueprint_explicit_modeling as bp_explicit_modeling
 
 
 from opengeodeweb_back import geode_functions
@@ -83,17 +85,17 @@ blueprint_workflow_ong = flask.Blueprint('workflow_ong', __name__)
 blueprint_simplex_remesh = flask.Blueprint('simplex_remesh', __name__)
 blueprint_explicit_modeling = flask.Blueprint('explicit_modeling', __name__)
 
-blueprint_tools.register_blueprint(blueprint_file_converter.file_converter_routes, url_prefix='/file_converter')
-blueprint_tools.register_blueprint(blueprint_validity_checker.validity_checker_routes, url_prefix='/validity_checker')
-blueprint_tools.register_blueprint(blueprint_crs_converter.crs_converter_routes, url_prefix='/crs_converter')
+bp_tools.register_blueprint(bp_file_converter.file_converter_routes, url_prefix='/file_converter')
+bp_tools.register_blueprint(bp_validity_checker.validity_checker_routes, url_prefix='/validity_checker')
+bp_tools.register_blueprint(bp_crs_converter.crs_converter_routes, url_prefix='/crs_converter')
 
-blueprint_workflows.register_blueprint(blueprint_workflow_ong.workflow_ong_routes, url_prefix='/ong')
-blueprint_workflows.register_blueprint(blueprint_simplex_remesh.simplex_remesh_routes, url_prefix='/simplexRemesh')
-blueprint_workflows.register_blueprint(blueprint_explicit_modeling.explicit_modeling_routes, url_prefix='/explicitModeling')
+bp_workflows.register_blueprint(bp_workflow_ong.workflow_ong_routes, url_prefix='/ong')
+bp_workflows.register_blueprint(bp_simplex_remesh.simplex_remesh_routes, url_prefix='/simplexRemesh')
+bp_workflows.register_blueprint(bp_explicit_modeling.explicit_modeling_routes, url_prefix='/explicitModeling')
 
-app.register_blueprint(blueprint_tools.tools_routes, url_prefix=f'/{ID}/tools')
-app.register_blueprint(blueprint_workflows.workflows_routes, url_prefix=f'/{ID}/workflows')
-app.register_blueprint(blueprint_ID.ID_routes, url_prefix=f'/{ID}')
+app.register_blueprint(bp_tools.tools_routes, url_prefix=f'/{ID}/tools')
+app.register_blueprint(bp_workflows.workflows_routes, url_prefix=f'/{ID}/workflows')
+app.register_blueprint(bp_ID.ID_routes, url_prefix=f'/{ID}')
 
 
 if FLASK_DEBUG == False:
