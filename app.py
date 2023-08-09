@@ -78,23 +78,16 @@ SECONDS_BETWEEN_SHUTDOWNS = float(app.config.get('SECONDS_BETWEEN_SHUTDOWNS'))
 blueprint_tools = flask.Blueprint('tools', __name__)
 blueprint_workflows = flask.Blueprint('workflows', __name__)
 
-blueprint_file_converter = flask.Blueprint('file_converter', __name__)
-blueprint_validity_checker = flask.Blueprint('validity_checker', __name__)
-blueprint_crs_converter = flask.Blueprint('crs_converter', __name__)
-blueprint_workflow_ong = flask.Blueprint('workflow_ong', __name__)
-blueprint_simplex_remesh = flask.Blueprint('simplex_remesh', __name__)
-blueprint_explicit_modeling = flask.Blueprint('explicit_modeling', __name__)
+blueprint_tools.register_blueprint(bp_file_converter.file_converter_routes, url_prefix='/file_converter')
+blueprint_tools.register_blueprint(bp_validity_checker.validity_checker_routes, url_prefix='/validity_checker')
+blueprint_tools.register_blueprint(bp_crs_converter.crs_converter_routes, url_prefix='/crs_converter')
 
-bp_tools.register_blueprint(bp_file_converter.file_converter_routes, url_prefix='/file_converter')
-bp_tools.register_blueprint(bp_validity_checker.validity_checker_routes, url_prefix='/validity_checker')
-bp_tools.register_blueprint(bp_crs_converter.crs_converter_routes, url_prefix='/crs_converter')
+blueprint_workflows.register_blueprint(bp_workflow_ong.workflow_ong_routes, url_prefix='/ong')
+blueprint_workflows.register_blueprint(bp_simplex_remesh.simplex_remesh_routes, url_prefix='/simplexRemesh')
+blueprint_workflows.register_blueprint(bp_explicit_modeling.explicit_modeling_routes, url_prefix='/explicitModeling')
 
-bp_workflows.register_blueprint(bp_workflow_ong.workflow_ong_routes, url_prefix='/ong')
-bp_workflows.register_blueprint(bp_simplex_remesh.simplex_remesh_routes, url_prefix='/simplexRemesh')
-bp_workflows.register_blueprint(bp_explicit_modeling.explicit_modeling_routes, url_prefix='/explicitModeling')
-
-app.register_blueprint(bp_tools.tools_routes, url_prefix=f'/{ID}/tools')
-app.register_blueprint(bp_workflows.workflows_routes, url_prefix=f'/{ID}/workflows')
+app.register_blueprint(blueprint_tools, url_prefix=f'/{ID}/tools')
+app.register_blueprint(blueprint_workflows, url_prefix=f'/{ID}/workflows')
 app.register_blueprint(bp_ID.ID_routes, url_prefix=f'/{ID}')
 
 
