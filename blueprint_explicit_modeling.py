@@ -16,6 +16,17 @@ logging.basicConfig(level=logging.INFO)
 
 explicit_modeling_routes = flask.Blueprint('explicit_modeling_routes', __name__)
 flask_cors.CORS(explicit_modeling_routes)
+
+
+@explicit_modeling_routes.before_request
+def before_request():
+    geode_functions.create_lock_file()
+
+@explicit_modeling_routes.teardown_request
+def teardown_request(exception):
+    geode_functions.remove_lock_file()
+    geode_functions.create_time_file()
+
 @explicit_modeling_routes.route('/get_brep_stats',methods=['POST'])
 def sendBRepStats():
     data_folder = "./data/"

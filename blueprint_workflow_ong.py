@@ -56,6 +56,16 @@ def restoreIsovalues(isovalues):
     return isovalues
 
 
+
+@workflow_ong_routes.before_request
+def before_request():
+    geode_functions.create_lock_file()
+
+@workflow_ong_routes.teardown_request
+def teardown_request(exception):
+    geode_functions.remove_lock_file()
+    geode_functions.create_time_file()
+
 @workflow_ong_routes.route('/get_constraints',methods = ['POST'])
 def sendConstraints():
     constraints = "["
