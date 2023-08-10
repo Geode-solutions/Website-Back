@@ -18,15 +18,6 @@ explicit_modeling_routes = flask.Blueprint('explicit_modeling_routes', __name__)
 flask_cors.CORS(explicit_modeling_routes)
 
 
-@explicit_modeling_routes.before_request
-def before_request():
-    geode_functions.create_lock_file(os.path.abspath(flask.current_app.config["LOCK_FOLDER"]))
-
-@explicit_modeling_routes.teardown_request
-def teardown_request(exception):
-    geode_functions.remove_lock_file(os.path.abspath(flask.current_app.config["LOCK_FOLDER"]))
-    geode_functions.create_time_file(os.path.abspath(flask.current_app.config["TIME_FOLDER"]))
-
 @explicit_modeling_routes.route('/get_brep_stats',methods=['POST'])
 def sendBRepStats():
     data_folder = "./data/"

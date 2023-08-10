@@ -15,15 +15,6 @@ simplex_remesh_routes = flask.Blueprint('simplex_remesh_routes', __name__)
 flask_cors.CORS(simplex_remesh_routes)
 
 
-@simplex_remesh_routes.before_request
-def before_request():
-    geode_functions.create_lock_file(os.path.abspath(flask.current_app.config["LOCK_FOLDER"]))
-
-@simplex_remesh_routes.teardown_request
-def teardown_request(exception):
-    geode_functions.remove_lock_file(os.path.abspath(flask.current_app.config["LOCK_FOLDER"]))
-    geode_functions.create_time_file(os.path.abspath(flask.current_app.config["TIME_FOLDER"]))
-
 @simplex_remesh_routes.route('/get_brep_info',methods=['POST'])
 def sendBRepInfo():
     data_folder = "./data/"
