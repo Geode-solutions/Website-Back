@@ -94,7 +94,7 @@ async def file_converter_convert_file():
     if os.path.exists(sub_folder):
         shutil.rmtree(sub_folder)
 
-    geode_functions.save(data, geode_object, os.path.join(UPLOAD_FOLDER, new_file_name))
+    geode_functions.save(data, geode_object, os.path.abspath(UPLOAD_FOLDER), new_file_name)
     mimetype = 'application/octet-binary'
 
     list_exceptions = ['triangle', 'vtm']
