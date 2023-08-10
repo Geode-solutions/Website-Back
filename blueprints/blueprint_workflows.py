@@ -21,6 +21,6 @@ def teardown_request(exception):
     geode_functions.create_time_file(os.path.abspath(flask.current_app.config["TIME_FOLDER"]))
 
 
-workflows_routes.register_blueprint(bp_workflow_ong.workflow_ong_routes, url_prefix='/ong')
-workflows_routes.register_blueprint(bp_simplex_remesh.simplex_remesh_routes, url_prefix='/simplexRemesh')
-workflows_routes.register_blueprint(bp_explicit_modeling.explicit_modeling_routes, url_prefix='/explicitModeling')
+workflows_routes.register_blueprint(bp_workflow_ong.workflow_ong_routes, url_prefix='/ong', name='workflow_ong_blueprint')
+workflows_routes.register_blueprint(bp_simplex_remesh.simplex_remesh_routes, url_prefix='/simplexRemesh', name='simplex_remesh_blueprint')
+workflows_routes.register_blueprint(bp_explicit_modeling.explicit_modeling_routes, url_prefix='/explicitModeling', name='explicit_modeling_blueprint')

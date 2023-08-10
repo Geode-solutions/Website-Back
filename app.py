@@ -66,9 +66,9 @@ MINUTES_BEFORE_TIMEOUT = float(app.config.get('MINUTES_BEFORE_TIMEOUT'))
 SECONDS_BETWEEN_SHUTDOWNS = float(app.config.get('SECONDS_BETWEEN_SHUTDOWNS'))
 
 
-app.register_blueprint(bp_tools.tools_routes, url_prefix=f'/{ID}/tools')
-app.register_blueprint(bp_workflows.workflows_routes, url_prefix=f'/{ID}/workflows')
-app.register_blueprint(bp_ID.ID_routes, url_prefix=f'/{ID}')
+app.register_blueprint(bp_tools.tools_routes, url_prefix=f'/{ID}/tools', name='tools_blueprint')
+app.register_blueprint(bp_workflows.workflows_routes, url_prefix=f'/{ID}/workflows', name='workflows_blueprint')
+app.register_blueprint(bp_ID.ID_routes, url_prefix=f'/{ID}', name='ID_blueprint')
 
 
 if FLASK_DEBUG == False:
