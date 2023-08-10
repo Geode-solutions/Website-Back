@@ -3,9 +3,9 @@ import flask
 import flask_cors
 from opengeodeweb_back import geode_functions, geode_objects
 
-import tools.blueprint_file_converter as bp_file_converter
-import tools.blueprint_validity_checker as bp_validity_checker
-import tools.blueprint_crs_converter as bp_crs_converter
+import blueprints.tools.blueprint_file_converter as bp_file_converter
+import blueprints.tools.blueprint_validity_checker as bp_validity_checker
+import blueprints.tools.blueprint_crs_converter as bp_crs_converter
 
 tools_routes = flask.Blueprint('crs_converter_routes', __name__)
 flask_cors.CORS(tools_routes)
