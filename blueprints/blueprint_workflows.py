@@ -22,5 +22,5 @@ def teardown_request(exception):
 
 
 workflows_routes.register_blueprint(bp_workflow_ong.workflow_ong_routes, url_prefix='/ong', name='workflow_ong_blueprint')
-workflows_routes.register_blueprint(bp_simplex_remesh.simplex_remesh_routes, url_prefix='/simplexRemesh', name='simplex_remesh_blueprint')
-workflows_routes.register_blueprint(bp_explicit_modeling.explicit_modeling_routes, url_prefix='/explicitModeling', name='explicit_modeling_blueprint')
+workflows_routes.register_blueprint(bp_simplex_remesh.simplex_remesh_routes, url_prefix='/simplex_remesh', name='simplex_remesh_blueprint')
+workflows_routes.register_blueprint(bp_explicit_modeling.explicit_modeling_routes, url_prefix='/explicit_modeling', name='explicit_modeling_blueprint')
