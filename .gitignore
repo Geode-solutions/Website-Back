@@ -1,7 +1,10 @@
+.env
 env/
+venv/
 .vscode/
 lock/
 time/
 uploads/
 __pycache__/
 .pytest_cache/
+geode.lic
