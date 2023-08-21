@@ -15,6 +15,7 @@ flask_cors.CORS(tools_routes)
 def before_request():
     geode_functions.create_lock_file(os.path.abspath(flask.current_app.config["LOCK_FOLDER"]))
 
+
 @tools_routes.teardown_request
 def teardown_request(exception):
     geode_functions.remove_lock_file(os.path.abspath(flask.current_app.config["LOCK_FOLDER"]))

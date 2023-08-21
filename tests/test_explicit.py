@@ -2,7 +2,7 @@ import os
 import base64
 
 ID = os.environ.get('ID')
-base_route = f"/{ID}/workflows/explicit_modeling"
+base_route = f"/{ID}/workflows/explicit"
 
 
 def test_get_brep_stats(client):

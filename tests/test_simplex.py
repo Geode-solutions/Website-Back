@@ -2,7 +2,7 @@ import os
 import base64
 
 ID = os.environ.get('ID')
-base_route = f"/{ID}/workflows/simplex_remesh"
+base_route = f"/{ID}/workflows/simplex"
 
 
 def test_get_brep_info(client):
