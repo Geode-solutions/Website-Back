@@ -54,7 +54,7 @@ def sendConstraints():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     constraints = "["
     data_constraints = geode_num.DataPointsManager3D()
-    constraint_file = WORKFLOWS_DATA_FOLDER + '3DBenchmark_implicit_data_constraints.og_pts3d'
+    constraint_file = WORKFLOWS_DATA_FOLDER + '/3DBenchmark_implicit_data_constraints.og_pts3d'
     data_constraints.load_data_points(constraint_file)
     for i in range(data_constraints.nb_data_points()):
         constraint = []
@@ -119,7 +119,7 @@ def step1():
     expliciter.add_scalar_isovalues( isovalues )
     brep = expliciter.build_brep()
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(og_geosciences.StructuralModel(brep),scalar_function_name)
-    geode_functions.save(implicit_model, "StructuralModel", os.path.abspath(DATA_FOLDER), "implicit.og_strm")
+    geode_functions.save(implicit_model, "StructuralModel", os.path.abspath(DATA_FOLDER), "/implicit.og_strm")
     return flask.make_response({'stepOneSuccessful': "yes" }, 200)
 
 
@@ -132,9 +132,9 @@ def step2():
         direction = float(variables['direction'])
     except ValueError:
         flask.abort(400, "Invalid data format for the 'axis' or 'metric' variables")
-    implicit_model = og_geosciences.ImplicitStructuralModel( geode_functions.load("StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")))
+    implicit_model = og_geosciences.ImplicitStructuralModel( geode_functions.load("StructuralModel", os.path.abspath(DATA_FOLDER + "/implicit.og_strm")))
     extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,axis,direction)
-    geode_functions.save(extracted_cross_section, "CrossSection", os.path.abspath(DATA_FOLDER), "cross_section.og_xsctn")
+    geode_functions.save(extracted_cross_section, "CrossSection", os.path.abspath(DATA_FOLDER), "/cross_section.og_xsctn")
     return flask.make_response({'stepTwoSuccessful': "yes" }, 200)
 
 
@@ -146,8 +146,8 @@ def step3():
         metric = int(variables['metric'])
     except ValueError:
         flask.abort(400, "Invalid data format for the 'metric' variable")
-    extracted_cross_section = geode_functions.load('CrossSection', os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn"))
+    extracted_cross_section = geode_functions.load('CrossSection', os.path.abspath(DATA_FOLDER + "/cross_section.og_xsctn"))
     constant_metric = geode_common.ConstantMetric2D( metric )
     remeshed_section,_ = geode_simp.simplex_remesh_section(extracted_cross_section,constant_metric)
-    geode_functions.save(remeshed_section, "Section", os.path.abspath(DATA_FOLDER), "section.vtm")
+    geode_functions.save(remeshed_section, "Section", os.path.abspath(DATA_FOLDER), "/section.vtm")
     return flask.make_response({'stepThreeSuccessful': "yes" }, 200)
