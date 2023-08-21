@@ -14,7 +14,7 @@ flask_cors.CORS(simplex_routes)
 @simplex_routes.route('/get_brep_info',methods=['POST'])
 def sendBRepInfo():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
-    brep = geode_functions.load("BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "/corbi.og_brep"))
+    brep = geode_functions.load("BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_brep"))
     surfacesID = []
     for surface in brep.surfaces():
         surfacesID.append(surface.id().string())
@@ -31,7 +31,7 @@ def remesh():
     variables = geode_functions.get_form_variables(flask.request.form,['globalMetric','surfaceMetrics','blockMetrics'])
     surfaceMetrics = eval(variables['surfaceMetrics'])
     blockMetrics = eval(variables['blockMetrics'])
-    brep = geode_functions.load("BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "/corbi.og_brep"))
+    brep = geode_functions.load("BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_brep"))
     brep_metric = geode_simp.BRepMetricConstraints(brep)
     try:
         if (10 <= float(variables['globalMetric']) <= 300):
@@ -55,5 +55,5 @@ def remesh():
         flask.abort(400, "Invalid UUID for an individual metric variable")
     metric = brep_metric.build_metric()
     brep_remeshed,_ = geode_simp.simplex_remesh_brep(brep, metric)
-    geode_functions.save(brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "/remeshed_corbi.vtm")
+    geode_functions.save(brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_corbi.vtm")
     return flask.make_response({'simplexRemeshSuccessful': "yes" }, 200)
