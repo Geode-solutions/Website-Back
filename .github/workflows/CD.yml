@@ -1,6 +1,8 @@
 name: Docker Image CD
 
 on: push
+
+
 jobs:
   test:
     runs-on: ubuntu-latest
