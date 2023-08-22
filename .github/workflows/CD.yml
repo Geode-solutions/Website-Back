@@ -14,12 +14,14 @@ jobs:
         python-version: "3.9"
     - name: Test
       run: |
+        curl -H "Accept: application/vnd.github.VERSION.raw" -H "Authorization: token ${{ secrets.TOKEN }}" https://api.github.com/repos/Geode-solutions/open-license-manager/contents/projects/geode/geode.lic\?ref\=master > ${{ github.workspace }}/geode.lic
         pip install pytest
         pip install -r requirements.txt
         pytest -v tests
       env:
         FLASK_DEBUG: false
         ID: 123456
+        GEODE_LICENSE_LOCATION: ${{ github.workspace }}/geode.lic
     
   deploy:
     needs: test
@@ -29,3 +31,5 @@ jobs:
       tag: ${{ github.ref_name }}
     secrets: 
       TOKEN: ${{secrets.GITHUB_TOKEN}}
+      LICENSE_TOKEN: ${{ secrets.TOKEN }}
+

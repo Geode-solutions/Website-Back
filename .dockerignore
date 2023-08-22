@@ -1,8 +1,9 @@
 __pycache__
+.env
 env
+venv
 tests
 uploads
-.env
 .vscode
 lock
 Architecture.drawio

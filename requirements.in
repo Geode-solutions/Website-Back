@@ -3,4 +3,14 @@ python-dotenv
 Flask[async]
 Flask-Cors
 Werkzeug
+OpenGeode-core
+OpenGeode-IO
+OpenGeode-Geosciences
+OpenGeode-GeosciencesIO
+OpenGeode-Inspector
+geode-numerics
+geode-simplex
+geode-explicit
+geode-implicit
+geode-common
 OpenGeodeWeb-Back
