@@ -7,6 +7,7 @@ import opengeode_geosciences as og_geosciences
 import geode_numerics as geode_num
 import geode_implicit as geode_imp
 import geode_simplex as geode_simp
+import geode_viewables as g_v
 import geode_common
 from opengeodeweb_back import geode_functions, geode_objects
 
@@ -120,7 +121,8 @@ def step1():
     brep = expliciter.build_brep()
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(og_geosciences.StructuralModel(brep),scalar_function_name)
     geode_functions.save(implicit_model, "StructuralModel", os.path.abspath(DATA_FOLDER), "implicit.og_strm")
-    return flask.make_response({'stepOneSuccessful': "yes" }, 200)
+    viewable_file_name = geode_functions.save_viewable(implicit_model, "StructuralModel", os.path.abspath(DATA_FOLDER), "implicit_structural_model")
+    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"implicit_structural_model"}, 200)
 
 
 @implicit_routes.route('/step2',methods=['POST'])
@@ -135,7 +137,8 @@ def step2():
     implicit_model = og_geosciences.ImplicitStructuralModel( geode_functions.load("StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")))
     extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,axis,direction)
     geode_functions.save(extracted_cross_section, "CrossSection", os.path.abspath(DATA_FOLDER), "cross_section.og_xsctn")
-    return flask.make_response({'stepTwoSuccessful': "yes" }, 200)
+    viewable_file_name = geode_functions.save_viewable(extracted_cross_section, "CrossSection", os.path.abspath(DATA_FOLDER), "implicit_cross_section")
+    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"implicit_cross_section"}, 200)
 
 
 @implicit_routes.route('/step3',methods=['POST'])
@@ -149,5 +152,5 @@ def step3():
     extracted_cross_section = geode_functions.load('CrossSection', os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn"))
     constant_metric = geode_common.ConstantMetric2D( metric )
     remeshed_section,_ = geode_simp.simplex_remesh_section(extracted_cross_section,constant_metric)
-    geode_functions.save(remeshed_section, "Section", os.path.abspath(DATA_FOLDER), "section.vtm")
-    return flask.make_response({'stepThreeSuccessful': "yes" }, 200)
+    viewable_file_name = geode_functions.save_viewable(remeshed_section, "Section", os.path.abspath(DATA_FOLDER), "implicit_remeshed_section")
+    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"implicit_remeshed_section"}, 200)
