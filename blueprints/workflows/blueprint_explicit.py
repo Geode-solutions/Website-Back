@@ -2,7 +2,6 @@ import os
 import opengeode as geode
 import opengeode_io as og_io
 import geode_explicit
-import geode_viewables as g_v
 from opengeodeweb_back import geode_functions, geode_objects
 import flask
 import flask_cors
