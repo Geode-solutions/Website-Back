@@ -23,7 +23,7 @@ def initialize():
     for block in brep.blocks():
         blocksID.append(block.id().string())
     viewable_file_name = geode_functions.save_viewable(brep, "BRep", os.path.abspath(DATA_FOLDER), "simplex_brep")
-    return flask.make_response(flask.jsonify({'viewable_file_name':viewable_file_name[6:], 'id':"simplex_brep", 'surfacesIDS':surfacesID, 'blocksIDS':blocksID }), 200)
+    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"simplex_brep", 'surfacesIDS':surfacesID, 'blocksIDS':blocksID }, 200)
 
 
 @simplex_routes.route('/remesh',methods=['POST'])
@@ -58,4 +58,4 @@ def remesh():
     metric = brep_metric.build_metric()
     brep_remeshed,_ = geode_simp.simplex_remesh_brep(brep, metric)
     viewable_file_name = geode_functions.save_viewable(brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep")
-    return flask.make_response(flask.jsonify({'viewable_file_name':viewable_file_name[6:], 'id':"remeshed_simplex_brep"}), 200)
+    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"remeshed_simplex_brep"}, 200)

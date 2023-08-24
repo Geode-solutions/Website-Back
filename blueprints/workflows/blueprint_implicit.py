@@ -66,7 +66,7 @@ def sendConstraints():
         constraint.append(data_constraints.data_point_weight(i))
         constraints += str(constraint) + ","
     constraints = constraints[:len(constraints)-1] + "]"
-    return flask.make_response(flask.jsonify({'constraints':constraints,}), 200)
+    return flask.make_response({'constraints':constraints,}, 200)
 
 
 @implicit_routes.route('/step1',methods = ['POST'])
