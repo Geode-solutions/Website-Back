@@ -7,7 +7,6 @@ import opengeode_geosciences as og_geosciences
 import geode_numerics as geode_num
 import geode_implicit as geode_imp
 import geode_simplex as geode_simp
-import geode_viewables as g_v
 import geode_common
 from opengeodeweb_back import geode_functions, geode_objects
 
