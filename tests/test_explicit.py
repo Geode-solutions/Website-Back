@@ -1,8 +1,7 @@
 import os
 import base64
 
-ID = os.environ.get('ID')
-base_route = f"/{ID}/workflows/explicit"
+base_route = f"/workflows/explicit"
 
 
 def test_get_base_data(client):
@@ -23,7 +22,7 @@ def test_get_base_data(client):
 
 
 def test_get_brep_stats(client):
-    response = client.post(f'{base_route}/get_brep_stats')
+    response = client.post(f"{base_route}/get_brep_stats")
     assert response.status_code == 200
     nb_corners = response.json['nb_corners']
     nb_lines = response.json['nb_lines']
