@@ -23,7 +23,7 @@ def initialize():
     for block in brep.blocks():
         blocksID.append(block.id().string())
     viewable_file_name = geode_functions.save_viewable(brep, "BRep", os.path.abspath(DATA_FOLDER), "simplex_brep")
-    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"simplex_brep", 'surfacesIDS':surfacesID, 'blocksIDS':blocksID }, 200)
+    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"simplex_brep", 'surfacesIDS':surfacesID, 'blocksIDS':blocksID }, 200)
 
 
 @simplex_routes.route('/remesh',methods=['POST'])
