@@ -121,7 +121,7 @@ def step1():
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(og_geosciences.StructuralModel(brep),scalar_function_name)
     geode_functions.save(implicit_model, "StructuralModel", os.path.abspath(DATA_FOLDER), "implicit.og_strm")
     viewable_file_name = geode_functions.save_viewable(implicit_model, "StructuralModel", os.path.abspath(DATA_FOLDER), "implicit_structural_model")
-    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"implicit_structural_model"}, 200)
+    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"implicit_structural_model"}, 200)
 
 
 @implicit_routes.route('/step2',methods=['POST'])
@@ -137,7 +137,7 @@ def step2():
     extracted_cross_section = geode_imp.extract_implicit_cross_section_from_axis(implicit_model,axis,direction)
     geode_functions.save(extracted_cross_section, "CrossSection", os.path.abspath(DATA_FOLDER), "cross_section.og_xsctn")
     viewable_file_name = geode_functions.save_viewable(extracted_cross_section, "CrossSection", os.path.abspath(DATA_FOLDER), "implicit_cross_section")
-    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"implicit_cross_section"}, 200)
+    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"implicit_cross_section"}, 200)
 
 
 @implicit_routes.route('/step3',methods=['POST'])
@@ -152,4 +152,4 @@ def step3():
     constant_metric = geode_common.ConstantMetric2D( metric )
     remeshed_section,_ = geode_simp.simplex_remesh_section(extracted_cross_section,constant_metric)
     viewable_file_name = geode_functions.save_viewable(remeshed_section, "Section", os.path.abspath(DATA_FOLDER), "implicit_remeshed_section")
-    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"implicit_remeshed_section"}, 200)
+    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"implicit_remeshed_section"}, 200)

@@ -58,4 +58,4 @@ def remesh():
     metric = brep_metric.build_metric()
     brep_remeshed,_ = geode_simp.simplex_remesh_brep(brep, metric)
     viewable_file_name = geode_functions.save_viewable(brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep")
-    return flask.make_response({'viewable_file_name':viewable_file_name[6:], 'id':"remeshed_simplex_brep"}, 200)
+    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"remeshed_simplex_brep"}, 200)
