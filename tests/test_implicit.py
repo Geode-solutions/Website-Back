@@ -32,6 +32,10 @@ def test_step1(client):
         },
     )
     assert response.status_code == 200
+    viewable_file_name = response.json['viewable_file_name']
+    id = response.json['id']
+    assert type(viewable_file_name) is str
+    assert type(id) is str
 
     # Test without bbox points
     response = client.post(
@@ -195,6 +199,10 @@ def test_step2(client):
         f"{base_route}/step2", data={"axis": axis, "direction": direction}
     )
     assert response.status_code == 200
+    viewable_file_name = response.json['viewable_file_name']
+    id = response.json['id']
+    assert type(viewable_file_name) is str
+    assert type(id) is str
 
     # Test without axis
     response = client.post(f"{base_route}/step2", data={"direction": direction})
@@ -247,6 +255,10 @@ def test_step3(client):
         },
     )
     assert response.status_code == 200
+    viewable_file_name = response.json['viewable_file_name']
+    id = response.json['id']
+    assert type(viewable_file_name) is str
+    assert type(id) is str
 
     # Test without metric
     response = client.post(f"{base_route}/step3", data={})

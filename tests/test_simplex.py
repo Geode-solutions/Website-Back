@@ -4,11 +4,15 @@ import base64
 base_route = f"/workflows/simplex"
 
 
-def test_get_brep_info(client):
-    response = client.post(f"{base_route}/get_brep_info")
+def test_initialize(client):
+    response = client.post(f'{base_route}/initialize')
     assert response.status_code == 200
-    surfacesID = response.json["surfacesIDS"]
-    blocksIDS = response.json["blocksIDS"]
+    viewable_file_name = response.json['viewable_file_name']
+    id = response.json['id']
+    surfacesID = response.json['surfacesIDS']
+    blocksIDS = response.json['blocksIDS']
+    assert type(viewable_file_name) is str
+    assert type(id) is str
     assert type(surfacesID) is list
     assert type(blocksIDS) is list
 
@@ -28,6 +32,10 @@ def test_remesh(client):
         },
     )
     assert response.status_code == 200
+    viewable_file_name = response.json['viewable_file_name']
+    id = response.json['id']
+    assert type(viewable_file_name) is str
+    assert type(id) is str
 
     # Test without surfaceMetrics
     response = client.post(

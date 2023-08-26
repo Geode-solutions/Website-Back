@@ -11,9 +11,10 @@ simplex_routes = flask.Blueprint('simplex_routes', __name__)
 flask_cors.CORS(simplex_routes)
 
 
-@simplex_routes.route('/get_brep_info',methods=['POST'])
-def sendBRepInfo():
+@simplex_routes.route('/initialize',methods=['POST'])
+def initialize():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
+    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     brep = geode_functions.load("BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_brep"))
     surfacesID = []
     for surface in brep.surfaces():
@@ -21,7 +22,8 @@ def sendBRepInfo():
     blocksID = []
     for block in brep.blocks():
         blocksID.append(block.id().string())
-    return flask.make_response(flask.jsonify({'surfacesIDS':surfacesID, 'blocksIDS':blocksID }), 200)
+    viewable_file_name = geode_functions.save_viewable(brep, "BRep", os.path.abspath(DATA_FOLDER), "simplex_brep")
+    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"simplex_brep", 'surfacesIDS':surfacesID, 'blocksIDS':blocksID }, 200)
 
 
 @simplex_routes.route('/remesh',methods=['POST'])
@@ -55,5 +57,5 @@ def remesh():
         flask.abort(400, "Invalid UUID for an individual metric variable")
     metric = brep_metric.build_metric()
     brep_remeshed,_ = geode_simp.simplex_remesh_brep(brep, metric)
-    geode_functions.save(brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_corbi.vtm")
-    return flask.make_response({'simplexRemeshSuccessful': "yes" }, 200)
+    viewable_file_name = geode_functions.save_viewable(brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep")
+    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"remeshed_simplex_brep"}, 200)
