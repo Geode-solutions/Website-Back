@@ -26,10 +26,10 @@ def step0():
     data_constraints.load_data_points(constraint_file)
     for i in range(data_constraints.nb_data_points()):
         constraint = []
-        point = data_constraints.data_point_position(i).string().split(" ")
-        constraint.append(float(point[0]))
-        constraint.append(float(point[1]))
-        constraint.append(float(point[2]))
+        point = data_constraints.data_point_position(i)
+        constraint.append(point.value(0))
+        constraint.append(point.value(1))
+        constraint.append(point.value(2))
         constraint.append(data_constraints.data_point_value(i))
         constraints += str(constraint) + ","
     constraints = constraints[: len(constraints) - 1] + "]"
@@ -84,11 +84,21 @@ def step1():
     )
     data_constraints = geode_numerics.DataPointsManager3D()
     for constraint in json.loads(variables["constraints"]):
-        data_constraints.add_data_point(
-            og.Point3D(
+        try:
+            point = og.Point3D(
                 [float(constraint["x"]), float(constraint["y"]), float(constraint["z"])]
-            ),
-            float(constraint["value"]),
+            )
+        except ValueError:
+            flask.abort(400, "Invalid data format for the constraint point")
+
+        try:
+            value = float(constraint["value"])
+        except ValueError:
+            flask.abort(400, "Invalid data format for the constraint value")
+
+        data_constraints.add_data_point(
+            point,
+            value,
             1,
         )
     bbox = og.BoundingBox3D()
@@ -106,7 +116,6 @@ def step1():
     expliciter = geode_implicit.RegularGridScalarFunctionExpliciter3D(
         function_computer.grid_with_functions(), scalar_function_name
     )
-    print("###", json.loads(variables["isovalues"]))
     expliciter.add_scalar_isovalues(json.loads(variables["isovalues"]))
     brep = expliciter.build_brep()
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(
@@ -144,8 +153,18 @@ def step2():
             "StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")
         )
     )
+    try:
+        axis = int(variables["axis"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the axis")
+
+    try:
+        coordinate = int(variables["coordinate"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the coordinate")
+
     extracted_cross_section = geode_implicit.extract_implicit_cross_section_from_axis(
-        implicit_model, int(variables["axis"]), float(variables["coordinate"])
+        implicit_model, axis, coordinate
     )
     geode_functions.save(
         extracted_cross_section,
@@ -175,8 +194,11 @@ def step3():
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")
     )
-    print("metric", float(variables["metric"]))
-    constant_metric = geode_common.ConstantMetric2D(float(variables["metric"]))
+    try:
+        metric = float(variables["metric"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the metric")
+    constant_metric = geode_common.ConstantMetric2D(metric)
     remeshed_section, _ = geode_simplex.simplex_remesh_section(
         extracted_cross_section, constant_metric
     )
