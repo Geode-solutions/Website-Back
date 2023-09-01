@@ -8,7 +8,6 @@ class Config(object):
     PORT = "5000"
     CORS_HEADERS = "Content-Type"
     UPLOAD_FOLDER = "./uploads"
-    DATA_FOLDER = "/data/"
     WORKFLOWS_DATA_FOLDER = "./data_workflows/"
     LOCK_FOLDER = "./lock"
     TIME_FOLDER = "./time"
@@ -19,6 +18,7 @@ class ProdConfig(Config):
     ORIGINS = ["https://geode-solutions.com", "https://next.geode-solutions.com"]
     MINUTES_BEFORE_TIMEOUT = "5"
     SECONDS_BETWEEN_SHUTDOWNS = "150"
+    DATA_FOLDER = "/data/"
 
 
 class DevConfig(Config):
@@ -26,3 +26,4 @@ class DevConfig(Config):
     ORIGINS = "http://localhost:3000"
     MINUTES_BEFORE_TIMEOUT = "1000"
     SECONDS_BETWEEN_SHUTDOWNS = "60"
+    DATA_FOLDER = "./data/"
