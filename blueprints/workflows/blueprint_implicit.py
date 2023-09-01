@@ -121,6 +121,9 @@ def step1():
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(
         og_geosciences.StructuralModel(brep), scalar_function_name
     )
+    builder = og_geosciences.ImplicitStructuralModelBuilder(implicit_model)
+    for surface in implicit_model.surfaces():
+        builder.remove_surface(surface)
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     geode_functions.save(
         implicit_model,
