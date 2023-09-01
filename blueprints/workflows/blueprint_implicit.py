@@ -77,7 +77,7 @@ def step0():
 
 @implicit_routes.route("/step1", methods=["POST"])
 def step1():
-    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
+    print(f"{flask.request.form=}", flush=True)
     variables = geode_functions.get_form_variables(
         flask.request.form,
         ["constraints", "isovalues"],
@@ -121,6 +121,7 @@ def step1():
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(
         og_geosciences.StructuralModel(brep), scalar_function_name
     )
+    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     geode_functions.save(
         implicit_model,
         "StructuralModel",
@@ -144,10 +145,11 @@ def step1():
 
 @implicit_routes.route("/step2", methods=["POST"])
 def step2():
-    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
+    print(f"{flask.request.form=}", flush=True)
     variables = geode_functions.get_form_variables(
         flask.request.form, ["axis", "coordinate"]
     )
+    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     implicit_model = og_geosciences.ImplicitStructuralModel(
         geode_functions.load(
             "StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")
@@ -189,8 +191,9 @@ def step2():
 
 @implicit_routes.route("/step3", methods=["POST"])
 def step3():
-    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
+    print(f"{flask.request.form=}", flush=True)
     variables = geode_functions.get_form_variables(flask.request.form, ["metric"])
+    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")
     )
