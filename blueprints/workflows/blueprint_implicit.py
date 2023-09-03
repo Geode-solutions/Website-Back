@@ -35,6 +35,9 @@ def step0():
     constraints = constraints[: len(constraints) - 1] + "]"
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     data_constraints.save_data_points_manager(
+        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d")
+    )
+    data_constraints.save_data_points_manager(
         os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.vtp")
     )
     curve = og.EdgedCurve3D.create()
@@ -75,32 +78,58 @@ def step0():
     )
 
 
+@implicit_routes.route("/update_value", methods=["POST"])
+def update_value():
+    print(f"{flask.request.form=}", flush=True)
+    variables = geode_functions.get_form_variables(
+        flask.request.form,
+        ["point", "value"],
+    )
+    try:
+        point = int(variables["point"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the point")
+
+    try:
+        value = float(variables["value"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the value")
+
+    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
+    data_constraints = geode_numerics.DataPointsManager3D()
+    constraint_file = os.path.join(
+        os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d"
+    )
+    data_constraints.load_data_points(constraint_file)
+    data_constraints.change_data_point_value(point, value)
+    data_constraints.save_data_points_manager(
+        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d")
+    )
+    data_constraints.save_data_points_manager(
+        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.vtp")
+    )
+    return flask.make_response(
+        {
+            "viewable_points": "implicit_points.vtp",
+            "points": "implicit_points",
+        },
+        200,
+    )
+
+
 @implicit_routes.route("/step1", methods=["POST"])
 def step1():
     print(f"{flask.request.form=}", flush=True)
     variables = geode_functions.get_form_variables(
         flask.request.form,
-        ["constraints", "isovalues"],
+        ["isovalues"],
     )
+    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     data_constraints = geode_numerics.DataPointsManager3D()
-    for constraint in json.loads(variables["constraints"]):
-        try:
-            point = og.Point3D(
-                [float(constraint["x"]), float(constraint["y"]), float(constraint["z"])]
-            )
-        except ValueError:
-            flask.abort(400, "Invalid data format for the constraint point")
-
-        try:
-            value = float(constraint["value"])
-        except ValueError:
-            flask.abort(400, "Invalid data format for the constraint value")
-
-        data_constraints.add_data_point(
-            point,
-            value,
-            1,
-        )
+    constraint_file = os.path.join(
+        os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d"
+    )
+    data_constraints.load_data_points(constraint_file)
     bbox = og.BoundingBox3D()
     bbox.add_point(og.Point3D([0, 0, 0]))
     bbox.add_point(og.Point3D([40, 40, 40]))
@@ -124,7 +153,6 @@ def step1():
     builder = og_geosciences.ImplicitStructuralModelBuilder(implicit_model)
     for surface in implicit_model.surfaces():
         builder.remove_surface(surface)
-    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     geode_functions.save(
         implicit_model,
         "StructuralModel",
