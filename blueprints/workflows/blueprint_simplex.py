@@ -7,55 +7,83 @@ import flask
 import flask_cors
 
 
-simplex_routes = flask.Blueprint('simplex_routes', __name__)
+simplex_routes = flask.Blueprint("simplex_routes", __name__)
 flask_cors.CORS(simplex_routes)
 
 
-@simplex_routes.route('/initialize',methods=['POST'])
+@simplex_routes.route("/initialize", methods=["POST"])
 def initialize():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    brep = geode_functions.load("BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_brep"))
-    surfacesID = []
-    for surface in brep.surfaces():
-        surfacesID.append(surface.id().string())
-    blocksID = []
-    for block in brep.blocks():
-        blocksID.append(block.id().string())
-    viewable_file_name = geode_functions.save_viewable(brep, "BRep", os.path.abspath(DATA_FOLDER), "simplex_brep")
-    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"simplex_brep", 'surfacesIDS':surfacesID, 'blocksIDS':blocksID }, 200)
+    brep = geode_functions.load(
+        "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
+    )
+    viewable_file_name = geode_functions.save_viewable(
+        brep, "BRep", os.path.abspath(DATA_FOLDER), "simplex_brep"
+    )
+    return flask.make_response(
+        {
+            "viewable_file_name": os.path.basename(viewable_file_name),
+            "id": "simplex_brep",
+        },
+        200,
+    )
 
 
-@simplex_routes.route('/remesh',methods=['POST'])
+@simplex_routes.route("/remesh", methods=["POST"])
 def remesh():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    variables = geode_functions.get_form_variables(flask.request.form,['globalMetric','surfaceMetrics','blockMetrics'])
-    surfaceMetrics = eval(variables['surfaceMetrics'])
-    blockMetrics = eval(variables['blockMetrics'])
-    brep = geode_functions.load("BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_brep"))
+    variables = geode_functions.get_form_variables(
+        flask.request.form, ["metric", "faults_metric"]
+    )
+    min_metric = 10
+    max_metric = 300
+    brep = geode_functions.load(
+        "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
+    )
     brep_metric = geode_simp.BRepMetricConstraints(brep)
     try:
-        if (10 <= float(variables['globalMetric']) <= 300):
-            brep_metric.set_default_metric(float(variables['globalMetric']))
+        metric = float(variables["metric"])
+        if min_metric <= metric <= max_metric:
+            brep_metric.set_default_metric(metric)
         else:
-            return flask.make_response({ 'name': 'Bad Request','description': 'Wrong metric value, should be between 10 and 300' }, 400)
+            return flask.make_response(
+                {
+                    "name": "Bad Request",
+                    "description": "Wrong metric value, should be between {min_metric} and {max_metric}",
+                },
+                400,
+            )
     except ValueError:
-        flask.abort(400, "Invalid data format for the global metric variable")
+        flask.abort(400, "Invalid data format for the metric variable")
+
     try:
-        for id in list(surfaceMetrics.keys()):
-            tmp_surface = brep.surface(geode.uuid(id))
-            brep_metric.set_surface_metric(tmp_surface,float(surfaceMetrics[id]))
-        for id in list(blockMetrics.keys()):
-            tmp_block = brep.block(geode.uuid(id))
-            brep_metric.set_block_metric(tmp_block,float(blockMetrics[id]))
+        faults_metric = float(variables["faults_metric"])
+        if min_metric <= faults_metric <= max_metric:
+            for fault in brep.faults():
+                for surface in brep.fault_items(fault):
+                    brep_metric.set_surface_metric(surface, faults_metric)
+        else:
+            return flask.make_response(
+                {
+                    "name": "Bad Request",
+                    "description": "Wrong faults_metric value, should be between {min_metric} and {max_metric}",
+                },
+                400,
+            )
     except ValueError:
-        flask.abort(400, "Invalid data format for an individual metric variable")
-    except RuntimeError:
-        flask.abort(400, "Invalid ID for an individual metric variable")
-    except IndexError:
-        flask.abort(400, "Invalid UUID for an individual metric variable")
+        flask.abort(400, "Invalid data format for the faults_metric variable")
+
     metric = brep_metric.build_metric()
-    brep_remeshed,_ = geode_simp.simplex_remesh_brep(brep, metric)
-    viewable_file_name = geode_functions.save_viewable(brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep")
-    return flask.make_response({'viewable_file_name':os.path.basename(viewable_file_name), 'id':"remeshed_simplex_brep"}, 200)
+    brep_remeshed, _ = geode_simp.simplex_remesh_brep(brep, metric)
+    viewable_file_name = geode_functions.save_viewable(
+        brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
+    )
+    return flask.make_response(
+        {
+            "viewable_file_name": os.path.basename(viewable_file_name),
+            "id": "remeshed_simplex_brep",
+        },
+        200,
+    )
