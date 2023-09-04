@@ -5,165 +5,63 @@ base_route = f"/workflows/simplex"
 
 
 def test_initialize(client):
-    response = client.post(f'{base_route}/initialize')
+    response = client.post(f"{base_route}/initialize")
     assert response.status_code == 200
-    viewable_file_name = response.json['viewable_file_name']
-    id = response.json['id']
-    surfacesID = response.json['surfacesIDS']
-    blocksIDS = response.json['blocksIDS']
+    viewable_file_name = response.json["viewable_file_name"]
+    id = response.json["id"]
     assert type(viewable_file_name) is str
     assert type(id) is str
-    assert type(surfacesID) is list
-    assert type(blocksIDS) is list
 
 
 def test_remesh(client):
-    surfaceMetrics = '{"00000000-fe86-4d4c-8000-000048049966":"200"}'
-    blockMetrics = '{"00000000-e121-4f75-8000-0000676a61c8":"200"}'
-    globalMetric = "150"
+    metric = "150"
+    faults_metric = "50"
 
-    # Normal test with surfaceMetrics/blockMetrics/globalmetric
+    # Normal test
     response = client.post(
         f"{base_route}/remesh",
         data={
-            "surfaceMetrics": surfaceMetrics,
-            "blockMetrics": blockMetrics,
-            "globalMetric": globalMetric,
+            "metric": metric,
+            "faults_metric": faults_metric,
         },
     )
     assert response.status_code == 200
-    viewable_file_name = response.json['viewable_file_name']
-    id = response.json['id']
+    viewable_file_name = response.json["viewable_file_name"]
+    id = response.json["id"]
     assert type(viewable_file_name) is str
     assert type(id) is str
 
-    # Test without surfaceMetrics
+    # Test without faults_metric
     response = client.post(
         f"{base_route}/remesh",
         data={
-            "blockMetrics": blockMetrics,
-            "globalMetric": globalMetric,
+            "metric": metric,
         },
     )
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No surfaceMetrics sent"
+    assert error_description == "No faults_metric sent"
 
-    # Test without blockMetrics
-    response = client.post(
-        f"{base_route}/remesh",
-        data={"surfaceMetrics": surfaceMetrics, "globalMetric": globalMetric},
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "No blockMetrics sent"
-
-    # Test without globalMetric
+    # Test without metric
     response = client.post(
         f"{base_route}/remesh",
         data={
-            "surfaceMetrics": surfaceMetrics,
-            "blockMetrics": blockMetrics,
+            "faults_metric": faults_metric,
         },
     )
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No globalMetric sent"
-
-    # Test with stupid surface metric
-    surfaceMetrics_stupid = '{"00000000-fe86-4d4c-8000-000048049966":"toto"}'
-    response = client.post(
-        f"{base_route}/remesh",
-        data={
-            "surfaceMetrics": surfaceMetrics_stupid,
-            "blockMetrics": blockMetrics,
-            "globalMetric": globalMetric,
-        },
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid data format for an individual metric variable"
-
-    # Test with stupid surface metric ID
-    surfaceID_stupid = '{"toto":"200"}'
-    response = client.post(
-        f"{base_route}/remesh",
-        data={
-            "surfaceMetrics": surfaceID_stupid,
-            "blockMetrics": blockMetrics,
-            "globalMetric": globalMetric,
-        },
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid ID for an individual metric variable"
-
-    # Test with non-existent surface metric ID
-    surfaceID_nonexistent = '{"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx":"200"}'
-    response = client.post(
-        f"{base_route}/remesh",
-        data={
-            "surfaceMetrics": surfaceID_nonexistent,
-            "blockMetrics": blockMetrics,
-            "globalMetric": globalMetric,
-        },
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid UUID for an individual metric variable"
-
-    # Test with stupid surface metric
-    blockMetrics_stupid = '{"00000000-e121-4f75-8000-0000676a61c8":"toto"}'
-    response = client.post(
-        f"{base_route}/remesh",
-        data={
-            "surfaceMetrics": surfaceMetrics,
-            "blockMetrics": blockMetrics_stupid,
-            "globalMetric": globalMetric,
-        },
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid data format for an individual metric variable"
-
-    # Test with stupid surface metric ID
-    blockID_stupid = '{"toto":"200"}'
-    response = client.post(
-        f"{base_route}/remesh",
-        data={
-            "surfaceMetrics": surfaceMetrics,
-            "blockMetrics": blockID_stupid,
-            "globalMetric": globalMetric,
-        },
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid ID for an individual metric variable"
-
-    # Test with non-existent block metric ID
-    blockID_nonexistent = '{"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx":"200"}'
-    response = client.post(
-        f"{base_route}/remesh",
-        data={
-            "surfaceMetrics": surfaceMetrics,
-            "blockMetrics": blockID_nonexistent,
-            "globalMetric": globalMetric,
-        },
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid UUID for an individual metric variable"
+    assert error_description == "No metric sent"
 
     # Test with stupid surface metric
     globalMetric_stupid = "Toto"
     response = client.post(
         f"{base_route}/remesh",
         data={
-            "surfaceMetrics": surfaceMetrics,
-            "blockMetrics": blockMetrics,
-            "globalMetric": globalMetric_stupid,
+            "faults_metric": faults_metric,
+            "metric": globalMetric_stupid,
         },
     )
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "Invalid data format for the global metric variable"
+    assert error_description == "Invalid data format for the metric variable"
