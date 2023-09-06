@@ -1,7 +1,7 @@
 import os
 import opengeode as geode
 import opengeode_io as og_io
-import geode_simplex as geode_simp
+import geode_simplex
 from opengeodeweb_back import geode_functions, geode_objects
 import flask
 import flask_cors
@@ -42,7 +42,7 @@ def remesh():
     brep = geode_functions.load(
         "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
     )
-    brep_metric = geode_simp.BRepMetricConstraints(brep)
+    brep_metric = geode_simplex.BRepMetricConstraints(brep)
     try:
         metric = float(variables["metric"])
         if min_metric <= metric <= max_metric:
@@ -76,7 +76,7 @@ def remesh():
         flask.abort(400, "Invalid data format for the faults_metric variable")
 
     metric = brep_metric.build_metric()
-    brep_remeshed, _ = geode_simp.simplex_remesh_brep(brep, metric)
+    brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, metric)
     viewable_file_name = geode_functions.save_viewable(
         brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
     )

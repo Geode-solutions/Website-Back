@@ -2,6 +2,8 @@ import os
 import opengeode as geode
 import opengeode_io as og_io
 import geode_explicit
+import geode_common
+import geode_simplex
 from opengeodeweb_back import geode_functions, geode_objects
 import flask
 import flask_cors
@@ -58,10 +60,14 @@ def sendBRepStats():
         modeler.add_triangulated_surface(surface.triangulated_mesh())
     modeler.add_triangulated_surface(topo)
     brep_explicit = modeler.build()
+    geode.filter_brep_components_with_regards_to_blocks(brep_explicit)
     nb_corners = brep_explicit.nb_corners()
     nb_lines = brep_explicit.nb_lines()
     nb_surfaces = brep_explicit.nb_surfaces()
     nb_blocks = brep_explicit.nb_blocks()
+    geode_functions.save(
+        brep_explicit, "BRep", os.path.abspath(DATA_FOLDER), "explicit_brep.og_brep"
+    )
     viewable_file_name = geode_functions.save_viewable(
         brep_explicit, "BRep", os.path.abspath(DATA_FOLDER), "explicit_brep"
     )
@@ -73,6 +79,33 @@ def sendBRepStats():
             "nb_lines": nb_lines,
             "nb_surfaces": nb_surfaces,
             "nb_blocks": nb_blocks,
+        },
+        200,
+    )
+
+
+@explicit_routes.route("/remesh", methods=["POST"])
+def remesh():
+    DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
+    variables = geode_functions.get_form_variables(flask.request.form, ["metric"])
+    min_metric = 50
+    max_metric = 500
+    brep = geode_functions.load(
+        "BRep", os.path.abspath(DATA_FOLDER + "explicit_brep.og_brep")
+    )
+    try:
+        metric = float(variables["metric"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the metric variable")
+    brep_metric = geode_common.ConstantMetric3D(metric)
+    brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, brep_metric)
+    viewable_file_name = geode_functions.save_viewable(
+        brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
+    )
+    return flask.make_response(
+        {
+            "viewable_file_name": os.path.basename(viewable_file_name),
+            "id": "remeshed_simplex_brep",
         },
         200,
     )
