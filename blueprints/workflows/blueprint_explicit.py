@@ -15,33 +15,26 @@ flask_cors.CORS(explicit_routes)
 def sendBaseData():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    id1 = geode_functions.load(
-        "TriangulatedSurface3D", os.path.abspath(WORKFLOWS_DATA_FOLDER + "ID1.og_tsf3d")
+    model_A1 = geode_functions.load(
+        "BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "model_A1.og_brep")
     )
-    id2 = geode_functions.load(
-        "TriangulatedSurface3D", os.path.abspath(WORKFLOWS_DATA_FOLDER + "ID2.og_tsf3d")
-    )
-    id3 = geode_functions.load(
-        "TriangulatedSurface3D", os.path.abspath(WORKFLOWS_DATA_FOLDER + "ID3.og_tsf3d")
+    topo = geode_functions.load(
+        "TriangulatedSurface3D",
+        os.path.abspath(WORKFLOWS_DATA_FOLDER + "topo_good.og_tsf3d"),
     )
 
     viewable_1 = geode_functions.save_viewable(
-        id1, "TriangulatedSurface3D", os.path.abspath(DATA_FOLDER), "id1"
+        model_A1, "BRep", os.path.abspath(DATA_FOLDER), "model_A1"
     )
     viewable_2 = geode_functions.save_viewable(
-        id2, "TriangulatedSurface3D", os.path.abspath(DATA_FOLDER), "id2"
-    )
-    viewable_3 = geode_functions.save_viewable(
-        id3, "TriangulatedSurface3D", os.path.abspath(DATA_FOLDER), "id3"
+        topo, "TriangulatedSurface3D", os.path.abspath(DATA_FOLDER), "topo"
     )
     return flask.make_response(
         {
             "viewable_1": os.path.basename(viewable_1),
-            "id1": "id1",
+            "id1": "model_A1",
             "viewable_2": os.path.basename(viewable_2),
-            "id2": "id2",
-            "viewable_3": os.path.basename(viewable_3),
-            "id3": "id3",
+            "id2": "topo",
         },
         200,
     )
@@ -51,22 +44,19 @@ def sendBaseData():
 def sendBRepStats():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    id1 = geode_functions.load(
-        "TriangulatedSurface3D", os.path.abspath(WORKFLOWS_DATA_FOLDER + "ID1.og_tsf3d")
+    model_A1 = geode_functions.load(
+        "BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "model_A1.og_brep")
     )
-    id2 = geode_functions.load(
-        "TriangulatedSurface3D", os.path.abspath(WORKFLOWS_DATA_FOLDER + "ID2.og_tsf3d")
+    topo = geode_functions.load(
+        "TriangulatedSurface3D",
+        os.path.abspath(WORKFLOWS_DATA_FOLDER + "topo_good.og_tsf3d"),
     )
-    id3 = geode_functions.load(
-        "TriangulatedSurface3D", os.path.abspath(WORKFLOWS_DATA_FOLDER + "ID3.og_tsf3d")
-    )
-    bbox = id1.bounding_box()
-    bbox.add_box(id2.bounding_box())
-    bbox.add_box(id3.bounding_box())
+    bbox = model_A1.bounding_box()
+    bbox.add_box(topo.bounding_box())
     modeler = geode_explicit.BRepExplicitModeler(bbox)
-    modeler.add_triangulated_surface(id1)
-    modeler.add_triangulated_surface(id2)
-    modeler.add_triangulated_surface(id3)
+    for surface in model_A1.surfaces():
+        modeler.add_triangulated_surface(surface.triangulated_mesh())
+    modeler.add_triangulated_surface(topo)
     brep_explicit = modeler.build()
     nb_corners = brep_explicit.nb_corners()
     nb_lines = brep_explicit.nb_lines()

@@ -9,6 +9,7 @@ import geode_common
 import geode_numerics
 import geode_implicit
 import geode_simplex
+import geode_conversion
 from opengeodeweb_back import geode_functions, geode_objects
 
 implicit_routes = flask.Blueprint("implicit_routes", __name__)
@@ -232,6 +233,7 @@ def step3():
         metric = float(variables["metric"])
     except ValueError:
         flask.abort(400, "Invalid data format for the metric")
+    # sharp_section = geode_conversion.add_sharp_features(extracted_cross_section, 80)
     constant_metric = geode_common.ConstantMetric2D(metric)
     remeshed_section, _ = geode_simplex.simplex_remesh_section(
         extracted_cross_section, constant_metric
