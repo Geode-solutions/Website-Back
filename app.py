@@ -14,6 +14,8 @@ from opengeodeweb_back import geode_functions
 
 from werkzeug.exceptions import HTTPException
 
+from werkzeug.exceptions import HTTPException
+
 
 if os.path.isfile("./.env"):
     basedir = os.path.abspath(os.path.dirname(__file__))
@@ -104,4 +106,4 @@ def create_backend():
 # ''' Main '''
 if __name__ == "__main__":
     print(f"Python is running in {FLASK_DEBUG} mode")
-    app.run(debug=FLASK_DEBUG, host='0.0.0.0', port=PORT, ssl_context=SSL)
+    app.run(debug=FLASK_DEBUG, host="0.0.0.0", port=PORT, ssl_context=SSL)
