@@ -15,7 +15,7 @@ def test_step0(client):
 
 
 def test_step1(client):
-    isovalues = json.dumps([0, 1, 2])
+    isovalues = json.dumps([0, 0.5, 1])
 
     # Normal test with isovalues
     response = client.post(
