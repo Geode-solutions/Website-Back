@@ -21,9 +21,7 @@ def step0():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     constraints = "["
     data_constraints = geode_numerics.DataPointsManager3D()
-    constraint_file = (
-        WORKFLOWS_DATA_FOLDER + "3DBenchmark_implicit_data_constraints.og_pts3d"
-    )
+    constraint_file = WORKFLOWS_DATA_FOLDER + "data_constraints.og_pts3d"
     data_constraints.load_data_points(constraint_file)
     for i in range(data_constraints.nb_data_points()):
         constraint = []
