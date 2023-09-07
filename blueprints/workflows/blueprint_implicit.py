@@ -233,10 +233,13 @@ def step3():
         metric = float(variables["metric"])
     except ValueError:
         flask.abort(400, "Invalid data format for the metric")
-    # sharp_section = geode_conversion.add_sharp_features(extracted_cross_section, 80)
+    sharp_section = geode_conversion.add_section_sharp_features(
+        extracted_cross_section, 120
+    )
+    print(dir(geode_conversion), flush=True)
     constant_metric = geode_common.ConstantMetric2D(metric)
     remeshed_section, _ = geode_simplex.simplex_remesh_section(
-        extracted_cross_section, constant_metric
+        sharp_section, constant_metric
     )
     viewable_file_name = geode_functions.save_viewable(
         remeshed_section,
