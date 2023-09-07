@@ -1,7 +1,7 @@
 import os
 import base64
 
-base_route = f"/workflows/explicit"
+base_route = "/workflows/explicit"
 
 
 def test_get_base_data(client):

@@ -2,7 +2,7 @@ import os
 import json
 import base64
 
-base_route = f"/workflows/implicit"
+base_route = "/workflows/implicit"
 
 
 def test_step0(client):

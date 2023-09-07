@@ -1,7 +1,7 @@
 import os
 import base64
 
-base_route = f"/workflows/simplex"
+base_route = "/workflows/simplex"
 
 
 def test_initialize(client):
