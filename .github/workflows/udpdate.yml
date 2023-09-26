@@ -52,7 +52,7 @@ jobs:
       if: steps.update.outputs.update == 'true' 
       with:
         source_branch: version-update
-        destination_branch: develop
+        destination_branch: next
         pr_reviewer: JulienChampagnol
         github_token: ${{ secrets.TOKEN }}
         
