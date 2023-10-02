@@ -9,8 +9,8 @@ class Config(object):
     CORS_HEADERS = "Content-Type"
     UPLOAD_FOLDER = "./uploads"
     WORKFLOWS_DATA_FOLDER = "./data_workflows/"
-    LOCK_FOLDER = "./lock"
-    TIME_FOLDER = "./time"
+    LOCK_FOLDER = "./lock/"
+    TIME_FOLDER = "./time/"
 
 
 class ProdConfig(Config):
