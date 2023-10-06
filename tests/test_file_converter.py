@@ -75,7 +75,7 @@ def test_allowed_objects(client):
     )
     assert response.status_code == 200
     allowed_objects = response.json["allowed_objects"]
-    list_objects = ["HybridSolid3D", "PolyhedralSolid3D", "TetrahedralSolid3D"]
+    geode_objects_list = ["HybridSolid3D", "PolyhedralSolid3D", "TetrahedralSolid3D"]
     for geode_object in allowed_objects:
         assert geode_object in allowed_objects
 
