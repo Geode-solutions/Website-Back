@@ -30,8 +30,25 @@ def file_converter_versions():
 
 @file_converter_routes.route("/allowed_files", methods=["GET"])
 def file_converter_allowed_files():
-    extensions = geode_functions.list_all_input_extensions()
+    extensions = geode_functions.list_input_extensions()
     return {"status": 200, "extensions": extensions}
+
+
+@file_converter_routes.route("/upload_file", methods=["POST"])
+def validity_checker_upload_file():
+    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
+    array_variables = ["file", "filename", "filesize"]
+    variables_dict = geode_functions.get_form_variables(
+        flask.request.form, array_variables
+    )
+    geode_functions.upload_file(
+        variables_dict["file"],
+        variables_dict["filename"],
+        UPLOAD_FOLDER,
+        variables_dict["filesize"],
+    )
+
+    return flask.make_response({"message": "File uploaded"}, 200)
 
 
 @file_converter_routes.route("/allowed_objects", methods=["POST"])
@@ -41,9 +58,36 @@ def file_converter_allowed_objects():
         flask.request.form, array_variables
     )
     file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
-    allowed_objects = geode_functions.list_objects(file_extension)
+    allowed_objects = geode_functions.list_geode_objects(file_extension)
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
+
+
+@file_converter_routes.route("/missing_files", methods=["POST"])
+def file_converter_missing_files():
+    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
+
+    array_variables = ["geode_object", "filename"]
+    variables_dict = geode_functions.get_form_variables(
+        flask.request.form, array_variables
+    )
+
+    missing_files = geode_functions.missing_files(
+        variables_dict["geode_object"],
+        os.path.join(UPLOAD_FOLDER, variables_dict["filename"]),
+    )
+    has_missing_files = missing_files.has_missing_files()
+    mandatory_files = missing_files.mandatory_files
+    additional_files = missing_files.additional_files
+
+    return flask.make_response(
+        {
+            "has_missing_files": has_missing_files,
+            "mandatory_files": mandatory_files,
+            "additional_files": additional_files,
+        },
+        200,
+    )
 
 
 @file_converter_routes.route("/output_file_extensions", methods=["POST"])
@@ -52,7 +96,7 @@ def file_converter_output_file_extensions():
     variables_dict = geode_functions.get_form_variables(
         flask.request.form, array_variables
     )
-    output_file_extensions = geode_functions.list_output_file_extensions(
+    output_file_extensions = geode_functions.get_geode_object_output_extensions(
         variables_dict["geode_object"]
     )
     return flask.make_response({"output_file_extensions": output_file_extensions}, 200)
@@ -85,8 +129,8 @@ async def file_converter_convert_file():
         shutil.rmtree(sub_folder)
 
     geode_functions.save(
-        data,
         variables_dict["geode_object"],
+        data,
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,
     )

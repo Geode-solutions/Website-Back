@@ -29,7 +29,7 @@ def validity_checker_versions():
 
 @validity_checker_routes.route("/allowed_files", methods=["GET"])
 def validity_checker_allowed_files():
-    extensions = geode_functions.list_all_input_extensions()
+    extensions = geode_functions.list_input_extensions(["inspector"])
 
     return flask.make_response({"extensions": extensions}, 200)
 
@@ -41,9 +41,36 @@ def validity_checker_allowed_objects():
         flask.request.form, array_variables
     )
     file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
-    allowed_objects = geode_functions.list_objects(file_extension)
+    allowed_objects = geode_functions.list_geode_objects(file_extension)
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
+
+
+@validity_checker_routes.route("/missing_files", methods=["POST"])
+def validity_checker_missing_files():
+    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
+
+    array_variables = ["geode_object", "filename"]
+    variables_dict = geode_functions.get_form_variables(
+        flask.request.form, array_variables
+    )
+
+    missing_files = geode_functions.missing_files(
+        variables_dict["geode_object"],
+        os.path.join(UPLOAD_FOLDER, variables_dict["filename"]),
+    )
+    has_missing_files = missing_files.has_missing_files()
+    mandatory_files = missing_files.mandatory_files
+    additional_files = missing_files.additional_files
+
+    return flask.make_response(
+        {
+            "has_missing_files": has_missing_files,
+            "mandatory_files": mandatory_files,
+            "additional_files": additional_files,
+        },
+        200,
+    )
 
 
 @validity_checker_routes.route("/upload_file", methods=["POST"])
