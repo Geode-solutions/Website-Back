@@ -80,11 +80,19 @@ def file_converter_missing_files():
     mandatory_files = missing_files.mandatory_files
     additional_files = missing_files.additional_files
 
+    mandatory_files_list = []
+    for mandatory_file in mandatory_files:
+        mandatory_files_list.append(os.path.basename(mandatory_file))
+
+    additional_files_list = []
+    for additional_file in additional_files:
+        additional_files_list.append(os.path.basename(additional_file))
+
     return flask.make_response(
         {
             "has_missing_files": has_missing_files,
-            "mandatory_files": mandatory_files,
-            "additional_files": additional_files,
+            "mandatory_files": mandatory_files_list,
+            "additional_files": additional_files_list,
         },
         200,
     )
