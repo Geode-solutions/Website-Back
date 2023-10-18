@@ -34,6 +34,18 @@ def file_converter_allowed_files():
     return {"status": 200, "extensions": extensions}
 
 
+@file_converter_routes.route("/allowed_objects", methods=["POST"])
+def file_converter_allowed_objects():
+    array_variables = ["filename"]
+    variables_dict = geode_functions.get_form_variables(
+        flask.request.form, array_variables
+    )
+    file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
+    allowed_objects = geode_functions.list_geode_objects(file_extension)
+
+    return flask.make_response({"allowed_objects": allowed_objects}, 200)
+
+
 @file_converter_routes.route("/upload_file", methods=["POST"])
 def validity_checker_upload_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
@@ -48,19 +60,7 @@ def validity_checker_upload_file():
         variables_dict["filesize"],
     )
 
-    return flask.make_response({"message": "File uploaded"}, 200)
-
-
-@file_converter_routes.route("/allowed_objects", methods=["POST"])
-def file_converter_allowed_objects():
-    array_variables = ["filename"]
-    variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
-    )
-    file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
-    allowed_objects = geode_functions.list_geode_objects(file_extension)
-
-    return flask.make_response({"allowed_objects": allowed_objects}, 200)
+    return flask.make_response({}, 200)
 
 
 @file_converter_routes.route("/missing_files", methods=["POST"])
@@ -114,16 +114,9 @@ def file_converter_output_file_extensions():
 async def file_converter_convert_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
-    array_variables = ["geode_object", "file", "filename", "filesize", "extension"]
+    array_variables = ["geode_object", "filename", "extension"]
     variables_dict = geode_functions.get_form_variables(
         flask.request.form, array_variables
-    )
-
-    geode_functions.upload_file(
-        variables_dict["file"],
-        variables_dict["filename"],
-        UPLOAD_FOLDER,
-        variables_dict["filesize"],
     )
 
     secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])

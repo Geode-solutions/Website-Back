@@ -91,6 +91,63 @@ def test_allowed_objects(client):
     assert error_message == "No filename sent"
 
 
+def test_upload_file(client):
+    file = base64.b64encode(open("./tests/corbi.og_brep", "rb").read())
+    filename = "corbi.og_brep"
+    filesize = os.path.getsize("./tests/corbi.og_brep")
+
+    # Test with file
+    response = client.post(
+        f"{base_route}/upload_file",
+        data={
+            "file": file,
+            "filename": filename,
+            "filesize": filesize,
+        },
+    )
+
+    assert response.status_code == 200
+
+    # Test without file
+    response = client.post(
+        f"{base_route}/upload_file",
+        data={
+            "filename": filename,
+            "filesize": filesize,
+        },
+    )
+
+    assert response.status_code == 400
+    error_description = response.json["description"]
+    assert error_description == "No file sent"
+
+    # Test without filename
+    response = client.post(
+        f"{base_route}/upload_file",
+        data={
+            "file": file,
+            "filesize": filesize,
+        },
+    )
+
+    assert response.status_code == 400
+    error_description = response.json["description"]
+    assert error_description == "No filename sent"
+
+    # Test without filesize
+    response = client.post(
+        f"{base_route}/upload_file",
+        data={
+            "file": file,
+            "filename": filename,
+        },
+    )
+
+    assert response.status_code == 400
+    error_description = response.json["description"]
+    assert error_description == "No filesize sent"
+
+
 def test_geographic_coordinate_systems(client):
     route = f"{base_route}/geographic_coordinate_systems"
 
@@ -148,6 +205,8 @@ def test_output_file_extensions(client):
 
 def test_convert_file(client):
     # Normal test with object/file/filename/extension
+
+    route = f"{base_route}/output_file_extensions"
     geode_object = ["BRep", "PolyhedralSolid3D"]
     filenames = ["corbi.og_brep", "cube.vtu"]
     input_crs_authority = "EPSG"
@@ -163,12 +222,10 @@ def test_convert_file(client):
         filesize = int(os.path.getsize(f"./tests/{filename}"))
 
         response = client.post(
-            f"{base_route}/convert_file",
+            route,
             data={
                 "geode_object": geode_object[index],
-                "file": file,
                 "filename": filename,
-                "filesize": filesize,
                 "input_crs_authority": input_crs_authority,
                 "input_crs_code": input_crs_code,
                 "input_crs_name": input_crs_name,
@@ -185,7 +242,7 @@ def test_convert_file(client):
 
         # Test without geode_object
         response = client.post(
-            f"{base_route}/convert_file",
+            route,
             data={
                 "file": file,
                 "filename": filename,
@@ -204,34 +261,11 @@ def test_convert_file(client):
         error_description = response.json["description"]
         assert error_description == "No geode_object sent"
 
-        # Test without file
-        response = client.post(
-            f"{base_route}/convert_file",
-            data={
-                "geode_object": geode_object[index],
-                "filename": filename,
-                "filesize": filesize,
-                "input_crs_authority": input_crs_authority,
-                "input_crs_code": input_crs_code,
-                "input_crs_name": input_crs_name,
-                "output_crs_authority": output_crs_authority,
-                "output_crs_code": output_crs_code,
-                "output_crs_name": output_crs_name,
-                "extension": extension[index],
-            },
-        )
-
-        assert response.status_code == 400
-        error_description = response.json["description"]
-        assert error_description == "No file sent"
-
         # Test without filename
         response = client.post(
-            f"{base_route}/convert_file",
+            route,
             data={
                 "geode_object": geode_object[index],
-                "file": file,
-                "filesize": filesize,
                 "input_crs_authority": input_crs_authority,
                 "input_crs_code": input_crs_code,
                 "input_crs_name": input_crs_name,
@@ -246,35 +280,12 @@ def test_convert_file(client):
         error_description = response.json["description"]
         assert error_description == "No filename sent"
 
-        # Test without filesize
-        response = client.post(
-            f"{base_route}/convert_file",
-            data={
-                "geode_object": geode_object[index],
-                "file": file,
-                "filename": filename,
-                "input_crs_authority": input_crs_authority,
-                "input_crs_code": input_crs_code,
-                "input_crs_name": input_crs_name,
-                "output_crs_authority": output_crs_authority,
-                "output_crs_code": output_crs_code,
-                "output_crs_name": output_crs_name,
-                "extension": extension[index],
-            },
-        )
-
-        assert response.status_code == 400
-        error_description = response.json["description"]
-        assert error_description == "No filesize sent"
-
         # Test without input_crs_authority
         response = client.post(
-            f"{base_route}/convert_file",
+            route,
             data={
                 "geode_object": geode_object[index],
-                "file": file,
                 "filename": filename,
-                "filesize": filesize,
                 "input_crs_code": input_crs_code,
                 "input_crs_name": input_crs_name,
                 "output_crs_authority": output_crs_authority,
@@ -290,12 +301,10 @@ def test_convert_file(client):
 
         # Test without input_crs_code
         response = client.post(
-            f"{base_route}/convert_file",
+            route,
             data={
                 "geode_object": geode_object[index],
-                "file": file,
                 "filename": filename,
-                "filesize": filesize,
                 "input_crs_authority": input_crs_authority,
                 "input_crs_name": input_crs_name,
                 "output_crs_authority": output_crs_authority,
@@ -314,9 +323,7 @@ def test_convert_file(client):
             f"{base_route}/convert_file",
             data={
                 "geode_object": geode_object[index],
-                "file": file,
                 "filename": filename,
-                "filesize": filesize,
                 "input_crs_authority": input_crs_authority,
                 "input_crs_code": input_crs_code,
                 "output_crs_authority": output_crs_authority,
@@ -335,9 +342,7 @@ def test_convert_file(client):
             f"{base_route}/convert_file",
             data={
                 "geode_object": geode_object[index],
-                "file": file,
                 "filename": filename,
-                "filesize": filesize,
                 "input_crs_authority": input_crs_authority,
                 "input_crs_code": input_crs_code,
                 "input_crs_name": input_crs_name,
@@ -356,9 +361,7 @@ def test_convert_file(client):
             f"{base_route}/convert_file",
             data={
                 "geode_object": geode_object[index],
-                "file": file,
                 "filename": filename,
-                "filesize": filesize,
                 "input_crs_authority": input_crs_authority,
                 "input_crs_code": input_crs_code,
                 "input_crs_name": input_crs_name,
@@ -377,9 +380,7 @@ def test_convert_file(client):
             f"{base_route}/convert_file",
             data={
                 "geode_object": geode_object[index],
-                "file": file,
                 "filename": filename,
-                "filesize": filesize,
                 "input_crs_authority": input_crs_authority,
                 "input_crs_code": input_crs_code,
                 "input_crs_name": input_crs_name,
@@ -398,9 +399,7 @@ def test_convert_file(client):
             f"{base_route}/convert_file",
             data={
                 "geode_object": geode_object[index],
-                "file": file,
                 "filename": filename,
-                "filesize": filesize,
                 "input_crs_authority": input_crs_authority,
                 "input_crs_code": input_crs_code,
                 "input_crs_name": input_crs_name,

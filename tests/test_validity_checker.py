@@ -97,25 +97,28 @@ def test_allowed_objects(client):
 
 
 def test_upload_file(client):
+    file = base64.b64encode(open("./tests/corbi.og_brep", "rb").read())
+    filename = "corbi.og_brep"
+    filesize = os.path.getsize("./tests/corbi.og_brep")
+
     # Test with file
     response = client.post(
         f"{base_route}/upload_file",
         data={
-            "file": base64.b64encode(open("./tests/corbi.og_brep", "rb").read()),
-            "filename": "corbi.og_brep",
-            "filesize": os.path.getsize("./tests/corbi.og_brep"),
+            "file": file,
+            "filename": filename,
+            "filesize": filesize,
         },
     )
 
     assert response.status_code == 200
-    message = response.json["message"]
-    assert message == "File uploaded"
 
     # Test without file
     response = client.post(
         f"{base_route}/upload_file",
         data={
-            "filename": "corbi.og_brep",
+            "filename": filename,
+            "filesize": filesize,
         },
     )
 
@@ -127,13 +130,27 @@ def test_upload_file(client):
     response = client.post(
         f"{base_route}/upload_file",
         data={
-            "file": base64.b64encode(open("./tests/corbi.og_brep", "rb").read()),
+            "file": file,
+            "filesize": filesize,
         },
     )
 
     assert response.status_code == 400
     error_description = response.json["description"]
     assert error_description == "No filename sent"
+
+    # Test without filesize
+    response = client.post(
+        f"{base_route}/upload_file",
+        data={
+            "file": file,
+            "filename": filename,
+        },
+    )
+
+    assert response.status_code == 400
+    error_description = response.json["description"]
+    assert error_description == "No filesize sent"
 
 
 def test_test_names(client):

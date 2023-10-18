@@ -29,7 +29,7 @@ def validity_checker_versions():
 
 @validity_checker_routes.route("/allowed_files", methods=["GET"])
 def validity_checker_allowed_files():
-    extensions = geode_functions.list_input_extensions(["inspector"])
+    extensions = geode_functions.list_input_extensions("inspector")
 
     return flask.make_response({"extensions": extensions}, 200)
 
@@ -41,7 +41,7 @@ def validity_checker_allowed_objects():
         flask.request.form, array_variables
     )
     file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
-    allowed_objects = geode_functions.list_geode_objects(file_extension)
+    allowed_objects = geode_functions.list_geode_objects(file_extension, "inspector")
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 

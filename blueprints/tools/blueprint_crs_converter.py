@@ -30,8 +30,21 @@ def crs_converter_versions():
 
 @crs_converter_routes.route("/allowed_files", methods=["GET"])
 def crs_converter_allowed_files():
-    extensions = geode_functions.list_input_extensions(["crs"])
+    extensions = geode_functions.list_input_extensions("crs")
     return {"status": 200, "extensions": extensions}
+
+
+@crs_converter_routes.route("/allowed_objects", methods=["POST"])
+def crs_converter_allowed_objects():
+    array_variables = ["filename"]
+    variables_dict = geode_functions.get_form_variables(
+        flask.request.form, array_variables
+    )
+    print(variables_dict["filename"])
+    file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
+    allowed_objects = geode_functions.list_geode_objects(file_extension, "crs")
+
+    return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
 
 @crs_converter_routes.route("/upload_file", methods=["POST"])
@@ -48,20 +61,7 @@ def validity_checker_upload_file():
         variables_dict["filesize"],
     )
 
-    return flask.make_response({"message": "File uploaded"}, 200)
-
-
-@crs_converter_routes.route("/allowed_objects", methods=["POST"])
-def crs_converter_allowed_objects():
-    array_variables = ["filename"]
-    variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
-    )
-    print(variables_dict["filename"])
-    file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
-    allowed_objects = geode_functions.list_geode_objects(file_extension)
-
-    return flask.make_response({"allowed_objects": allowed_objects}, 200)
+    return flask.make_response({}, 200)
 
 
 @crs_converter_routes.route("/missing_files", methods=["POST"])
@@ -139,9 +139,7 @@ async def crs_converter_convert_file():
 
     array_variables = [
         "geode_object",
-        "file",
         "filename",
-        "filesize",
         "input_crs_authority",
         "input_crs_code",
         "input_crs_name",
@@ -165,13 +163,6 @@ async def crs_converter_convert_file():
         "code": variables_dict["output_crs_code"],
         "name": variables_dict["output_crs_name"],
     }
-
-    geode_functions.upload_file(
-        variables_dict["file"],
-        variables_dict["filename"],
-        UPLOAD_FOLDER,
-        variables_dict["filesize"],
-    )
 
     secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
