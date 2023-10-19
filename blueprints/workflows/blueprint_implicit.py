@@ -153,14 +153,14 @@ def step1():
     for surface in implicit_model.surfaces():
         builder.remove_surface(surface)
     geode_functions.save(
-        implicit_model,
         "StructuralModel",
+        implicit_model,
         os.path.abspath(DATA_FOLDER),
         "implicit.og_strm",
     )
     viewable_file_name = geode_functions.save_viewable(
-        implicit_model,
         "StructuralModel",
+        implicit_model,
         os.path.abspath(DATA_FOLDER),
         "implicit_structural_model",
     )
@@ -199,14 +199,14 @@ def step2():
         implicit_model, axis, coordinate
     )
     geode_functions.save(
-        extracted_cross_section,
         "CrossSection",
+        extracted_cross_section,
         os.path.abspath(DATA_FOLDER),
         "cross_section.og_xsctn",
     )
     viewable_file_name = geode_functions.save_viewable(
-        extracted_cross_section,
         "CrossSection",
+        extracted_cross_section,
         os.path.abspath(DATA_FOLDER),
         "implicit_cross_section",
     )
@@ -240,8 +240,8 @@ def step3():
         sharp_section, constant_metric
     )
     viewable_file_name = geode_functions.save_viewable(
-        remeshed_section,
         "Section",
+        remeshed_section,
         os.path.abspath(DATA_FOLDER),
         "implicit_remeshed_section",
     )

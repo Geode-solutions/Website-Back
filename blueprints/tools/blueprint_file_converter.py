@@ -30,7 +30,7 @@ def file_converter_versions():
 
 @file_converter_routes.route("/allowed_files", methods=["GET"])
 def file_converter_allowed_files():
-    extensions = geode_functions.list_all_input_extensions()
+    extensions = geode_functions.list_input_extensions()
     return {"status": 200, "extensions": extensions}
 
 
@@ -41,7 +41,7 @@ def file_converter_allowed_objects():
         flask.request.form, array_variables
     )
     file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
-    allowed_objects = geode_functions.list_objects(file_extension)
+    allowed_objects = geode_functions.list_geode_objects(file_extension)
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
@@ -52,7 +52,7 @@ def file_converter_output_file_extensions():
     variables_dict = geode_functions.get_form_variables(
         flask.request.form, array_variables
     )
-    output_file_extensions = geode_functions.list_output_file_extensions(
+    output_file_extensions = geode_functions.get_geode_object_output_extensions(
         variables_dict["geode_object"]
     )
     return flask.make_response({"output_file_extensions": output_file_extensions}, 200)
@@ -85,8 +85,8 @@ async def file_converter_convert_file():
         shutil.rmtree(sub_folder)
 
     geode_functions.save(
-        data,
         variables_dict["geode_object"],
+        data,
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,
     )
@@ -110,11 +110,11 @@ async def file_converter_convert_file():
         new_file_name = strict_file_name + ".zip"
         print(f"{new_file_name=}")
         mimetype = "application/zip"
-        with zipfile.ZipFile(f"{UPLOAD_FOLDER}/{new_file_name}", "w") as zipObj:
+        with zipfile.ZipFile(f"{UPLOAD_FOLDER}/{new_file_name}", "w") as zip_obj:
             for folder_name, sub_folders, file_names in os.walk(sub_folder):
                 for variables_dict["filename"] in file_names:
                     file_path = os.path.join(folder_name, variables_dict["filename"])
-                    zipObj.write(file_path, os.path.basename(file_path))
+                    zip_obj.write(file_path, os.path.basename(file_path))
 
     response = flask.send_from_directory(
         directory=UPLOAD_FOLDER,

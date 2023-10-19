@@ -30,7 +30,7 @@ def crs_converter_versions():
 
 @crs_converter_routes.route("/allowed_files", methods=["GET"])
 def crs_converter_allowed_files():
-    extensions = geode_functions.list_all_input_extensions()
+    extensions = geode_functions.list_input_extensions("crs")
     return {"status": 200, "extensions": extensions}
 
 
@@ -42,7 +42,7 @@ def crs_converter_allowed_objects():
     )
     print(variables_dict["filename"])
     file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
-    allowed_objects = geode_functions.list_objects(file_extension)
+    allowed_objects = geode_functions.list_geode_objects(file_extension, "crs")
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
@@ -74,7 +74,7 @@ def crs_converter_output_file_extensions():
     variables_dict = geode_functions.get_form_variables(
         flask.request.form, array_variables
     )
-    output_file_extensions = geode_functions.list_output_file_extensions(
+    output_file_extensions = geode_functions.get_geode_object_output_extensions(
         variables_dict["geode_object"]
     )
 
@@ -135,8 +135,8 @@ async def crs_converter_convert_file():
     )
 
     geode_functions.save(
-        data,
         variables_dict["geode_object"],
+        data,
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,
     )

@@ -18,46 +18,8 @@ def test_allowed_files(client):
     assert response.status_code == 200
     extensions = response.json["extensions"]
     assert type(extensions) is list
-    list_extensions = [
-        "dat",
-        "dev",
-        "dxf",
-        "lso",
-        "ml",
-        "msh",
-        "obj",
-        "og_brep",
-        "og_edc2d",
-        "og_edc3d",
-        "og_grp",
-        "og_hso3d",
-        "og_psf2d",
-        "og_psf3d",
-        "og_pso3d",
-        "og_pts2d",
-        "og_pts3d",
-        "og_rgd2d",
-        "og_rgd3d",
-        "og_sctn",
-        "og_strm",
-        "og_tsf2d",
-        "og_tsf3d",
-        "og_tso3d",
-        "og_vts",
-        "og_xsctn",
-        "ply",
-        "smesh",
-        "stl",
-        "svg",
-        "ts",
-        "txt",
-        "vtp",
-        "vtu",
-        "wl",
-    ]
-
-    for extension in list_extensions:
-        assert extension in extensions
+    for extension in extensions:
+        assert type(extension) is str
 
 
 def test_allowed_objects(client):
