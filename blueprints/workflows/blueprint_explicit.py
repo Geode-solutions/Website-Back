@@ -26,10 +26,10 @@ def sendBaseData():
     )
 
     viewable_1 = geode_functions.save_viewable(
-        model_A1, "BRep", os.path.abspath(DATA_FOLDER), "model_A1"
+        "BRep", model_A1, os.path.abspath(DATA_FOLDER), "model_A1"
     )
     viewable_2 = geode_functions.save_viewable(
-        topo, "TriangulatedSurface3D", os.path.abspath(DATA_FOLDER), "topo"
+        "TriangulatedSurface3D", topo, os.path.abspath(DATA_FOLDER), "topo"
     )
     return flask.make_response(
         {
@@ -66,10 +66,10 @@ def sendBRepStats():
     nb_surfaces = brep_explicit.nb_surfaces()
     nb_blocks = brep_explicit.nb_blocks()
     geode_functions.save(
-        brep_explicit, "BRep", os.path.abspath(DATA_FOLDER), "explicit_brep.og_brep"
+        "BRep", brep_explicit, os.path.abspath(DATA_FOLDER), "explicit_brep.og_brep"
     )
     viewable_file_name = geode_functions.save_viewable(
-        brep_explicit, "BRep", os.path.abspath(DATA_FOLDER), "explicit_brep"
+        "BRep", brep_explicit, os.path.abspath(DATA_FOLDER), "explicit_brep"
     )
     return flask.make_response(
         {
@@ -100,7 +100,7 @@ def remesh():
     brep_metric = geode_common.ConstantMetric3D(metric)
     brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, brep_metric)
     viewable_file_name = geode_functions.save_viewable(
-        brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
+        "BRep", brep_remeshed, os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
     )
     return flask.make_response(
         {

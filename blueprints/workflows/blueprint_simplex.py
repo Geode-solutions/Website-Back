@@ -19,7 +19,7 @@ def initialize():
         "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
     )
     viewable_file_name = geode_functions.save_viewable(
-        brep, "BRep", os.path.abspath(DATA_FOLDER), "simplex_brep"
+        "BRep", brep, os.path.abspath(DATA_FOLDER), "simplex_brep"
     )
     return flask.make_response(
         {
@@ -78,7 +78,7 @@ def remesh():
     metric = brep_metric.build_metric()
     brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, metric)
     viewable_file_name = geode_functions.save_viewable(
-        brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
+        "BRep", brep_remeshed, os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
     )
     return flask.make_response(
         {
