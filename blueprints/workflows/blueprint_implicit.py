@@ -84,16 +84,9 @@ def update_value():
         flask.request.form,
         ["point", "value"],
     )
-    try:
-        point = int(variables["point"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the point")
+    flask.request.json["point"]
 
-    try:
-        value = float(variables["value"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the value")
-
+    flask.request.json["value"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     data_constraints = geode_numerics.DataPointsManager3D()
     constraint_file = os.path.join(
@@ -185,15 +178,9 @@ def step2():
             "StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")
         )
     )
-    try:
-        axis = int(variables["axis"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the axis")
+    flask.request.json["axis"]
 
-    try:
-        coordinate = int(variables["coordinate"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the coordinate")
+    flask.request.json["coordinate"]
 
     extracted_cross_section = geode_implicit.extract_implicit_cross_section_from_axis(
         implicit_model, axis, coordinate
@@ -227,10 +214,7 @@ def step3():
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")
     )
-    try:
-        metric = float(variables["metric"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the metric")
+    flask.request.json["metric"]
     sharp_section = geode_conversion.add_section_sharp_features(
         extracted_cross_section, 120
     )

@@ -93,10 +93,7 @@ def remesh():
     brep = geode_functions.load(
         "BRep", os.path.abspath(DATA_FOLDER + "explicit_brep.og_brep")
     )
-    try:
-        metric = float(variables["metric"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the metric variable")
+    flask.request.json["metric"]
     brep_metric = geode_common.ConstantMetric3D(metric)
     brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, brep_metric)
     viewable_file_name = geode_functions.save_viewable(
