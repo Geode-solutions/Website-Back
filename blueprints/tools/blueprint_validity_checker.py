@@ -38,7 +38,7 @@ def validity_checker_allowed_files():
 def validity_checker_allowed_objects():
     array_variables = ["filename"]
     variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
+        flask.request.json, array_variables
     )
     file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
     allowed_objects = geode_functions.list_objects(file_extension)
@@ -51,7 +51,7 @@ def validity_checker_upload_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     array_variables = ["file", "filename", "filesize"]
     variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
+        flask.request.json, array_variables
     )
     geode_functions.upload_file(
         variables_dict["file"],
@@ -67,12 +67,12 @@ def validity_checker_upload_file():
 def validity_checker_test_names():
     array_variables = ["geode_object"]
     variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
+        flask.request.json, array_variables
     )
     model_checks = inspector_functions.json_return(
         inspector_functions.inspectors()[variables_dict["geode_object"]]["tests_names"]
     )
-
+    print(f"{model_checks=}")
     return flask.make_response({"model_checks": model_checks}, 200)
 
 
@@ -81,7 +81,7 @@ def validity_checker_inspect_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     array_variables = ["geode_object", "filename", "test"]
     variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
+        flask.request.json, array_variables
     )
 
     secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])
