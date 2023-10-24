@@ -24,7 +24,7 @@ def crs_converter_versions():
         "OpenGeode-GeosciencesIO",
     ]
     return flask.make_response(
-        {"versions": geode_functions.get_versions(list_packages)}, 200
+        {"versions": geode_functions.versions(list_packages)}, 200
     )
 
 
@@ -37,9 +37,7 @@ def crs_converter_allowed_files():
 @crs_converter_routes.route("/allowed_objects", methods=["POST"])
 def crs_converter_allowed_objects():
     array_variables = ["filename"]
-    variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
-    )
+    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
     print(variables_dict["filename"])
     file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
     allowed_objects = geode_functions.list_geode_objects(file_extension, "crs")
@@ -51,9 +49,7 @@ def crs_converter_allowed_objects():
 def validity_checker_upload_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     array_variables = ["file", "filename", "filesize"]
-    variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
-    )
+    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
     geode_functions.upload_file(
         variables_dict["file"],
         variables_dict["filename"],
@@ -68,13 +64,11 @@ def validity_checker_upload_file():
 def crs_converter_missing_files():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
-    array_variables = ["geode_object", "filename"]
-    variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
-    )
+    array_variables = ["input_geode_object", "filename"]
+    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
 
     missing_files = geode_functions.missing_files(
-        variables_dict["geode_object"],
+        variables_dict["input_geode_object"],
         os.path.join(UPLOAD_FOLDER, variables_dict["filename"]),
     )
     has_missing_files = missing_files.has_missing_files()
@@ -101,12 +95,10 @@ def crs_converter_missing_files():
 
 @crs_converter_routes.route("/geographic_coordinate_systems", methods=["POST"])
 def crs_converter_geographic_coordinate_systems():
-    array_variables = ["geode_object"]
-    variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
-    )
-    infos = geode_functions.get_geographic_coordinate_systems(
-        variables_dict["geode_object"]
+    array_variables = ["input_geode_object"]
+    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
+    infos = geode_functions.geographic_coordinate_systems(
+        variables_dict["input_geode_object"]
     )
     crs_list = []
 
@@ -122,15 +114,22 @@ def crs_converter_geographic_coordinate_systems():
 
 @crs_converter_routes.route("/output_file_extensions", methods=["POST"])
 def crs_converter_output_file_extensions():
-    array_variables = ["geode_object"]
-    variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
-    )
-    output_file_extensions = geode_functions.get_geode_object_output_extensions(
-        variables_dict["geode_object"]
+    array_variables = ["input_geode_object"]
+    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
+    output_file_extensions = geode_functions.geode_object_output_extensions(
+        variables_dict["input_geode_object"]
     )
 
-    return flask.make_response({"output_file_extensions": output_file_extensions}, 200)
+    geode_objects_and_output_extensions = (
+        geode_functions.geode_objects_output_extensions(
+            variables_dict["input_geode_object"]
+        )
+    )
+
+    return flask.make_response(
+        {"geode_objects_and_output_extensions": geode_objects_and_output_extensions},
+        200,
+    )
 
 
 @crs_converter_routes.route("/convert_file", methods=["POST"])
@@ -138,7 +137,7 @@ async def crs_converter_convert_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
     array_variables = [
-        "geode_object",
+        "input_geode_object",
         "filename",
         "input_crs_authority",
         "input_crs_code",
@@ -146,11 +145,10 @@ async def crs_converter_convert_file():
         "output_crs_authority",
         "output_crs_code",
         "output_crs_name",
-        "extension",
+        "output_geode_object",
+        "output_extension",
     ]
-    variables_dict = geode_functions.get_form_variables(
-        flask.request.form, array_variables
-    )
+    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
 
     input_crs = {
         "authority": variables_dict["input_crs_authority"],
@@ -166,19 +164,19 @@ async def crs_converter_convert_file():
 
     secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
-    data = geode_functions.load(variables_dict["geode_object"], file_path)
+    data = geode_functions.load(variables_dict["input_geode_object"], file_path)
     strict_file_name = os.path.splitext(secure_filename)[0]
-    new_file_name = strict_file_name + "." + variables_dict["extension"]
+    new_file_name = strict_file_name + "." + variables_dict["output_extension"]
 
     geode_functions.assign_geographic_coordinate_system_info(
-        variables_dict["geode_object"], data, input_crs
+        variables_dict["input_geode_object"], data, input_crs
     )
     geode_functions.convert_geographic_coordinate_system_info(
-        variables_dict["geode_object"], data, output_crs
+        variables_dict["input_geode_object"], data, output_crs
     )
 
     geode_functions.save(
-        variables_dict["geode_object"],
+        variables_dict["output_geode_object"],
         data,
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,

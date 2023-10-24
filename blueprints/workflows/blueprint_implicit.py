@@ -80,7 +80,7 @@ def step0():
 @implicit_routes.route("/update_value", methods=["POST"])
 def update_value():
     print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.get_form_variables(
+    variables = geode_functions.form_variables(
         flask.request.form,
         ["point", "value"],
     )
@@ -119,7 +119,7 @@ def update_value():
 @implicit_routes.route("/step1", methods=["POST"])
 def step1():
     print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.get_form_variables(
+    variables = geode_functions.form_variables(
         flask.request.form,
         ["isovalues"],
     )
@@ -176,7 +176,7 @@ def step1():
 @implicit_routes.route("/step2", methods=["POST"])
 def step2():
     print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.get_form_variables(
+    variables = geode_functions.form_variables(
         flask.request.form, ["axis", "coordinate"]
     )
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
@@ -222,7 +222,7 @@ def step2():
 @implicit_routes.route("/step3", methods=["POST"])
 def step3():
     print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.get_form_variables(flask.request.form, ["metric"])
+    variables = geode_functions.form_variables(flask.request.form, ["metric"])
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")

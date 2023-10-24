@@ -87,7 +87,7 @@ def sendBRepStats():
 @explicit_routes.route("/remesh", methods=["POST"])
 def remesh():
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    variables = geode_functions.get_form_variables(flask.request.form, ["metric"])
+    variables = geode_functions.form_variables(flask.request.form, ["metric"])
     min_metric = 50
     max_metric = 500
     brep = geode_functions.load(

@@ -34,7 +34,7 @@ def initialize():
 def remesh():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    variables = geode_functions.get_form_variables(
+    variables = geode_functions.form_variables(
         flask.request.form, ["metric", "faults_metric"]
     )
     min_metric = 10
