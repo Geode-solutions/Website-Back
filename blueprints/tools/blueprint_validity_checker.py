@@ -48,11 +48,11 @@ def validity_checker_allowed_objects():
 def validity_checker_missing_files():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
-    array_variables = ["geode_object", "filename"]
+    array_variables = ["input_geode_object", "filename"]
     variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
 
     missing_files = geode_functions.missing_files(
-        variables_dict["geode_object"],
+        variables_dict["input_geode_object"],
         os.path.join(UPLOAD_FOLDER, variables_dict["filename"]),
     )
     has_missing_files = missing_files.has_missing_files()
@@ -94,10 +94,12 @@ def validity_checker_upload_file():
 
 @validity_checker_routes.route("/tests_names", methods=["POST"])
 def validity_checker_test_names():
-    array_variables = ["geode_object"]
+    array_variables = ["input_geode_object"]
     variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
     model_checks = inspector_functions.json_return(
-        inspector_functions.inspectors()[variables_dict["geode_object"]]["tests_names"]
+        inspector_functions.inspectors()[variables_dict["input_geode_object"]][
+            "tests_names"
+        ]
     )
 
     return flask.make_response({"model_checks": model_checks}, 200)
@@ -106,13 +108,13 @@ def validity_checker_test_names():
 @validity_checker_routes.route("/inspect_file", methods=["POST"])
 def validity_checker_inspect_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
-    array_variables = ["geode_object", "filename", "test"]
+    array_variables = ["input_geode_object", "filename", "test"]
     variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
 
     secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
-    data = geode_functions.load(variables_dict["geode_object"], file_path)
-    inspector = geode_functions.inspector(variables_dict["geode_object"], data)
+    data = geode_functions.load(variables_dict["input_geode_object"], file_path)
+    inspector = geode_functions.inspector(variables_dict["input_geode_object"], data)
     test_result = getattr(inspector, variables_dict["test"])()
 
     if type(test_result) == int:
@@ -136,7 +138,7 @@ def validity_checker_inspect_file():
         expected_result
     )
 
-    if result == False:
+    if result is False:
         test_name = variables_dict["test"]
         print(f"Wrong test result: {test_name}", flush=True)
 

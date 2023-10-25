@@ -38,7 +38,6 @@ def crs_converter_allowed_files():
 def crs_converter_allowed_objects():
     array_variables = ["filename"]
     variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
-    print(variables_dict["filename"])
     file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
     allowed_objects = geode_functions.list_geode_objects(file_extension, "crs")
 
