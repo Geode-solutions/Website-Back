@@ -84,6 +84,15 @@ def update_value():
         flask.request.form,
         ["point", "value"],
     )
+    try:
+        point = int(variables["point"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the point")
+
+    try:
+        value = float(variables["value"])
+    except ValueError:
+        flask.abort(400, "Invalid data format for the value")
     flask.request.json["point"]
 
     flask.request.json["value"]
