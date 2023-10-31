@@ -141,7 +141,7 @@ def test_test_names(client):
     for geode_object in ObjectArray:
         # Normal test with all objects
         response = client.post(
-            f"{base_route}/tests_names", data={"geode_object": geode_object}
+            f"{base_route}/tests_names", data={"input_geode_object": geode_object}
         )
         assert response.status_code == 200
         model_checks = response.json["model_checks"]

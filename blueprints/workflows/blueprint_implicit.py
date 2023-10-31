@@ -132,17 +132,14 @@ def step1():
     bbox = og.BoundingBox3D()
     bbox.add_point(og.Point3D([0, 0, 0]))
     bbox.add_point(og.Point3D([40, 40, 40]))
-    function_computer = geode_implicit.RegularGridScalarFunctionComputer3D(
-        data_constraints,
-        bbox,
-        10,
-        geode_numerics.GridScalarFunctionComputerType.FDM_boundaryfree_curvature_minimization,
+    function_computer = geode_implicit.ScalarFunctionComputer3D(
+        data_constraints, bbox, 10
     )
 
     scalar_function_name = "Boundary free - Curvature"
     function_computer.compute_scalar_function(scalar_function_name)
-    expliciter = geode_implicit.RegularGridScalarFunctionExpliciter3D(
-        function_computer.grid_with_functions(), scalar_function_name
+    expliciter = geode_implicit.GridScalarFunctionExpliciter3D(
+        function_computer.grid_with_results(), scalar_function_name
     )
     expliciter.add_scalar_isovalues(json.loads(variables["isovalues"]))
     brep = expliciter.build_brep()
