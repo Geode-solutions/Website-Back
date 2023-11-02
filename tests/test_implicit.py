@@ -20,7 +20,7 @@ def test_step1(client):
     # Normal test with isovalues
     response = client.post(
         f"{base_route}/step1",
-        data={
+        json={
             "isovalues": isovalues,
         },
     )
@@ -33,7 +33,7 @@ def test_step1(client):
     # Test without isovalues
     response = client.post(
         f"{base_route}/step1",
-        data={},
+        json={},
     )
     assert response.status_code == 400
     error_description = response.json["description"]
@@ -46,7 +46,7 @@ def test_step2(client):
 
     # Normal test with axis/diretcion
     response = client.post(
-        f"{base_route}/step2", data={"axis": axis, "coordinate": coordinate}
+        f"{base_route}/step2", json={"axis": axis, "coordinate": coordinate}
     )
     assert response.status_code == 200
     viewable_file_name = response.json["viewable_file_name"]
@@ -55,7 +55,7 @@ def test_step2(client):
     assert type(id) is str
 
     # Test without axis
-    response = client.post(f"{base_route}/step2", data={"coordinate": coordinate})
+    response = client.post(f"{base_route}/step2", json={"coordinate": coordinate})
     assert response.status_code == 400
     error_description = response.json["description"]
     assert error_description == "No axis sent"
@@ -63,7 +63,7 @@ def test_step2(client):
     # Test with stupid axis value
     axis_stupid = "Toto"
     response = client.post(
-        f"{base_route}/step2", data={"axis": axis_stupid, "coordinate": coordinate}
+        f"{base_route}/step2", json={"axis": axis_stupid, "coordinate": coordinate}
     )
     assert response.status_code == 400
     error_description = response.json["description"]
@@ -72,7 +72,7 @@ def test_step2(client):
     # Test with stupid coordinate value
     coordinate_stupid = "Toto"
     response = client.post(
-        f"{base_route}/step2", data={"axis": axis, "coordinate": coordinate_stupid}
+        f"{base_route}/step2", json={"axis": axis, "coordinate": coordinate_stupid}
     )
     assert response.status_code == 400
     error_description = response.json["description"]
@@ -85,7 +85,7 @@ def test_step3(client):
     # Normal test with metric
     response = client.post(
         f"{base_route}/step3",
-        data={
+        json={
             "metric": metric,
         },
     )
@@ -96,7 +96,7 @@ def test_step3(client):
     assert type(id) is str
 
     # Test without metric
-    response = client.post(f"{base_route}/step3", data={})
+    response = client.post(f"{base_route}/step3", json={})
     assert response.status_code == 400
     error_description = response.json["description"]
     assert error_description == "No metric sent"
@@ -105,7 +105,7 @@ def test_step3(client):
     metric_stupid = "Toto"
     response = client.post(
         f"{base_route}/step3",
-        data={
+        json={
             "metric": metric_stupid,
         },
     )
