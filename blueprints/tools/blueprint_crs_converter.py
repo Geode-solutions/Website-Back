@@ -101,13 +101,6 @@ async def crs_converter_convert_file():
         "name": flask.request.json["output_crs_name"],
     }
 
-    geode_functions.upload_file(
-        flask.request.json["file"],
-        flask.request.json["filename"],
-        UPLOAD_FOLDER,
-        flask.request.json["filesize"],
-    )
-
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
     data = geode_functions.load(flask.request.json["geode_object"], file_path)

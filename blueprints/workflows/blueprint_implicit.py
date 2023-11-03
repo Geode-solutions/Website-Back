@@ -79,12 +79,12 @@ def step0():
 
 @implicit_routes.route("/update_value", methods=["POST"])
 def update_value():
-    variables = geode_functions.validate_request(
+    geode_functions.validate_request(
         flask.request,
         ["point", "value"],
     )
-    point = int(variables["point"])
-    value = float(variables["value"])
+    point = int(flask.request.json["point"])
+    value = float(flask.request.json["value"])
 
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     data_constraints = geode_numerics.DataPointsManager3D()
@@ -110,7 +110,7 @@ def update_value():
 
 @implicit_routes.route("/step1", methods=["POST"])
 def step1():
-    variables = geode_functions.validate_request(
+    geode_functions.validate_request(
         flask.request,
         ["isovalues"],
     )
@@ -129,10 +129,10 @@ def step1():
 
     scalar_function_name = "Boundary free - Curvature"
     function_computer.compute_scalar_function(scalar_function_name)
-    expliciter = geode_implicit.ScalarFunctionExpliciter3D(
-        function_computer.grid_with_functions(), scalar_function_name
+    expliciter = geode_implicit.GridScalarFunctionExpliciter3D(
+        function_computer.grid_with_results(), scalar_function_name
     )
-    expliciter.add_scalar_isovalues(json.loads(variables["isovalues"]))
+    expliciter.add_scalar_isovalues(json.loads(flask.request.json["isovalues"]))
     brep = expliciter.build_brep()
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(
         og_geosciences.StructuralModel(brep), scalar_function_name
@@ -163,15 +163,15 @@ def step1():
 
 @implicit_routes.route("/step2", methods=["POST"])
 def step2():
-    variables = geode_functions.validate_request(flask.request, ["axis", "coordinate"])
+    geode_functions.validate_request(flask.request, ["axis", "coordinate"])
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     implicit_model = og_geosciences.ImplicitStructuralModel(
         geode_functions.load(
             "StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")
         )
     )
-    axis = int(variables["axis"])
-    coordinate = int(variables["coordinate"])
+    axis = int(flask.request.json["axis"])
+    coordinate = int(flask.request.json["coordinate"])
 
     extracted_cross_section = geode_implicit.extract_implicit_cross_section_from_axis(
         implicit_model, axis, coordinate
@@ -200,12 +200,12 @@ def step2():
 @implicit_routes.route("/step3", methods=["POST"])
 def step3():
     print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.validate_request(flask.request.form, ["metric"])
+    geode_functions.validate_request(flask.request.form, ["metric"])
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")
     )
-    metric = float(variables["metric"])
+    metric = float(flask.request.json["metric"])
     sharp_section = geode_conversion.add_section_sharp_features(
         extracted_cross_section, 120
     )
@@ -215,8 +215,8 @@ def step3():
         sharp_section, constant_metric
     )
     viewable_file_name = geode_functions.save_viewable(
-        remeshed_section,
         "Section",
+        remeshed_section,
         os.path.abspath(DATA_FOLDER),
         "implicit_remeshed_section",
     )

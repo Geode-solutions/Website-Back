@@ -57,7 +57,7 @@ async def file_converter_convert_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
     geode_functions.validate_request(
-        flask.request, ["geode_object", "file", "filename", "filesize", "extension"]
+        flask.request, ["geode_object", "filename", "extension"]
     )
 
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])

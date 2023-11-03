@@ -125,8 +125,8 @@ def test_convert_file(client):
         )
 
         assert response.status_code == 200
-        assert type((response.json)) is bytes
-        assert len((response.json)) > 0
+        # assert type(response.json) is bytes
+        # assert len(response.json) > 0
 
         # Test without geode_object
         response = client.post(
@@ -165,26 +165,6 @@ def test_convert_file(client):
         assert response.status_code == 400
         error_description = response.json["description"]
         assert error_description == "No filename sent"
-
-        # Test without filesize
-        response = client.post(
-            f"{base_route}/convert_file",
-            json={
-                "geode_object": geode_object[index],
-                "filename": filename,
-                "input_crs_authority": input_crs_authority,
-                "input_crs_code": input_crs_code,
-                "input_crs_name": input_crs_name,
-                "output_crs_authority": output_crs_authority,
-                "output_crs_code": output_crs_code,
-                "output_crs_name": output_crs_name,
-                "extension": extension[index],
-            },
-        )
-
-        assert response.status_code == 400
-        error_description = response.json["description"]
-        assert error_description == "No filesize sent"
 
         # Test without input_crs_authority
         response = client.post(

@@ -43,7 +43,7 @@ def remesh():
         "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
     )
     brep_metric = geode_simplex.BRepMetricConstraints(brep)
-    metric = float(variables["metric"])
+    metric = float(flask.request.json["metric"])
     if min_metric <= metric <= max_metric:
         brep_metric.set_default_metric(metric)
     else:
@@ -55,7 +55,7 @@ def remesh():
             400,
         )
 
-    faults_metric = float(variables["faults_metric"])
+    faults_metric = float(flask.request.json["faults_metric"])
     if min_metric <= faults_metric <= max_metric:
         for fault in brep.faults():
             for surface in brep.fault_items(fault):
@@ -72,7 +72,7 @@ def remesh():
     metric = brep_metric.build_metric()
     brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, metric)
     viewable_file_name = geode_functions.save_viewable(
-        brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
+        "BRep", brep_remeshed, os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
     )
     return flask.make_response(
         {

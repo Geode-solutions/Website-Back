@@ -88,9 +88,7 @@ def test_convert_file(client):
         f"{base_route}/convert_file",
         json={
             "geode_object": geode_object,
-            "file": file,
             "filename": filename,
-            "filesize": filesize,
             "extension": extension,
         },
     )
@@ -103,9 +101,7 @@ def test_convert_file(client):
     response = client.post(
         f"{base_route}/convert_file",
         json={
-            "file": file,
             "filename": filename,
-            "filesize": filesize,
             "extension": extension,
         },
     )
@@ -114,28 +110,11 @@ def test_convert_file(client):
     error_description = response.json["description"]
     assert error_description == "No geode_object sent"
 
-    # Test without file
-    response = client.post(
-        f"{base_route}/convert_file",
-        json={
-            "geode_object": geode_object,
-            "filename": filename,
-            "filesize": filesize,
-            "extension": extension,
-        },
-    )
-
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "No file sent"
-
     # Test without filename
     response = client.post(
         f"{base_route}/convert_file",
         json={
             "geode_object": geode_object,
-            "file": file,
-            "filesize": filesize,
             "extension": extension,
         },
     )
@@ -144,29 +123,12 @@ def test_convert_file(client):
     error_description = response.json["description"]
     assert error_description == "No filename sent"
 
-    # Test without filesize
-    response = client.post(
-        f"{base_route}/convert_file",
-        json={
-            "geode_object": geode_object,
-            "file": file,
-            "filename": filename,
-            "extension": extension,
-        },
-    )
-
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "No filesize sent"
-
     # Test without extension
     response = client.post(
         f"{base_route}/convert_file",
         json={
             "geode_object": geode_object,
-            "file": file,
             "filename": filename,
-            "filesize": filesize,
         },
     )
 
