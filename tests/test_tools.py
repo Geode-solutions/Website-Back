@@ -10,4 +10,4 @@ def test_upload_file(client):
         data={"file": (open("./tests/corbi.og_brep", "rb"), "corbi.og_brep")},
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201

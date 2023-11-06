@@ -117,7 +117,7 @@ def test_inspect_file(client):
         "tools/upload_file",
         data={"file": (open(f"./tests/{filename}", "rb"), filename)},
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
 
     response = client.post(
         f"{base_route}/inspect_file",

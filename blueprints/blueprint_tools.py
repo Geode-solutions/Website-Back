@@ -46,10 +46,15 @@ tools_routes.register_blueprint(
 )
 
 
-@tools_routes.route("/upload_file", methods=["PUT"])
+@tools_routes.route("/upload_file", methods=["OPTIONS", "PUT"])
 def upload_file():
+    if flask.request.method == "OPTIONS":
+        return flask.make_response({}, 200)
+
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
-    file = flask.request.files["file"]
-    filename = werkzeug.utils.secure_filename(file.filename)
-    file.save(os.path.join(flask.current_app.config["UPLOAD_FOLDER"], filename))
-    return flask.make_response({"message": "File uploaded"}, 200)
+    files = flask.request.files.getlist("content")
+
+    for file in files:
+        filename = werkzeug.utils.secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+    return flask.make_response({"message": "File uploaded"}, 201)
