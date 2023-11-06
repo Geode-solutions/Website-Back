@@ -199,7 +199,6 @@ def step2():
 
 @implicit_routes.route("/step3", methods=["POST"])
 def step3():
-    print(f"{flask.request.form=}", flush=True)
     geode_functions.validate_request(flask.request, ["metric"])
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
@@ -209,7 +208,6 @@ def step3():
     sharp_section = geode_conversion.add_section_sharp_features(
         extracted_cross_section, 120
     )
-    print(dir(geode_conversion), flush=True)
     constant_metric = geode_common.ConstantMetric2D(metric)
     remeshed_section, _ = geode_simplex.simplex_remesh_section(
         sharp_section, constant_metric

@@ -63,7 +63,7 @@ def validity_checker_inspect_file():
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
     data = geode_functions.load(flask.request.json["geode_object"], file_path)
-    inspector = geode_functions.get_inspector(flask.request.json["geode_object"], data)
+    inspector = geode_functions.inspector(flask.request.json["geode_object"], data)
     test_result = getattr(inspector, flask.request.json["test"])()
 
     if type(test_result) == int:
