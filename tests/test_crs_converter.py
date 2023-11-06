@@ -106,7 +106,7 @@ def test_convert_file(client):
     for index, filename in enumerate(filenames):
         response = client.put(
             "tools/upload_file",
-            files={"content": FileStorage(open(f"./tests/{filename}", "rb"))},
+            data={"content": FileStorage(open(f"./tests/{filename}", "rb"))},
         )
         assert response.status_code == 201
 
