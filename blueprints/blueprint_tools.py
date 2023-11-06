@@ -52,6 +52,8 @@ def upload_file():
         return flask.make_response({}, 200)
 
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.mkdir(UPLOAD_FOLDER)
     files = flask.request.files.getlist("content")
 
     for file in files:
