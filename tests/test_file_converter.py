@@ -84,6 +84,12 @@ def test_convert_file(client):
     filesize = int(os.path.getsize("./tests/corbi.og_brep"))
     extension = "msh"
 
+    response = client.put(
+        "tools/upload_file",
+        data={"file": (open(f"./tests/{filename}", "rb"), filename)},
+    )
+    assert response.status_code == 200
+
     response = client.post(
         f"{base_route}/convert_file",
         json={

@@ -103,7 +103,7 @@ def test_convert_file(client):
     extension = ["msh", "vtu"]
 
     for index, filename in enumerate(filenames):
-        response = client.post(
+        response = client.put(
             "tools/upload_file",
             data={"file": (open(f"./tests/{filename}", "rb"), filename)},
         )

@@ -200,7 +200,7 @@ def step2():
 @implicit_routes.route("/step3", methods=["POST"])
 def step3():
     print(f"{flask.request.form=}", flush=True)
-    geode_functions.validate_request(flask.request.form, ["metric"])
+    geode_functions.validate_request(flask.request, ["metric"])
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")

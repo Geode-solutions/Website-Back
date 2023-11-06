@@ -5,7 +5,7 @@ base_route = "/tools"
 
 
 def test_upload_file(client):
-    response = client.post(
+    response = client.put(
         f"{base_route}/upload_file",
         data={"file": (open("./tests/corbi.og_brep", "rb"), "corbi.og_brep")},
     )

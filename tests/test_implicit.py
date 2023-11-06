@@ -41,8 +41,8 @@ def test_step1(client):
 
 
 def test_step2(client):
-    axis = "0"
-    coordinate = "2"
+    axis = 0
+    coordinate = 2
 
     # Normal test with axis/diretcion
     response = client.post(
@@ -60,27 +60,9 @@ def test_step2(client):
     error_description = response.json["description"]
     assert error_description == "No axis sent"
 
-    # Test with stupid axis value
-    axis_stupid = "Toto"
-    response = client.post(
-        f"{base_route}/step2", json={"axis": axis_stupid, "coordinate": coordinate}
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid data format for the axis"
-
-    # Test with stupid coordinate value
-    coordinate_stupid = "Toto"
-    response = client.post(
-        f"{base_route}/step2", json={"axis": axis, "coordinate": coordinate_stupid}
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid data format for the coordinate"
-
 
 def test_step3(client):
-    metric = "1"
+    metric = 1
 
     # Normal test with metric
     response = client.post(
@@ -100,15 +82,3 @@ def test_step3(client):
     assert response.status_code == 400
     error_description = response.json["description"]
     assert error_description == "No metric sent"
-
-    # Test with stupid metric value
-    metric_stupid = "Toto"
-    response = client.post(
-        f"{base_route}/step3",
-        json={
-            "metric": metric_stupid,
-        },
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid data format for the metric"

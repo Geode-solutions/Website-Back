@@ -46,7 +46,7 @@ tools_routes.register_blueprint(
 )
 
 
-@tools_routes.route("/upload_file", methods=["POST"])
+@tools_routes.route("/upload_file", methods=["PUT"])
 def upload_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     file = flask.request.files["file"]

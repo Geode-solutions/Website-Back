@@ -110,11 +110,18 @@ def test_test_names(client):
 
 def test_inspect_file(client):
     # Test with file
+
+    filename = "corbi.og_brep"
+
+    response = client.put(
+        "tools/upload_file",
+        data={"file": (open(f"./tests/{filename}", "rb"), filename)},
+    )
+    assert response.status_code == 200
+
     response = client.post(
         f"{base_route}/inspect_file",
         json={
-            "file": str(base64.b64encode(open("./tests/corbi.og_brep", "rb").read())),
-            "filename": "corbi.og_brep",
-            "filesize": os.path.getsize("./tests/corbi.og_brep"),
+            "filename": filename,
         },
     )
