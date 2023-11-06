@@ -1,5 +1,6 @@
 import os
 import base64
+from werkzeug.datastructures import FileStorage
 
 base_route = "/tools/crs_converter"
 
@@ -105,7 +106,7 @@ def test_convert_file(client):
     for index, filename in enumerate(filenames):
         response = client.put(
             "tools/upload_file",
-            data={"content": (open(f"./tests/{filename}", "rb"))},
+            files={"content": FileStorage(open(f"./tests/{filename}", "rb"))},
         )
         assert response.status_code == 201
 

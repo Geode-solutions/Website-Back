@@ -1,5 +1,6 @@
 import os
 import base64
+from werkzeug.datastructures import FileStorage
 
 base_route = "/tools/validity_checker"
 
@@ -115,7 +116,7 @@ def test_inspect_file(client):
 
     response = client.put(
         "tools/upload_file",
-        data={"content": (open(f"./tests/{filename}", "rb"))},
+        data={"content": FileStorage(open(f"./tests/{filename}", "rb"))},
     )
     assert response.status_code == 201
 

@@ -1,5 +1,6 @@
 import os
 import base64
+from werkzeug.datastructures import FileStorage
 
 base_route = "/tools/file_converter"
 
@@ -80,13 +81,11 @@ def test_convert_file(client):
     # Normal test with object/file/filename/extension
     geode_object = "BRep"
     filename = "corbi.og_brep"
-    file = str(base64.b64encode(open("./tests/corbi.og_brep", "rb").read()))
-    filesize = int(os.path.getsize("./tests/corbi.og_brep"))
     extension = "msh"
 
     response = client.put(
         "tools/upload_file",
-        data={"content": (open(f"./tests/{filename}", "rb"))},
+        data={"content": FileStorage(open(f"./tests/{filename}", "rb"))},
     )
     assert response.status_code == 201
 
