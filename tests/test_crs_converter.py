@@ -105,7 +105,7 @@ def test_convert_file(client):
     for index, filename in enumerate(filenames):
         response = client.put(
             "tools/upload_file",
-            data={"file": (open(f"./tests/{filename}", "rb"), filename)},
+            data={"content": (open(f"./tests/{filename}", "rb"), filename)},
         )
         assert response.status_code == 201
 
@@ -124,9 +124,8 @@ def test_convert_file(client):
             },
         )
 
+        print(response)
         assert response.status_code == 200
-        # assert type(response.json) is bytes
-        # assert len(response.json) > 0
 
         # Test without geode_object
         response = client.post(

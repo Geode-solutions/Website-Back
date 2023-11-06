@@ -115,7 +115,7 @@ def test_inspect_file(client):
 
     response = client.put(
         "tools/upload_file",
-        data={"file": (open(f"./tests/{filename}", "rb"), filename)},
+        data={"content": (open(f"./tests/{filename}", "rb"), filename)},
     )
     assert response.status_code == 201
 
