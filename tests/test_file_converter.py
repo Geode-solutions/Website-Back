@@ -86,7 +86,7 @@ def test_convert_file(client):
 
     response = client.put(
         "tools/upload_file",
-        data={"content": (open(f"./tests/{filename}", "rb"), filename)},
+        data={"content": (open(f"./tests/{filename}", "rb"))},
     )
     assert response.status_code == 201
 
