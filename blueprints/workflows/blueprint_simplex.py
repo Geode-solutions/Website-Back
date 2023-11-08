@@ -19,7 +19,7 @@ def initialize():
         "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
     )
     viewable_file_name = geode_functions.save_viewable(
-        brep, "BRep", os.path.abspath(DATA_FOLDER), "simplex_brep"
+        "BRep", brep, os.path.abspath(DATA_FOLDER), "simplex_brep"
     )
     return flask.make_response(
         {
@@ -34,8 +34,8 @@ def initialize():
 def remesh():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    variables = geode_functions.get_form_variables(
-        flask.request.form, ["metric", "faults_metric"]
+    variables = geode_functions.validate_request(
+        flask.request, ["metric", "faults_metric"]
     )
     min_metric = 10
     max_metric = 300
@@ -43,42 +43,36 @@ def remesh():
         "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
     )
     brep_metric = geode_simplex.BRepMetricConstraints(brep)
-    try:
-        metric = float(variables["metric"])
-        if min_metric <= metric <= max_metric:
-            brep_metric.set_default_metric(metric)
-        else:
-            return flask.make_response(
-                {
-                    "name": "Bad Request",
-                    "description": "Wrong metric value, should be between {min_metric} and {max_metric}",
-                },
-                400,
-            )
-    except ValueError:
-        flask.abort(400, "Invalid data format for the metric variable")
+    metric = float(flask.request.json["metric"])
+    if min_metric <= metric <= max_metric:
+        brep_metric.set_default_metric(metric)
+    else:
+        return flask.make_response(
+            {
+                "name": "Bad Request",
+                "description": "Wrong metric value, should be between {min_metric} and {max_metric}",
+            },
+            400,
+        )
 
-    try:
-        faults_metric = float(variables["faults_metric"])
-        if min_metric <= faults_metric <= max_metric:
-            for fault in brep.faults():
-                for surface in brep.fault_items(fault):
-                    brep_metric.set_surface_metric(surface, faults_metric)
-        else:
-            return flask.make_response(
-                {
-                    "name": "Bad Request",
-                    "description": "Wrong faults_metric value, should be between {min_metric} and {max_metric}",
-                },
-                400,
-            )
-    except ValueError:
-        flask.abort(400, "Invalid data format for the faults_metric variable")
+    faults_metric = float(flask.request.json["faults_metric"])
+    if min_metric <= faults_metric <= max_metric:
+        for fault in brep.faults():
+            for surface in brep.fault_items(fault):
+                brep_metric.set_surface_metric(surface, faults_metric)
+    else:
+        return flask.make_response(
+            {
+                "name": "Bad Request",
+                "description": "Wrong faults_metric value, should be between {min_metric} and {max_metric}",
+            },
+            400,
+        )
 
     metric = brep_metric.build_metric()
     brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, metric)
     viewable_file_name = geode_functions.save_viewable(
-        brep_remeshed, "BRep", os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
+        "BRep", brep_remeshed, os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
     )
     return flask.make_response(
         {

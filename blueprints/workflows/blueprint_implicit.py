@@ -79,20 +79,12 @@ def step0():
 
 @implicit_routes.route("/update_value", methods=["POST"])
 def update_value():
-    print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.get_form_variables(
-        flask.request.form,
+    geode_functions.validate_request(
+        flask.request,
         ["point", "value"],
     )
-    try:
-        point = int(variables["point"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the point")
-
-    try:
-        value = float(variables["value"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the value")
+    point = int(flask.request.json["point"])
+    value = float(flask.request.json["value"])
 
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     data_constraints = geode_numerics.DataPointsManager3D()
@@ -118,9 +110,8 @@ def update_value():
 
 @implicit_routes.route("/step1", methods=["POST"])
 def step1():
-    print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.get_form_variables(
-        flask.request.form,
+    geode_functions.validate_request(
+        flask.request,
         ["isovalues"],
     )
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
@@ -132,19 +123,16 @@ def step1():
     bbox = og.BoundingBox3D()
     bbox.add_point(og.Point3D([0, 0, 0]))
     bbox.add_point(og.Point3D([40, 40, 40]))
-    function_computer = geode_implicit.RegularGridScalarFunctionComputer3D(
-        data_constraints,
-        bbox,
-        10,
-        geode_numerics.GridScalarFunctionComputerType.FDM_boundaryfree_curvature_minimization,
+    function_computer = geode_implicit.ScalarFunctionComputer3D(
+        data_constraints, bbox, 10
     )
 
     scalar_function_name = "Boundary free - Curvature"
     function_computer.compute_scalar_function(scalar_function_name)
-    expliciter = geode_implicit.RegularGridScalarFunctionExpliciter3D(
-        function_computer.grid_with_functions(), scalar_function_name
+    expliciter = geode_implicit.GridScalarFunctionExpliciter3D(
+        function_computer.grid_with_results(), scalar_function_name
     )
-    expliciter.add_scalar_isovalues(json.loads(variables["isovalues"]))
+    expliciter.add_scalar_isovalues(json.loads(flask.request.json["isovalues"]))
     brep = expliciter.build_brep()
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(
         og_geosciences.StructuralModel(brep), scalar_function_name
@@ -153,14 +141,14 @@ def step1():
     for surface in implicit_model.surfaces():
         builder.remove_surface(surface)
     geode_functions.save(
-        implicit_model,
         "StructuralModel",
+        implicit_model,
         os.path.abspath(DATA_FOLDER),
         "implicit.og_strm",
     )
     viewable_file_name = geode_functions.save_viewable(
-        implicit_model,
         "StructuralModel",
+        implicit_model,
         os.path.abspath(DATA_FOLDER),
         "implicit_structural_model",
     )
@@ -175,38 +163,28 @@ def step1():
 
 @implicit_routes.route("/step2", methods=["POST"])
 def step2():
-    print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.get_form_variables(
-        flask.request.form, ["axis", "coordinate"]
-    )
+    geode_functions.validate_request(flask.request, ["axis", "coordinate"])
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     implicit_model = og_geosciences.ImplicitStructuralModel(
         geode_functions.load(
             "StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")
         )
     )
-    try:
-        axis = int(variables["axis"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the axis")
-
-    try:
-        coordinate = int(variables["coordinate"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the coordinate")
+    axis = int(flask.request.json["axis"])
+    coordinate = int(flask.request.json["coordinate"])
 
     extracted_cross_section = geode_implicit.extract_implicit_cross_section_from_axis(
         implicit_model, axis, coordinate
     )
     geode_functions.save(
-        extracted_cross_section,
         "CrossSection",
+        extracted_cross_section,
         os.path.abspath(DATA_FOLDER),
         "cross_section.og_xsctn",
     )
     viewable_file_name = geode_functions.save_viewable(
-        extracted_cross_section,
         "CrossSection",
+        extracted_cross_section,
         os.path.abspath(DATA_FOLDER),
         "implicit_cross_section",
     )
@@ -221,27 +199,22 @@ def step2():
 
 @implicit_routes.route("/step3", methods=["POST"])
 def step3():
-    print(f"{flask.request.form=}", flush=True)
-    variables = geode_functions.get_form_variables(flask.request.form, ["metric"])
+    geode_functions.validate_request(flask.request, ["metric"])
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")
     )
-    try:
-        metric = float(variables["metric"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the metric")
+    metric = float(flask.request.json["metric"])
     sharp_section = geode_conversion.add_section_sharp_features(
         extracted_cross_section, 120
     )
-    print(dir(geode_conversion), flush=True)
     constant_metric = geode_common.ConstantMetric2D(metric)
     remeshed_section, _ = geode_simplex.simplex_remesh_section(
         sharp_section, constant_metric
     )
     viewable_file_name = geode_functions.save_viewable(
-        remeshed_section,
         "Section",
+        remeshed_section,
         os.path.abspath(DATA_FOLDER),
         "implicit_remeshed_section",
     )
