@@ -60,7 +60,8 @@ async def crs_converter_convert_file():
             "output_crs_authority",
             "output_crs_code",
             "output_crs_name",
-            "extension",
+            "output_geode_object",
+            "output_extension",
         ],
     )
 
@@ -80,7 +81,7 @@ async def crs_converter_convert_file():
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
     data = geode_functions.load(flask.request.json["input_geode_object"], file_path)
     strict_file_name = os.path.splitext(secure_filename)[0]
-    new_file_name = strict_file_name + "." + flask.request.json["extension"]
+    new_file_name = strict_file_name + "." + flask.request.json["output_extension"]
 
     geode_functions.assign_geographic_coordinate_system_info(
         flask.request.json["input_geode_object"], data, input_crs
@@ -90,7 +91,7 @@ async def crs_converter_convert_file():
     )
 
     geode_functions.save(
-        flask.request.json["input_geode_object"],
+        flask.request.json["output_geode_object"],
         data,
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,

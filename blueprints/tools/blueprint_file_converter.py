@@ -34,7 +34,7 @@ async def file_converter_convert_file():
 
     geode_functions.validate_request(
         flask.request,
-        ["geode_object", "filename", "output_geode_object", "output_extension"],
+        ["input_geode_object", "filename", "output_geode_object", "output_extension"],
     )
 
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
