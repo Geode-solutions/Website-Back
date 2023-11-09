@@ -87,16 +87,13 @@ def sendBRepStats():
 @explicit_routes.route("/remesh", methods=["POST"])
 def remesh():
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    variables = geode_functions.form_variables(flask.request.form, ["metric"])
+    geode_functions.validate_request(flask.request, ["metric"])
     min_metric = 50
     max_metric = 500
     brep = geode_functions.load(
         "BRep", os.path.abspath(DATA_FOLDER + "explicit_brep.og_brep")
     )
-    try:
-        metric = float(variables["metric"])
-    except ValueError:
-        flask.abort(400, "Invalid data format for the metric variable")
+    metric = float(flask.request.json["metric"])
     brep_metric = geode_common.ConstantMetric3D(metric)
     brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, brep_metric)
     viewable_file_name = geode_functions.save_viewable(

@@ -21,83 +21,16 @@ def validity_checker_versions():
         "OpenGeode-GeosciencesIO",
         "OpenGeode-Inspector",
     ]
-
     return flask.make_response(
         {"versions": geode_functions.versions(list_packages)}, 200
     )
 
 
-@validity_checker_routes.route("/allowed_files", methods=["GET"])
-def validity_checker_allowed_files():
-    extensions = geode_functions.list_input_extensions("inspector")
-
-    return flask.make_response({"extensions": extensions}, 200)
-
-
-@validity_checker_routes.route("/allowed_objects", methods=["POST"])
-def validity_checker_allowed_objects():
-    array_variables = ["filename"]
-    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
-    file_extension = os.path.splitext(variables_dict["filename"])[1][1:]
-    allowed_objects = geode_functions.list_geode_objects(file_extension, "inspector")
-
-    return flask.make_response({"allowed_objects": allowed_objects}, 200)
-
-
-@validity_checker_routes.route("/missing_files", methods=["POST"])
-def validity_checker_missing_files():
-    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
-
-    array_variables = ["input_geode_object", "filename"]
-    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
-
-    missing_files = geode_functions.missing_files(
-        variables_dict["input_geode_object"],
-        os.path.join(UPLOAD_FOLDER, variables_dict["filename"]),
-    )
-    has_missing_files = missing_files.has_missing_files()
-    mandatory_files = missing_files.mandatory_files
-    additional_files = missing_files.additional_files
-
-    mandatory_files_list = []
-    for mandatory_file in mandatory_files:
-        mandatory_files_list.append(os.path.basename(mandatory_file))
-
-    additional_files_list = []
-    for additional_file in additional_files:
-        additional_files_list.append(os.path.basename(additional_file))
-
-    return flask.make_response(
-        {
-            "has_missing_files": has_missing_files,
-            "mandatory_files": mandatory_files_list,
-            "additional_files": additional_files_list,
-        },
-        200,
-    )
-
-
-@validity_checker_routes.route("/upload_file", methods=["POST"])
-def validity_checker_upload_file():
-    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
-    array_variables = ["file", "filename", "filesize"]
-    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
-    geode_functions.upload_file(
-        variables_dict["file"],
-        variables_dict["filename"],
-        UPLOAD_FOLDER,
-        variables_dict["filesize"],
-    )
-
-    return flask.make_response({"message": "File uploaded"}, 200)
-
-
 @validity_checker_routes.route("/tests_names", methods=["POST"])
 def validity_checker_test_names():
-    array_variables = ["input_geode_object"]
-    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
+    geode_functions.validate_request(flask.request, ["input_geode_object"])
     model_checks = inspector_functions.json_return(
-        inspector_functions.inspectors()[variables_dict["input_geode_object"]][
+        inspector_functions.inspectors()[flask.request.json["input_geode_object"]][
             "tests_names"
         ]
     )
@@ -109,13 +42,15 @@ def validity_checker_test_names():
 def validity_checker_inspect_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     array_variables = ["input_geode_object", "filename", "test"]
-    variables_dict = geode_functions.form_variables(flask.request.form, array_variables)
+    geode_functions.validate_request(flask.request, array_variables)
 
-    secure_filename = werkzeug.utils.secure_filename(variables_dict["filename"])
+    secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
-    data = geode_functions.load(variables_dict["input_geode_object"], file_path)
-    inspector = geode_functions.inspector(variables_dict["input_geode_object"], data)
-    test_result = getattr(inspector, variables_dict["test"])()
+    data = geode_functions.load(flask.request.json["input_geode_object"], file_path)
+    inspector = geode_functions.inspector(
+        flask.request.json["input_geode_object"], data
+    )
+    test_result = getattr(inspector, flask.request.json["test"])()
 
     if type(test_result) == int:
         expected_result = 0
@@ -139,7 +74,7 @@ def validity_checker_inspect_file():
     )
 
     if result is False:
-        test_name = variables_dict["test"]
+        test_name = flask.request.json["test"]
         print(f"Wrong test result: {test_name}", flush=True)
 
     return flask.make_response(

@@ -14,13 +14,13 @@ def test_initialize(client):
 
 
 def test_remesh(client):
-    metric = "150"
-    faults_metric = "50"
+    metric = 150
+    faults_metric = 50
 
     # Normal test
     response = client.post(
         f"{base_route}/remesh",
-        data={
+        json={
             "metric": metric,
             "faults_metric": faults_metric,
         },
@@ -34,7 +34,7 @@ def test_remesh(client):
     # Test without faults_metric
     response = client.post(
         f"{base_route}/remesh",
-        data={
+        json={
             "metric": metric,
         },
     )
@@ -45,23 +45,10 @@ def test_remesh(client):
     # Test without metric
     response = client.post(
         f"{base_route}/remesh",
-        data={
+        json={
             "faults_metric": faults_metric,
         },
     )
     assert response.status_code == 400
     error_description = response.json["description"]
     assert error_description == "No metric sent"
-
-    # Test with stupid surface metric
-    globalMetric_stupid = "Toto"
-    response = client.post(
-        f"{base_route}/remesh",
-        data={
-            "faults_metric": faults_metric,
-            "metric": globalMetric_stupid,
-        },
-    )
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Invalid data format for the metric variable"

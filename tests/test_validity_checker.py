@@ -1,5 +1,6 @@
 import os
 import base64
+from werkzeug.datastructures import FileStorage
 
 base_route = "/tools/validity_checker"
 
@@ -11,108 +12,6 @@ def test_versions(client):
     assert type(versions) is list
     for version in versions:
         assert type(version) is dict
-
-
-def test_allowed_files(client):
-    response = client.get(f"{base_route}/allowed_files")
-    assert response.status_code == 200
-    extensions = response.json["extensions"]
-    assert type(extensions) is list
-    for extension in extensions:
-        assert type(extension) is str
-
-
-def test_allowed_objects(client):
-    # Normal test with filename 'corbi.og_brep'
-    response = client.post(
-        f"{base_route}/allowed_objects", data={"filename": "corbi.og_brep"}
-    )
-    assert response.status_code == 200
-    allowed_objects = response.json["allowed_objects"]
-    assert type(allowed_objects) is list
-    assert "BRep" in allowed_objects
-
-    # Normal test with filename .vtu
-    response = client.post(
-        f"{base_route}/allowed_objects", data={"filename": "toto.vtu"}
-    )
-    assert response.status_code == 200
-    allowed_objects = response.json["allowed_objects"]
-    list_objects = ["HybridSolid3D", "PolyhedralSolid3D", "TetrahedralSolid3D"]
-    for geode_object in list_objects:
-        assert geode_object in allowed_objects
-
-    # Test with stupid filename
-    response = client.post(
-        f"{base_route}/allowed_objects", data={"filename": "toto.tutu"}
-    )
-    assert response.status_code == 200
-    allowed_objects = response.json["allowed_objects"]
-    assert type(allowed_objects) is list
-    assert not allowed_objects
-
-    # Test without filename
-    response = client.post(f"{base_route}/allowed_objects")
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "No filename sent"
-
-
-def test_upload_file(client):
-    file = base64.b64encode(open("./tests/corbi.og_brep", "rb").read())
-    filename = "corbi.og_brep"
-    filesize = os.path.getsize("./tests/corbi.og_brep")
-
-    # Test with file
-    response = client.post(
-        f"{base_route}/upload_file",
-        data={
-            "file": file,
-            "filename": filename,
-            "filesize": filesize,
-        },
-    )
-
-    assert response.status_code == 200
-
-    # Test without file
-    response = client.post(
-        f"{base_route}/upload_file",
-        data={
-            "filename": filename,
-            "filesize": filesize,
-        },
-    )
-
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "No file sent"
-
-    # Test without filename
-    response = client.post(
-        f"{base_route}/upload_file",
-        data={
-            "file": file,
-            "filesize": filesize,
-        },
-    )
-
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "No filename sent"
-
-    # Test without filesize
-    response = client.post(
-        f"{base_route}/upload_file",
-        data={
-            "file": file,
-            "filename": filename,
-        },
-    )
-
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "No filesize sent"
 
 
 def test_test_names(client):
@@ -141,7 +40,8 @@ def test_test_names(client):
     for geode_object in ObjectArray:
         # Normal test with all objects
         response = client.post(
-            f"{base_route}/tests_names", data={"input_geode_object": geode_object}
+            f"{base_route}/tests_names",
+            json={"input_geode_object": geode_object},
         )
         assert response.status_code == 200
         model_checks = response.json["model_checks"]
@@ -161,7 +61,7 @@ def test_test_names(client):
                     print("is_leaf")
                     response_test = client.post(
                         f"{base_route}/inspect_file",
-                        data={
+                        json={
                             "object": "BRep",
                             "filename": "corbi.og_brep",
                             "test": check["route"],
@@ -175,11 +75,18 @@ def test_test_names(client):
 
 def test_inspect_file(client):
     # Test with file
+
+    filename = "corbi.og_brep"
+
+    response = client.put(
+        "tools/upload_file",
+        data={"content": FileStorage(open(f"./tests/{filename}", "rb"))},
+    )
+    assert response.status_code == 201
+
     response = client.post(
         f"{base_route}/inspect_file",
-        data={
-            "file": base64.b64encode(open("./tests/corbi.og_brep", "rb").read()),
-            "filename": "corbi.og_brep",
-            "filesize": os.path.getsize("./tests/corbi.og_brep"),
+        json={
+            "filename": filename,
         },
     )
