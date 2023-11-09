@@ -87,6 +87,7 @@ flask_cors.CORS(app, origins=ORIGINS)
 @app.errorhandler(HTTPException)
 def handle_exception(e):
     response = e.get_response()
+    print(e.description)
     response.data = flask.json.dumps(
         {
             "code": e.code,
