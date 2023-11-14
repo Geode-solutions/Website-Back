@@ -1,0 +1,10 @@
+{
+  "$id": "/workflows/simplex/initialize",
+  "route": "/initialize",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

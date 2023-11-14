@@ -1,0 +1,9 @@
+{
+  "$id": "/workflows/explicit/get_brep_stats",
+  "route": "/get_brep_stats",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "additionalProperties": false
+}

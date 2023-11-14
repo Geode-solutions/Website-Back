@@ -1,0 +1,10 @@
+{
+    "$id": "/tools/ID/healthcheck",
+    "route": "healthcheck",
+    "methods": [
+        "GET"
+    ],
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+}

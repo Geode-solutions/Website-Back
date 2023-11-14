@@ -1,0 +1,10 @@
+{
+    "$id": "/tools/validity_checker/allowed_files",
+    "route": "/allowed_files",
+    "methods": [
+        "GET"
+    ],
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+}
