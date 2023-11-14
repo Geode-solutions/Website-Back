@@ -4,6 +4,5 @@
     "methods": [
         "GET"
     ],
-    "type": "object",
-    "properties": {}
+    "type": "object"
 }

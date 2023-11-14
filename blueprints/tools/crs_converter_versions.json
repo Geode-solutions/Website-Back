@@ -5,6 +5,5 @@
         "GET"
     ],
     "type": "object",
-    "properties": {},
     "additionalProperties": false
 }
