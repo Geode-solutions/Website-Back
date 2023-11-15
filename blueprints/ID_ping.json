@@ -1,0 +1,9 @@
+{
+    "$id": "/tools/ID/ping",
+    "route": "ping",
+    "methods": [
+        "POST"
+    ],
+    "type": "object",
+    "additionalProperties": false
+}

@@ -9,14 +9,37 @@ import flask
 import flask_cors
 import werkzeug
 from opengeodeweb_back import geode_functions
+import json
 
+with open("blueprints/tools/crs_converter_allowed_files.json", "r") as file:
+    crs_converter_allowed_files_json = json.load(file)
+
+with open("blueprints/tools/crs_converter_allowed_objects.json", "r") as file:
+    crs_converter_allowed_objects_json = json.load(file)
+
+with open("blueprints/tools/crs_converter_convert_file.json", "r") as file:
+    crs_converter_convert_file_json = json.load(file)
+
+with open(
+    "blueprints/tools/crs_converter_geographic_coordinate_systems.json", "r"
+) as file:
+    crs_converter_geographic_coordinate_systems_json = json.load(file)
+
+with open("blueprints/tools/crs_converter_output_file_extensions.json", "r") as file:
+    crs_converter_output_file_extensions_json = json.load(file)
+
+with open("blueprints/tools/crs_converter_versions.json", "r") as file:
+    crs_converter_versions_json = json.load(file)
 
 crs_converter_routes = flask.Blueprint("crs_converter_routes", __name__)
 flask_cors.CORS(crs_converter_routes)
 
 
-@crs_converter_routes.route("/versions", methods=["GET"])
+@crs_converter_routes.route(
+    crs_converter_versions_json["route"], methods=crs_converter_versions_json["methods"]
+)
 def crs_converter_versions():
+    geode_functions.validate_request(flask.request, crs_converter_versions_json)
     list_packages = [
         "OpenGeode-core",
         "OpenGeode-IO",
@@ -28,24 +51,36 @@ def crs_converter_versions():
     )
 
 
-@crs_converter_routes.route("/allowed_files", methods=["GET"])
+@crs_converter_routes.route(
+    crs_converter_allowed_files_json["route"],
+    methods=crs_converter_allowed_files_json["methods"],
+)
 def crs_converter_allowed_files():
+    geode_functions.validate_request(flask.request, crs_converter_allowed_files_json)
     extensions = geode_functions.list_input_extensions("crs")
     return {"status": 200, "extensions": extensions}
 
 
-@crs_converter_routes.route("/allowed_objects", methods=["POST"])
+@crs_converter_routes.route(
+    crs_converter_allowed_objects_json["route"],
+    methods=crs_converter_allowed_objects_json["methods"],
+)
 def crs_converter_allowed_objects():
-    geode_functions.validate_request(flask.request, ["filename"])
+    geode_functions.validate_request(flask.request, crs_converter_allowed_objects_json)
     file_extension = os.path.splitext(flask.request.json["filename"])[1][1:]
     allowed_objects = geode_functions.list_geode_objects(file_extension, "crs")
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
 
-@crs_converter_routes.route("/geographic_coordinate_systems", methods=["POST"])
+@crs_converter_routes.route(
+    crs_converter_geographic_coordinate_systems_json["route"],
+    methods=crs_converter_geographic_coordinate_systems_json["methods"],
+)
 def crs_converter_geographic_coordinate_systems():
-    geode_functions.validate_request(flask.request, ["geode_object"])
+    geode_functions.validate_request(
+        flask.request, crs_converter_geographic_coordinate_systems_json
+    )
     infos = geode_functions.geographic_coordinate_systems(
         flask.request.json["geode_object"]
     )
@@ -61,9 +96,14 @@ def crs_converter_geographic_coordinate_systems():
     return flask.make_response({"crs_list": crs_list}, 200)
 
 
-@crs_converter_routes.route("/output_file_extensions", methods=["POST"])
-def crs_converter_output_file_extensiongeode_functionss():
-    geode_functions.validate_request(flask.request, ["geode_object"])
+@crs_converter_routes.route(
+    crs_converter_output_file_extensions_json["route"],
+    methods=crs_converter_output_file_extensions_json["methods"],
+)
+def crs_converter_output_file_extensions():
+    geode_functions.validate_request(
+        flask.request, crs_converter_output_file_extensions_json
+    )
     output_file_extensions = geode_functions.geode_object_output_extensions(
         flask.request.json["geode_object"]
     )
@@ -71,23 +111,16 @@ def crs_converter_output_file_extensiongeode_functionss():
     return flask.make_response({"output_file_extensions": output_file_extensions}, 200)
 
 
-@crs_converter_routes.route("/convert_file", methods=["POST"])
+@crs_converter_routes.route(
+    crs_converter_convert_file_json["route"],
+    methods=crs_converter_convert_file_json["methods"],
+)
 async def crs_converter_convert_file():
-    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     geode_functions.validate_request(
         flask.request,
-        [
-            "geode_object",
-            "filename",
-            "input_crs_authority",
-            "input_crs_code",
-            "input_crs_name",
-            "output_crs_authority",
-            "output_crs_code",
-            "output_crs_name",
-            "extension",
-        ],
+        crs_converter_convert_file_json,
     )
+    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
     input_crs = {
         "authority": flask.request.json["input_crs_authority"],

@@ -1,0 +1,17 @@
+{
+  "$id": "/workflows/implicit/step3",
+  "type": "object",
+  "route": "/step3",
+  "methods": [
+    "POST"
+  ],
+  "properties": {
+    "metric": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "metric"
+  ],
+  "additionalProperties": false
+}

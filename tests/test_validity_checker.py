@@ -47,7 +47,7 @@ def test_allowed_objects(client):
     response = client.post(f"{base_route}/allowed_objects", json={})
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No filename sent"
+    assert error_description == "Validation error: 'filename' is a required property"
 
 
 def test_test_names(client):

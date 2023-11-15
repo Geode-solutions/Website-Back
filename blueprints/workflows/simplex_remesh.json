@@ -1,0 +1,21 @@
+{
+  "$id": "/workflows/simplex/remesh",
+  "route": "/remesh",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "properties": {
+    "metric": {
+      "type": "number"
+    },
+    "faults_metric": {
+      "type": "number"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "metric",
+    "faults_metric"
+  ]
+}

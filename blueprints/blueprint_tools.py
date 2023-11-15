@@ -7,6 +7,10 @@ import werkzeug
 import blueprints.tools.blueprint_file_converter as bp_file_converter
 import blueprints.tools.blueprint_validity_checker as bp_validity_checker
 import blueprints.tools.blueprint_crs_converter as bp_crs_converter
+import json
+
+with open("blueprints/tools_upload_file.json", "r") as file:
+    upload_file_json = json.load(file)
 
 tools_routes = flask.Blueprint("crs_converter_routes", __name__)
 flask_cors.CORS(tools_routes)
@@ -46,7 +50,7 @@ tools_routes.register_blueprint(
 )
 
 
-@tools_routes.route("/upload_file", methods=["OPTIONS", "PUT"])
+@tools_routes.route(upload_file_json["route"], methods=upload_file_json["methods"])
 def upload_file():
     if flask.request.method == "OPTIONS":
         return flask.make_response({}, 200)
