@@ -46,12 +46,16 @@ def test_convert_file(client):
         return {
             "input_geode_object": "BRep",
             "filename": "corbi.og_brep",
-            "input_crs_authority": "EPSG",
-            "input_crs_code": "2000",
-            "input_crs_name": "Anguilla 1957 / British West Indies Grid",
-            "output_crs_authority": "EPSG",
-            "output_crs_code": "2001",
-            "output_crs_name": "Antigua 1943 / British West Indies Grid",
+            "input_crs": {
+                "authority": "EPSG",
+                "code": "2000",
+                "name": "Anguilla 1957 / British West Indies Grid",
+            },
+            "output_crs": {
+                "authority": "EPSG",
+                "code": "2001",
+                "name": "Antigua 1943 / British West Indies Grid",
+            },
             "output_geode_object": "BRep",
             "output_extension": "msh",
         }
