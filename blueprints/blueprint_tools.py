@@ -1,4 +1,8 @@
+# Standard library imports
+import json
 import os
+
+# Third party imports
 import flask
 import flask_cors
 from opengeodeweb_back import geode_functions, geode_objects
@@ -7,7 +11,7 @@ import werkzeug
 import blueprints.tools.blueprint_file_converter as bp_file_converter
 import blueprints.tools.blueprint_validity_checker as bp_validity_checker
 import blueprints.tools.blueprint_crs_converter as bp_crs_converter
-import json
+
 
 tools_routes = flask.Blueprint("crs_converter_routes", __name__)
 flask_cors.CORS(tools_routes)
@@ -88,6 +92,7 @@ def upload_file():
 
     for file in files:
         filename = werkzeug.utils.secure_filename(os.path.basename(file.filename))
+        print(f"{filename=}")
         file.save(os.path.join(UPLOAD_FOLDER, filename))
     return flask.make_response({"message": "File uploaded"}, 201)
 

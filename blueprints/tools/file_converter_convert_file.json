@@ -15,6 +15,12 @@
     },
     "output_extension": {
       "type": "string"
+    },
+    "responseType": {
+      "type": "string"
+    },
+    "responseEncoding": {
+      "type": "string"
     }
   },
   "required": [
