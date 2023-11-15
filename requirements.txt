@@ -107,7 +107,7 @@ opengeode-io==6.2.1
     #   geode-viewables
     #   opengeode-inspector
     #   opengeodeweb-back
-opengeodeweb-back==1.4.0
+opengeodeweb-back==2.0.0
     # via -r requirements.in
 python-dotenv==1.0.0
     # via -r requirements.in

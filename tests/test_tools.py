@@ -38,7 +38,7 @@ def test_allowed_objects(client):
         response = client.post(route, json=json)
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == f"No {key} sent"
+        assert error_description == f"Validation error: '{key}' is a required property"
 
 
 def test_upload_file(client):
@@ -79,7 +79,7 @@ def test_missing_files(client):
         response = client.post(route, json=json)
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == f"No {key} sent"
+        assert error_description == f"Validation error: '{key}' is a required property"
 
 
 def test_geode_objects_and_output_extensions(client):
@@ -104,4 +104,6 @@ def test_geode_objects_and_output_extensions(client):
     response = client.post(route, json={})
     assert response.status_code == 400
     error_message = response.json["description"]
-    assert error_message == "No input_geode_object sent"
+    assert (
+        error_message == "Validation error: 'input_geode_object' is a required property"
+    )

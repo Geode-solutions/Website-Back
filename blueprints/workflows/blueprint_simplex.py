@@ -5,13 +5,21 @@ import geode_simplex
 from opengeodeweb_back import geode_functions, geode_objects
 import flask
 import flask_cors
+import json
 
+with open("blueprints/workflows/simplex_initialize.json", "r") as file:
+    simplex_initialize_json = json.load(file)
+
+with open("blueprints/workflows/simplex_remesh.json", "r") as file:
+    simplex_remesh_json = json.load(file)
 
 simplex_routes = flask.Blueprint("simplex_routes", __name__)
 flask_cors.CORS(simplex_routes)
 
 
-@simplex_routes.route("/initialize", methods=["POST"])
+@simplex_routes.route(
+    simplex_initialize_json["route"], methods=simplex_initialize_json["methods"]
+)
 def initialize():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
@@ -30,11 +38,13 @@ def initialize():
     )
 
 
-@simplex_routes.route("/remesh", methods=["POST"])
+@simplex_routes.route(
+    simplex_remesh_json["route"], methods=simplex_remesh_json["methods"]
+)
 def remesh():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    geode_functions.validate_request(flask.request, ["metric", "faults_metric"])
+    variables = geode_functions.validate_request(flask.request, simplex_remesh_json)
     min_metric = 10
     max_metric = 300
     brep = geode_functions.load(

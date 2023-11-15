@@ -1,0 +1,21 @@
+{
+  "$id": "/workflows/implicit/step2",
+  "route": "/step2",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "properties": {
+    "axis": {
+      "type": "number"
+    },
+    "coordinate": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "axis",
+    "coordinate"
+  ],
+  "additionalProperties": false
+}

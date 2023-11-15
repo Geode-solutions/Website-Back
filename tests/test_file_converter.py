@@ -44,4 +44,4 @@ def test_convert_file(client):
         response = client.post(route, json=json)
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == f"No {key} sent"
+        assert error_description == f"Validation error: '{key}' is a required property"

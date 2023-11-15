@@ -7,7 +7,7 @@ import blueprints.workflows.blueprint_implicit as bp_implicit
 import blueprints.workflows.blueprint_simplex as bp_simplex
 import blueprints.workflows.blueprint_explicit as bp_explicit
 
-workflows_routes = flask.Blueprint("crs_converter_routes", __name__)
+workflows_routes = flask.Blueprint("workflows_routes", __name__)
 flask_cors.CORS(workflows_routes)
 
 
