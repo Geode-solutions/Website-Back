@@ -12,10 +12,6 @@ import json
 with open("blueprints/tools_upload_file.json", "r") as file:
     upload_file_json = json.load(file)
 
-tools_routes = flask.Blueprint("crs_converter_routes", __name__)
-flask_cors.CORS(tools_routes)
-
-
 @tools_routes.before_request
 def before_request():
     geode_functions.create_lock_file(
@@ -49,18 +45,4 @@ tools_routes.register_blueprint(
     name="crs_converter_blueprint",
 )
 
-
 @tools_routes.route(upload_file_json["route"], methods=upload_file_json["methods"])
-def upload_file():
-    if flask.request.method == "OPTIONS":
-        return flask.make_response({}, 200)
-
-    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.mkdir(UPLOAD_FOLDER)
-    files = flask.request.files.getlist("content")
-
-    for file in files:
-        filename = werkzeug.utils.secure_filename(os.path.basename(file.filename))
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
-    return flask.make_response({"message": "File uploaded"}, 201)

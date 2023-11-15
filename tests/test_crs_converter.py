@@ -145,6 +145,7 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
+
         assert (
             error_description
             == "Validation error: 'geode_object' is a required property"
