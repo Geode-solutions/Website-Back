@@ -6,14 +6,34 @@ import flask
 import flask_cors
 import werkzeug
 from opengeodeweb_back import geode_functions, inspector_functions
+import json
+
+with open("blueprints/tools/validity_checker_allowed_files.json", "r") as file:
+    validity_checker_allowed_files_json = json.load(file)
+
+with open("blueprints/tools/validity_checker_allowed_objects.json", "r") as file:
+    validity_checker_allowed_objects_json = json.load(file)
+
+with open("blueprints/tools/validity_checker_inspect_file.json", "r") as file:
+    validity_checker_inspect_file_json = json.load(file)
+
+with open("blueprints/tools/validity_checker_test_names.json", "r") as file:
+    validity_checker_test_names_json = json.load(file)
+
+with open("blueprints/tools/validity_checker_versions.json", "r") as file:
+    validity_checker_versions_json = json.load(file)
 
 
 validity_checker_routes = flask.Blueprint("validity_checker_routes", __name__)
 flask_cors.CORS(validity_checker_routes)
 
 
-@validity_checker_routes.route("/versions", methods=["GET"])
+@validity_checker_routes.route(
+    validity_checker_versions_json["route"],
+    methods=validity_checker_versions_json["methods"],
+)
 def validity_checker_versions():
+    geode_functions.validate_request(flask.request, validity_checker_versions_json)
     list_packages = [
         "OpenGeode-core",
         "OpenGeode-IO",
@@ -26,25 +46,37 @@ def validity_checker_versions():
     )
 
 
-@validity_checker_routes.route("/allowed_files", methods=["GET"])
+@validity_checker_routes.route(
+    validity_checker_allowed_files_json["route"],
+    methods=validity_checker_allowed_files_json["methods"],
+)
 def validity_checker_allowed_files():
+    geode_functions.validate_request(flask.request, validity_checker_allowed_files_json)
     extensions = geode_functions.list_input_extensions("inspector")
 
     return flask.make_response({"extensions": extensions}, 200)
 
 
-@validity_checker_routes.route("/allowed_objects", methods=["POST"])
+@validity_checker_routes.route(
+    validity_checker_allowed_objects_json["route"],
+    methods=validity_checker_allowed_objects_json["methods"],
+)
 def validity_checker_allowed_objects():
-    geode_functions.validate_request(flask.request, ["filename"])
+    geode_functions.validate_request(
+        flask.request, validity_checker_allowed_objects_json
+    )
     file_extension = os.path.splitext(flask.request.json["filename"])[1][1:]
     allowed_objects = geode_functions.list_geode_objects(file_extension, "inspector")
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
 
-@validity_checker_routes.route("/tests_names", methods=["POST"])
+@validity_checker_routes.route(
+    validity_checker_test_names_json["route"],
+    methods=validity_checker_test_names_json["methods"],
+)
 def validity_checker_test_names():
-    geode_functions.validate_request(flask.request, ["geode_object"])
+    geode_functions.validate_request(flask.request, validity_checker_test_names_json)
     model_checks = inspector_functions.json_return(
         inspector_functions.inspectors()[flask.request.json["geode_object"]][
             "tests_names"
@@ -54,11 +86,14 @@ def validity_checker_test_names():
     return flask.make_response({"model_checks": model_checks}, 200)
 
 
-@validity_checker_routes.route("/inspect_file", methods=["POST"])
+@validity_checker_routes.route(
+    validity_checker_inspect_file_json["route"],
+    methods=validity_checker_inspect_file_json["methods"],
+)
 def validity_checker_inspect_file():
+    geode_functions.validate_request(flask.request, validity_checker_inspect_file_json)
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     array_variables = ["geode_object", "filename", "test"]
-    geode_functions.validate_request(flask.request, array_variables)
 
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))

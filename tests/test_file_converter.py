@@ -28,6 +28,7 @@ def test_allowed_objects(client):
     response = client.post(
         f"{base_route}/allowed_objects", json={"filename": "corbi.og_brep"}
     )
+    print(response)
     assert response.status_code == 200
     allowed_objects = response.json["allowed_objects"]
     assert type(allowed_objects) is list
@@ -56,7 +57,7 @@ def test_allowed_objects(client):
     response = client.post(f"{base_route}/allowed_objects", json={})
     assert response.status_code == 400
     error_message = response.json["description"]
-    assert error_message == "No filename sent"
+    assert error_message == "Validation error: 'filename' is a required property"
 
 
 def test_output_file_extensions(client):
@@ -74,7 +75,7 @@ def test_output_file_extensions(client):
     response = client.post(f"{base_route}/output_file_extensions", json={})
     assert response.status_code == 400
     error_message = response.json["description"]
-    assert error_message == "No geode_object sent"
+    assert error_message == "Validation error: 'geode_object' is a required property"
 
 
 def test_convert_file(client):
@@ -113,7 +114,9 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No geode_object sent"
+    assert (
+        error_description == "Validation error: 'geode_object' is a required property"
+    )
 
     # Test without filename
     response = client.post(
@@ -126,7 +129,7 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No filename sent"
+    assert error_description == "Validation error: 'filename' is a required property"
 
     # Test without extension
     response = client.post(
@@ -139,4 +142,4 @@ def test_convert_file(client):
 
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No extension sent"
+    assert error_description == "Validation error: 'extension' is a required property"

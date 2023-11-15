@@ -1,0 +1,25 @@
+{
+    "$id": "/tools/validity_checker/inspect_file",
+    "route": "/inspect_file",
+    "methods": [
+        "POST"
+    ],
+    "type": "object",
+    "properties": {
+        "geode_object": {
+            "type": "string"
+        },
+        "filename": {
+            "type": "string"
+        },
+        "test": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "geode_object",
+        "filename",
+        "test"
+    ],
+    "additionalProperties": false
+}

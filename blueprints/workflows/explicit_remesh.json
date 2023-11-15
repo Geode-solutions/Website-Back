@@ -1,0 +1,17 @@
+{
+  "$id": "/workflows/explicit/remesh",
+  "route": "/remesh",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "properties": {
+    "metric": {
+      "type": "number"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "metric"
+  ]
+}

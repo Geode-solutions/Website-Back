@@ -1,0 +1,20 @@
+{
+  "$id": "/workflows/implicit/step1",
+  "route": "/step1",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "properties": {
+    "isovalues": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
+    }
+  },
+  "required": [
+    "isovalues"
+  ],
+  "additionalProperties": false
+}

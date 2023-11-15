@@ -8,14 +8,34 @@ import flask
 import flask_cors
 import werkzeug
 from opengeodeweb_back import geode_functions
+import json
+
+with open("blueprints/tools/crs_converter_allowed_files.json", "r") as file:
+    file_converter_allowed_files_json = json.load(file)
+
+with open("blueprints/tools/file_converter_allowed_objects.json", "r") as file:
+    file_converter_allowed_objects_json = json.load(file)
+
+with open("blueprints/tools/file_converter_convert_file.json", "r") as file:
+    file_converter_convert_file_json = json.load(file)
+
+with open("blueprints/tools/file_converter_output_file_extensions.json", "r") as file:
+    file_converter_output_file_extensions_json = json.load(file)
+
+with open("blueprints/tools/file_converter_versions.json", "r") as file:
+    file_converter_versions_json = json.load(file)
 
 
 file_converter_routes = flask.Blueprint("file_converter_routes", __name__)
 flask_cors.CORS(file_converter_routes)
 
 
-@file_converter_routes.route("/versions", methods=["GET"])
+@file_converter_routes.route(
+    file_converter_versions_json["route"],
+    methods=file_converter_versions_json["methods"],
+)
 def file_converter_versions():
+    geode_functions.validate_request(flask.request, file_converter_versions_json)
     list_packages = [
         "OpenGeode-core",
         "OpenGeode-IO",
@@ -28,37 +48,49 @@ def file_converter_versions():
     )
 
 
-@file_converter_routes.route("/allowed_files", methods=["GET"])
+@file_converter_routes.route(
+    file_converter_allowed_files_json["route"],
+    methods=file_converter_allowed_files_json["methods"],
+)
 def file_converter_allowed_files():
+    geode_functions.validate_request(flask.request, file_converter_allowed_files_json)
     extensions = geode_functions.list_input_extensions()
     return {"status": 200, "extensions": extensions}
 
 
-@file_converter_routes.route("/allowed_objects", methods=["POST"])
+@file_converter_routes.route(
+    file_converter_allowed_objects_json["route"],
+    methods=file_converter_allowed_objects_json["methods"],
+)
 def file_converter_allowed_objects():
-    geode_functions.validate_request(flask.request, ["filename"])
+    geode_functions.validate_request(flask.request, file_converter_allowed_objects_json)
     file_extension = os.path.splitext(flask.request.json["filename"])[1][1:]
     allowed_objects = geode_functions.list_geode_objects(file_extension)
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
 
-@file_converter_routes.route("/output_file_extensions", methods=["POST"])
+@file_converter_routes.route(
+    file_converter_output_file_extensions_json["route"],
+    methods=file_converter_output_file_extensions_json["methods"],
+)
 def file_converter_output_file_extensions():
-    geode_functions.validate_request(flask.request, ["geode_object"])
+    geode_functions.validate_request(
+        flask.request, file_converter_output_file_extensions_json
+    )
     output_file_extensions = geode_functions.geode_object_output_extensions(
         flask.request.json["geode_object"]
     )
     return flask.make_response({"output_file_extensions": output_file_extensions}, 200)
 
 
-@file_converter_routes.route("/convert_file", methods=["POST"])
+@file_converter_routes.route(
+    file_converter_convert_file_json["route"],
+    methods=file_converter_convert_file_json["methods"],
+)
 async def file_converter_convert_file():
+    geode_functions.validate_request(flask.request, file_converter_convert_file_json)
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
-
-    geode_functions.validate_request(
-        flask.request, ["geode_object", "filename", "extension"]
-    )
 
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
     file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
