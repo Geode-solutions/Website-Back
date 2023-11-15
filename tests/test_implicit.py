@@ -15,7 +15,7 @@ def test_step0(client):
 
 
 def test_step1(client):
-    isovalues = json.dumps([0, 0.5, 1])
+    isovalues = [0, 0.5, 1]
 
     # Normal test with isovalues
     response = client.post(
@@ -37,7 +37,7 @@ def test_step1(client):
     )
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No isovalues sent"
+    assert error_description == "Validation error: 'isovalues' is a required property"
 
 
 def test_step2(client):
@@ -58,8 +58,7 @@ def test_step2(client):
     response = client.post(f"{base_route}/step2", json={"coordinate": coordinate})
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No axis sent"
-
+    assert error_description == "Validation error: 'axis' is a required property"
 
 def test_step3(client):
     metric = 1
@@ -81,4 +80,4 @@ def test_step3(client):
     response = client.post(f"{base_route}/step3", json={})
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No metric sent"
+    assert error_description == "Validation error: 'metric' is a required property"

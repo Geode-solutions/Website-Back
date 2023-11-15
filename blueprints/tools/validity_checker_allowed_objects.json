@@ -1,0 +1,17 @@
+{
+    "$id": "/tools/validity_checker/allowed_objects",
+    "route": "/allowed_objects",
+    "methods": [
+        "POST"
+    ],
+    "type": "object",
+    "properties": {
+        "filename": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "filename"
+    ],
+    "additionalProperties": false
+}

@@ -52,7 +52,7 @@ def test_allowed_objects(client):
     response = client.post(route, json={})
     assert response.status_code == 400
     error_message = response.json["description"]
-    assert error_message == "No filename sent"
+    assert error_message == "Validation error: 'filename' is a required property"
 
 
 def test_geographic_coordinate_systems(client):
@@ -70,7 +70,7 @@ def test_geographic_coordinate_systems(client):
     response = client.post(route, json={})
     assert response.status_code == 400
     error_message = response.json["description"]
-    assert error_message == "No geode_object sent"
+    assert error_message == "Validation error: 'geode_object' is a required property"
 
 
 def test_output_file_extensions(client):
@@ -88,7 +88,7 @@ def test_output_file_extensions(client):
     response = client.post(route, json={})
     assert response.status_code == 400
     error_message = response.json["description"]
-    assert error_message == "No geode_object sent"
+    assert error_message == "Validation error: 'geode_object' is a required property"
 
 
 def test_convert_file(client):
@@ -145,7 +145,11 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No geode_object sent"
+
+        assert (
+            error_description
+            == "Validation error: 'geode_object' is a required property"
+        )
 
         # Test without filename
         response = client.post(
@@ -164,7 +168,9 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No filename sent"
+        assert (
+            error_description == "Validation error: 'filename' is a required property"
+        )
 
         # Test without input_crs_authority
         response = client.post(
@@ -183,7 +189,10 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No input_crs_authority sent"
+        assert (
+            error_description
+            == "Validation error: 'input_crs_authority' is a required property"
+        )
 
         # Test without input_crs_code
         response = client.post(
@@ -202,7 +211,10 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No input_crs_code sent"
+        assert (
+            error_description
+            == "Validation error: 'input_crs_code' is a required property"
+        )
 
         # Test without input_crs_name
         response = client.post(
@@ -221,7 +233,10 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No input_crs_name sent"
+        assert (
+            error_description
+            == "Validation error: 'input_crs_name' is a required property"
+        )
 
         # Test without output_crs_authority
         response = client.post(
@@ -240,7 +255,10 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No output_crs_authority sent"
+        assert (
+            error_description
+            == "Validation error: 'output_crs_authority' is a required property"
+        )
 
         # Test without output_crs_code
         response = client.post(
@@ -259,7 +277,10 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No output_crs_code sent"
+        assert (
+            error_description
+            == "Validation error: 'output_crs_code' is a required property"
+        )
 
         # Test without output_crs_name
         response = client.post(
@@ -278,7 +299,10 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No output_crs_name sent"
+        assert (
+            error_description
+            == "Validation error: 'output_crs_name' is a required property"
+        )
 
         # Test without extension
         response = client.post(
@@ -297,4 +321,6 @@ def test_convert_file(client):
 
         assert response.status_code == 400
         error_description = response.json["description"]
-        assert error_description == "No extension sent"
+        assert (
+            error_description == "Validation error: 'extension' is a required property"
+        )

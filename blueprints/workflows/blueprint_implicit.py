@@ -12,11 +12,27 @@ import geode_simplex
 import geode_conversion
 from opengeodeweb_back import geode_functions, geode_objects
 
+with open("blueprints/workflows/implicit _update_value.json", "r") as file:
+    update_value_json = json.load(file)
+
+with open("blueprints/workflows/implicit_step0.json", "r") as file:
+    step0_json = json.load(file)
+
+with open("blueprints/workflows/implicit_step1.json", "r") as file:
+    step1_json = json.load(file)
+
+with open("blueprints/workflows/implicit_step2.json", "r") as file:
+    step2_json = json.load(file)
+
+with open("blueprints/workflows/implicit_step3.json", "r") as file:
+    step3_json = json.load(file)
+
+
 implicit_routes = flask.Blueprint("implicit_routes", __name__)
 flask_cors.CORS(implicit_routes)
 
 
-@implicit_routes.route("/step0", methods=["POST"])
+@implicit_routes.route(step0_json["route"], methods=step0_json["methods"])
 def step0():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     constraints = "["
@@ -77,11 +93,11 @@ def step0():
     )
 
 
-@implicit_routes.route("/update_value", methods=["POST"])
+@implicit_routes.route(update_value_json["route"], methods=update_value_json["methods"])
 def update_value():
     geode_functions.validate_request(
         flask.request,
-        ["point", "value"],
+        update_value_json,
     )
     point = int(flask.request.json["point"])
     value = float(flask.request.json["value"])
@@ -108,11 +124,11 @@ def update_value():
     )
 
 
-@implicit_routes.route("/step1", methods=["POST"])
+@implicit_routes.route(step1_json["route"], methods=step1_json["methods"])
 def step1():
     geode_functions.validate_request(
         flask.request,
-        ["isovalues"],
+        step1_json,
     )
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     data_constraints = geode_numerics.DataPointsManager3D()
@@ -132,7 +148,7 @@ def step1():
     expliciter = geode_implicit.GridScalarFunctionExpliciter3D(
         function_computer.grid_with_results(), scalar_function_name
     )
-    expliciter.add_scalar_isovalues(json.loads(flask.request.json["isovalues"]))
+    expliciter.add_scalar_isovalues(flask.request.json["isovalues"])
     brep = expliciter.build_brep()
     implicit_model = og_geosciences.implicit_model_from_structural_model_scalar_field(
         og_geosciences.StructuralModel(brep), scalar_function_name
@@ -161,20 +177,18 @@ def step1():
     )
 
 
-@implicit_routes.route("/step2", methods=["POST"])
+@implicit_routes.route(step2_json["route"], methods=step2_json["methods"])
 def step2():
-    geode_functions.validate_request(flask.request, ["axis", "coordinate"])
+    geode_functions.validate_request(flask.request, step2_json)
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     implicit_model = og_geosciences.ImplicitStructuralModel(
         geode_functions.load(
             "StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")
         )
     )
-    axis = int(flask.request.json["axis"])
-    coordinate = int(flask.request.json["coordinate"])
 
     extracted_cross_section = geode_implicit.extract_implicit_cross_section_from_axis(
-        implicit_model, axis, coordinate
+        implicit_model, flask.request.json["axis"], flask.request.json["coordinate"]
     )
     geode_functions.save(
         "CrossSection",
@@ -197,9 +211,9 @@ def step2():
     )
 
 
-@implicit_routes.route("/step3", methods=["POST"])
+@implicit_routes.route(step3_json["route"], methods=step3_json["methods"])
 def step3():
-    geode_functions.validate_request(flask.request, ["metric"])
+    geode_functions.validate_request(flask.request, step3_json)
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")

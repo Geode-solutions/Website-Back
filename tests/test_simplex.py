@@ -40,7 +40,9 @@ def test_remesh(client):
     )
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No faults_metric sent"
+    assert (
+        error_description == "Validation error: 'faults_metric' is a required property"
+    )
 
     # Test without metric
     response = client.post(
@@ -51,4 +53,4 @@ def test_remesh(client):
     )
     assert response.status_code == 400
     error_description = response.json["description"]
-    assert error_description == "No metric sent"
+    assert error_description == "Validation error: 'metric' is a required property"

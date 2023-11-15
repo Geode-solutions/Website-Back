@@ -1,0 +1,9 @@
+{
+    "$id": "/tools/validity_checker/versions",
+    "route": "/versions",
+    "methods": [
+        "GET"
+    ],
+    "type": "object",
+    "additionalProperties": false
+}

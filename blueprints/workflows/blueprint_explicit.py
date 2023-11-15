@@ -7,13 +7,24 @@ import geode_simplex
 from opengeodeweb_back import geode_functions, geode_objects
 import flask
 import flask_cors
+import json
 
+with open("blueprints/workflows/explicit_brep_stats.json") as file:
+    explicit_brep_stats_json = json.load(file)
+
+with open("blueprints/workflows/explicit_get_base_data.json") as file:
+    explicit_get_base_data_json = json.load(file)
+
+with open("blueprints/workflows/explicit_remesh.json") as file:
+    explicit_remesh_json = json.load(file)
 
 explicit_routes = flask.Blueprint("explicit_routes", __name__)
 flask_cors.CORS(explicit_routes)
 
 
-@explicit_routes.route("/get_base_data", methods=["POST"])
+@explicit_routes.route(
+    explicit_get_base_data_json["route"], methods=explicit_get_base_data_json["methods"]
+)
 def sendBaseData():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
@@ -42,7 +53,9 @@ def sendBaseData():
     )
 
 
-@explicit_routes.route("/get_brep_stats", methods=["POST"])
+@explicit_routes.route(
+    explicit_brep_stats_json["route"], methods=explicit_brep_stats_json["methods"]
+)
 def sendBRepStats():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
@@ -84,7 +97,9 @@ def sendBRepStats():
     )
 
 
-@explicit_routes.route("/remesh", methods=["POST"])
+@explicit_routes.route(
+    explicit_remesh_json["route"], methods=explicit_remesh_json["methods"]
+)
 def remesh():
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     geode_functions.validate_request(flask.request, ["metric"])

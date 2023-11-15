@@ -1,0 +1,9 @@
+{
+  "$id": "/workflows/explicit/get_base_data",
+  "route": "/get_base_data",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "additionalProperties": false
+}

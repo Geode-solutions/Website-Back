@@ -1,0 +1,9 @@
+{
+  "$id": "/workflows/implicit/step0",
+  "route": "/step0",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "additionalProperties": false
+}
