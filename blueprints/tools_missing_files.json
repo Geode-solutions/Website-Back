@@ -1,6 +1,6 @@
 {
-  "$id": "/tools/validity_checker/inspect_file",
-  "route": "/inspect_file",
+  "$id": "/tools/missing_files",
+  "route": "/missing_files",
   "methods": ["POST"],
   "type": "object",
   "properties": {
@@ -9,11 +9,8 @@
     },
     "filename": {
       "type": "string"
-    },
-    "test": {
-      "type": "string"
     }
   },
-  "required": ["input_geode_object", "filename", "test"],
+  "required": ["input_geode_object", "filename"],
   "additionalProperties": false
 }

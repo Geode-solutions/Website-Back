@@ -9,17 +9,11 @@ import flask
 import flask_cors
 import json
 
-with open("blueprints/workflows/explicit_brep_stats.json") as file:
-    explicit_brep_stats_json = json.load(file)
+explicit_routes = flask.Blueprint("explicit_routes", __name__)
+flask_cors.CORS(explicit_routes)
 
 with open("blueprints/workflows/explicit_get_base_data.json") as file:
     explicit_get_base_data_json = json.load(file)
-
-with open("blueprints/workflows/explicit_remesh.json") as file:
-    explicit_remesh_json = json.load(file)
-
-explicit_routes = flask.Blueprint("explicit_routes", __name__)
-flask_cors.CORS(explicit_routes)
 
 
 @explicit_routes.route(
@@ -51,6 +45,10 @@ def sendBaseData():
         },
         200,
     )
+
+
+with open("blueprints/workflows/explicit_brep_stats.json") as file:
+    explicit_brep_stats_json = json.load(file)
 
 
 @explicit_routes.route(
@@ -95,6 +93,10 @@ def sendBRepStats():
         },
         200,
     )
+
+
+with open("blueprints/workflows/explicit_remesh.json") as file:
+    explicit_remesh_json = json.load(file)
 
 
 @explicit_routes.route(
