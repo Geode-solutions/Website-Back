@@ -102,7 +102,7 @@ def sendBRepStats():
 )
 def remesh():
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    geode_functions.validate_request(flask.request, ["metric"])
+    geode_functions.validate_request(flask.request, explicit_remesh_json)
     min_metric = 50
     max_metric = 500
     brep = geode_functions.load(
