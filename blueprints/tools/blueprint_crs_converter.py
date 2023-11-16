@@ -14,14 +14,9 @@ from opengeodeweb_back import geode_functions
 crs_converter_routes = flask.Blueprint("crs_converter_routes", __name__)
 flask_cors.CORS(crs_converter_routes)
 
+
 with open("blueprints/tools/crs_converter_versions.json", "r") as file:
     crs_converter_versions_json = json.load(file)
-with open(
-    "blueprints/tools/crs_converter_geographic_coordinate_systems.json", "r"
-) as file:
-    crs_converter_geographic_coordinate_systems_json = json.load(file)
-with open("blueprints/tools/crs_converter_convert_file.json", "r") as file:
-    crs_converter_convert_file_json = json.load(file)
 
 
 @crs_converter_routes.route(
@@ -38,6 +33,12 @@ def crs_converter_versions():
     return flask.make_response(
         {"versions": geode_functions.versions(list_packages)}, 200
     )
+
+
+with open(
+    "blueprints/tools/crs_converter_geographic_coordinate_systems.json", "r"
+) as file:
+    crs_converter_geographic_coordinate_systems_json = json.load(file)
 
 
 @crs_converter_routes.route(
@@ -61,6 +62,10 @@ def crs_converter_geographic_coordinate_systems():
         crs_list.append(crs)
 
     return flask.make_response({"crs_list": crs_list}, 200)
+
+
+with open("blueprints/tools/crs_converter_convert_file.json", "r") as file:
+    crs_converter_convert_file_json = json.load(file)
 
 
 @crs_converter_routes.route(

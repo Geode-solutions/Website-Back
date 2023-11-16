@@ -8,15 +8,12 @@ import werkzeug
 from opengeodeweb_back import geode_functions, inspector_functions
 import json
 
-with open("blueprints/tools/validity_checker_versions.json", "r") as file:
-    validity_checker_versions_json = json.load(file)
-with open("blueprints/tools/validity_checker_test_names.json", "r") as file:
-    validity_checker_test_names_json = json.load(file)
-with open("blueprints/tools/validity_checker_inspect_file.json", "r") as file:
-    validity_checker_inspect_file_json = json.load(file)
-
 validity_checker_routes = flask.Blueprint("validity_checker_routes", __name__)
 flask_cors.CORS(validity_checker_routes)
+
+
+with open("blueprints/tools/validity_checker_versions.json", "r") as file:
+    validity_checker_versions_json = json.load(file)
 
 
 @validity_checker_routes.route(
@@ -37,6 +34,10 @@ def validity_checker_versions():
     )
 
 
+with open("blueprints/tools/validity_checker_test_names.json", "r") as file:
+    validity_checker_test_names_json = json.load(file)
+
+
 @validity_checker_routes.route(
     validity_checker_test_names_json["route"],
     methods=validity_checker_test_names_json["methods"],
@@ -50,6 +51,10 @@ def validity_checker_test_names():
     )
 
     return flask.make_response({"model_checks": model_checks}, 200)
+
+
+with open("blueprints/tools/validity_checker_inspect_file.json", "r") as file:
+    validity_checker_inspect_file_json = json.load(file)
 
 
 @validity_checker_routes.route(

@@ -10,16 +10,12 @@ import flask_cors
 import werkzeug
 from opengeodeweb_back import geode_functions
 
+file_converter_routes = flask.Blueprint("file_converter_routes", __name__)
+flask_cors.CORS(file_converter_routes)
+
 
 with open("blueprints/tools/file_converter_versions.json", "r") as file:
     file_converter_versions_json = json.load(file)
-
-with open("blueprints/tools/file_converter_convert_file.json", "r") as file:
-    file_converter_convert_file_json = json.load(file)
-
-
-file_converter_routes = flask.Blueprint("file_converter_routes", __name__)
-flask_cors.CORS(file_converter_routes)
 
 
 @file_converter_routes.route(
@@ -38,6 +34,10 @@ def file_converter_versions():
     return flask.make_response(
         {"versions": geode_functions.versions(list_packages)}, 200
     )
+
+
+with open("blueprints/tools/file_converter_convert_file.json", "r") as file:
+    file_converter_convert_file_json = json.load(file)
 
 
 @file_converter_routes.route(

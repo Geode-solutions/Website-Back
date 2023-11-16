@@ -54,18 +54,6 @@ tools_routes.register_blueprint(
 with open("blueprints/tools_allowed_files.json", "r") as file:
     tools_allowed_files_json = json.load(file)
 
-with open("blueprints/tools_upload_file.json", "r") as file:
-    tools_upload_file_json = json.load(file)
-
-with open("blueprints/tools_allowed_objects.json", "r") as file:
-    tools_allowed_objects_json = json.load(file)
-
-with open("blueprints/tools_missing_files.json", "r") as file:
-    tools_missing_files_json = json.load(file)
-
-with open("blueprints/tools_geode_objects_and_output_extensions.json", "r") as file:
-    tools_geode_objects_and_output_extensions_json = json.load(file)
-
 
 @tools_routes.route(
     tools_allowed_files_json["route"],
@@ -75,6 +63,10 @@ def allowed_files():
     geode_functions.validate_request(flask.request, tools_allowed_files_json)
     extensions = geode_functions.list_input_extensions(flask.request.json["key"])
     return {"status": 200, "extensions": extensions}
+
+
+with open("blueprints/tools_upload_file.json", "r") as file:
+    tools_upload_file_json = json.load(file)
 
 
 @tools_routes.route(
@@ -97,6 +89,10 @@ def upload_file():
     return flask.make_response({"message": "File uploaded"}, 201)
 
 
+with open("blueprints/tools_allowed_objects.json", "r") as file:
+    tools_allowed_objects_json = json.load(file)
+
+
 @tools_routes.route(
     tools_allowed_objects_json["route"],
     methods=tools_allowed_objects_json["methods"],
@@ -109,6 +105,10 @@ def allowed_objects():
     )
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
+
+
+with open("blueprints/tools_missing_files.json", "r") as file:
+    tools_missing_files_json = json.load(file)
 
 
 @tools_routes.route(
@@ -143,6 +143,10 @@ def missing_files():
         },
         200,
     )
+
+
+with open("blueprints/tools_geode_objects_and_output_extensions.json", "r") as file:
+    tools_geode_objects_and_output_extensions_json = json.load(file)
 
 
 @tools_routes.route(
