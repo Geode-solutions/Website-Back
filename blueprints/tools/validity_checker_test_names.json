@@ -1,17 +1,13 @@
 {
-    "$id": "/tools/validity_checker/tests_names",
-    "route": "/tests_names",
-    "methods": [
-        "POST"
-    ],
-    "type": "object",
-    "properties": {
-        "geode_object": {
-            "type": "string"
-        }
-    },
-    "required": [
-        "geode_object"
-    ],
-    "additionalProperties": false
+  "$id": "/tools/validity_checker/tests_names",
+  "route": "/tests_names",
+  "methods": ["POST"],
+  "type": "object",
+  "properties": {
+    "input_geode_object": {
+      "type": "string"
+    }
+  },
+  "required": ["input_geode_object"],
+  "additionalProperties": false
 }
