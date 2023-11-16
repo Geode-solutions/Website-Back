@@ -60,6 +60,7 @@ def test_step2(client):
     error_description = response.json["description"]
     assert error_description == "Validation error: 'axis' is a required property"
 
+
 def test_step3(client):
     metric = 1
 

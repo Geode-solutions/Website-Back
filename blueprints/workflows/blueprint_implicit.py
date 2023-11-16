@@ -12,24 +12,12 @@ import geode_simplex
 import geode_conversion
 from opengeodeweb_back import geode_functions, geode_objects
 
-with open("blueprints/workflows/implicit _update_value.json", "r") as file:
-    update_value_json = json.load(file)
-
-with open("blueprints/workflows/implicit_step0.json", "r") as file:
-    step0_json = json.load(file)
-
-with open("blueprints/workflows/implicit_step1.json", "r") as file:
-    step1_json = json.load(file)
-
-with open("blueprints/workflows/implicit_step2.json", "r") as file:
-    step2_json = json.load(file)
-
-with open("blueprints/workflows/implicit_step3.json", "r") as file:
-    step3_json = json.load(file)
-
 
 implicit_routes = flask.Blueprint("implicit_routes", __name__)
 flask_cors.CORS(implicit_routes)
+
+with open("blueprints/workflows/implicit_step0.json", "r") as file:
+    step0_json = json.load(file)
 
 
 @implicit_routes.route(step0_json["route"], methods=step0_json["methods"])
@@ -93,6 +81,10 @@ def step0():
     )
 
 
+with open("blueprints/workflows/implicit_update_value.json", "r") as file:
+    update_value_json = json.load(file)
+
+
 @implicit_routes.route(update_value_json["route"], methods=update_value_json["methods"])
 def update_value():
     geode_functions.validate_request(
@@ -122,6 +114,10 @@ def update_value():
         },
         200,
     )
+
+
+with open("blueprints/workflows/implicit_step1.json", "r") as file:
+    step1_json = json.load(file)
 
 
 @implicit_routes.route(step1_json["route"], methods=step1_json["methods"])
@@ -177,6 +173,10 @@ def step1():
     )
 
 
+with open("blueprints/workflows/implicit_step2.json", "r") as file:
+    step2_json = json.load(file)
+
+
 @implicit_routes.route(step2_json["route"], methods=step2_json["methods"])
 def step2():
     geode_functions.validate_request(flask.request, step2_json)
@@ -209,6 +209,10 @@ def step2():
         },
         200,
     )
+
+
+with open("blueprints/workflows/implicit_step3.json", "r") as file:
+    step3_json = json.load(file)
 
 
 @implicit_routes.route(step3_json["route"], methods=step3_json["methods"])

@@ -1,4 +1,7 @@
+# Standard library imports
 import os
+
+# Third party imports
 import flask
 import flask_cors
 from opengeodeweb_back import geode_functions, geode_objects
