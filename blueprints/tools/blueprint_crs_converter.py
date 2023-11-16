@@ -35,35 +35,6 @@ def crs_converter_versions():
     )
 
 
-with open(
-    "blueprints/tools/crs_converter_geographic_coordinate_systems.json", "r"
-) as file:
-    crs_converter_geographic_coordinate_systems_json = json.load(file)
-
-
-@crs_converter_routes.route(
-    crs_converter_geographic_coordinate_systems_json["route"],
-    methods=crs_converter_geographic_coordinate_systems_json["methods"],
-)
-def crs_converter_geographic_coordinate_systems():
-    geode_functions.validate_request(
-        flask.request, crs_converter_geographic_coordinate_systems_json
-    )
-    infos = geode_functions.geographic_coordinate_systems(
-        flask.request.json["input_geode_object"]
-    )
-    crs_list = []
-
-    for info in infos:
-        crs = {}
-        crs["name"] = info.name
-        crs["code"] = info.code
-        crs["authority"] = info.authority
-        crs_list.append(crs)
-
-    return flask.make_response({"crs_list": crs_list}, 200)
-
-
 with open("blueprints/tools/crs_converter_convert_file.json", "r") as file:
     crs_converter_convert_file_json = json.load(file)
 

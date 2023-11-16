@@ -145,6 +145,33 @@ def missing_files():
     )
 
 
+with open("blueprints/tools/tools_geographic_coordinate_systems.json", "r") as file:
+    tools_geographic_coordinate_systems_json = json.load(file)
+
+
+@tools_routes.route(
+    tools_geographic_coordinate_systems_json["route"],
+    methods=tools_geographic_coordinate_systems_json["methods"],
+)
+def crs_converter_geographic_coordinate_systems():
+    geode_functions.validate_request(
+        flask.request, tools_geographic_coordinate_systems_json
+    )
+    infos = geode_functions.geographic_coordinate_systems(
+        flask.request.json["input_geode_object"]
+    )
+    crs_list = []
+
+    for info in infos:
+        crs = {}
+        crs["name"] = info.name
+        crs["code"] = info.code
+        crs["authority"] = info.authority
+        crs_list.append(crs)
+
+    return flask.make_response({"crs_list": crs_list}, 200)
+
+
 with open("blueprints/tools_geode_objects_and_output_extensions.json", "r") as file:
     tools_geode_objects_and_output_extensions_json = json.load(file)
 
