@@ -145,7 +145,9 @@ def missing_files():
     )
 
 
-with open("blueprints/tools/tools_geographic_coordinate_systems.json", "r") as file:
+with open(
+    "blueprints/tools/tools_converter_geographic_coordinate_systems.json", "r"
+) as file:
     tools_geographic_coordinate_systems_json = json.load(file)
 
 
