@@ -175,7 +175,7 @@ def geode_objects_and_output_extensions():
 
     filenames = flask.request.json["filenames"]
     input_geode_object = flask.request.json["input_geode_object"]
-    geode_objects_and_output_extensions = []
+    geode_objects_and_output_extensions = {}
 
     print(f"{ flask.request.json=}")
     for index, filename in enumerate(filenames):
@@ -185,33 +185,19 @@ def geode_objects_and_output_extensions():
         file_geode_objects_and_output_extensions = (
             geode_functions.geode_objects_output_extensions(input_geode_object, data)
         )
+        print(f"{file_geode_objects_and_output_extensions=}")
 
         if index == 0:
             geode_objects_and_output_extensions = (
                 file_geode_objects_and_output_extensions
             )
         else:
-            for item in file_geode_objects_and_output_extensions:
-                geode_object = item["geode_object"]
-                output_extensions = item["output_extensions"]
-
-                for output_extension in output_extensions:
+            for geode_object, value in file_geode_objects_and_output_extensions:
+                for output_extension in value:
                     if not output_extension.is_saveable:
                         geode_objects_and_output_extensions[geode_object][
                             output_extension
                         ]["is_saveable"] = False
-                    geode_object_and_output_extensions = {
-                        "geode_object": geode_object,
-                        "output_extension": output_extension,
-                    }
-
-                geode_objects_and_output_extensions.append(
-                    geode_object_and_output_extensions
-                )
-            geode_objects_and_output_extensions = list(
-                set(geode_objects_and_output_extensions)
-                & set(file_geode_objects_and_output_extensions)
-            )
 
     print(geode_objects_and_output_extensions)
     return flask.make_response(
