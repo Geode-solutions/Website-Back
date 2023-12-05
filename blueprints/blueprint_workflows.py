@@ -6,7 +6,7 @@ import flask
 import flask_cors
 from opengeodeweb_back import geode_functions, geode_objects
 
-import blueprints.workflows.blueprint_implicit as bp_implicit
+# import blueprints.workflows.blueprint_implicit as bp_implicit
 import blueprints.workflows.blueprint_simplex as bp_simplex
 import blueprints.workflows.blueprint_explicit as bp_explicit
 
@@ -31,9 +31,9 @@ def teardown_request(exception):
     )
 
 
-workflows_routes.register_blueprint(
-    bp_implicit.implicit_routes, url_prefix="/implicit", name="implicit_blueprint"
-)
+# workflows_routes.register_blueprint(
+#     bp_implicit.implicit_routes, url_prefix="/implicit", name="implicit_blueprint"
+# )
 workflows_routes.register_blueprint(
     bp_simplex.simplex_routes, url_prefix="/simplex", name="simplex_blueprint"
 )
