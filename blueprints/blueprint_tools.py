@@ -99,10 +99,16 @@ with open("blueprints/tools_allowed_objects.json", "r") as file:
 )
 def allowed_objects():
     geode_functions.validate_request(flask.request, tools_allowed_objects_json)
-    file_extension = os.path.splitext(flask.request.json["filename"])[1][1:]
-    allowed_objects = geode_functions.list_geode_objects(
-        file_extension, flask.request.json["key"]
-    )
+    filenames = flask.request.json["filenames"]
+    for index, filename in enumerate(filenames):
+        file_extension = os.path.splitext(filename)[1][1:]
+        filename_allowed_objects = geode_functions.list_geode_objects(
+            file_extension, flask.request.json["key"]
+        )
+        if index == 0:
+            allowed_objects = filename_allowed_objects
+        else:
+            allowed_objects = list(set(allowed_objects) & set(filename_allowed_objects))
 
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
@@ -119,21 +125,28 @@ def missing_files():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     geode_functions.validate_request(flask.request, tools_missing_files_json)
 
-    missing_files = geode_functions.missing_files(
-        flask.request.json["input_geode_object"],
-        os.path.join(UPLOAD_FOLDER, flask.request.json["filename"]),
-    )
-    has_missing_files = missing_files.has_missing_files()
-    mandatory_files = missing_files.mandatory_files
-    additional_files = missing_files.additional_files
-
+    filenames = flask.request.json["filenames"]
+    has_missing_files = False
     mandatory_files_list = []
-    for mandatory_file in mandatory_files:
-        mandatory_files_list.append(os.path.basename(mandatory_file))
-
     additional_files_list = []
-    for additional_file in additional_files:
-        additional_files_list.append(os.path.basename(additional_file))
+
+    for index, filename in enumerate(filenames):
+        file_missing_files = geode_functions.missing_files(
+            flask.request.json["input_geode_object"],
+            os.path.join(UPLOAD_FOLDER, filename),
+        )
+        file_has_missing_files = file_missing_files.has_missing_files()
+        file_mandatory_files = file_missing_files.mandatory_files
+        file_additional_files = file_missing_files.additional_files
+
+        if file_has_missing_files:
+            has_missing_files = True
+
+        for mandatory_file in file_mandatory_files:
+            mandatory_files_list.append(os.path.basename(mandatory_file))
+
+        for additional_file in file_additional_files:
+            additional_files_list.append(os.path.basename(additional_file))
 
     return flask.make_response(
         {
@@ -154,18 +167,53 @@ with open("blueprints/tools_geode_objects_and_output_extensions.json", "r") as f
     methods=tools_geode_objects_and_output_extensions_json["methods"],
 )
 def geode_objects_and_output_extensions():
+    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
+
     geode_functions.validate_request(
         flask.request, tools_geode_objects_and_output_extensions_json
     )
-    geode_objects_output_extensions = geode_functions.geode_objects_output_extensions(
-        flask.request.json["input_geode_object"]
-    )
-    geode_objects_and_output_extensions = (
-        geode_functions.geode_objects_output_extensions(
-            flask.request.json["input_geode_object"]
-        )
-    )
 
+    filenames = flask.request.json["filenames"]
+    input_geode_object = flask.request.json["input_geode_object"]
+    geode_objects_and_output_extensions = []
+
+    print(f"{ flask.request.json=}")
+    for index, filename in enumerate(filenames):
+        data = geode_functions.load(
+            input_geode_object, os.path.join(UPLOAD_FOLDER, filename)
+        )
+        file_geode_objects_and_output_extensions = (
+            geode_functions.geode_objects_output_extensions(input_geode_object, data)
+        )
+
+        if index == 0:
+            geode_objects_and_output_extensions = (
+                file_geode_objects_and_output_extensions
+            )
+        else:
+            for item in file_geode_objects_and_output_extensions:
+                geode_object = item["geode_object"]
+                output_extensions = item["output_extensions"]
+
+                for output_extension in output_extensions:
+                    if not output_extension.is_saveable:
+                        geode_objects_and_output_extensions[geode_object][
+                            output_extension
+                        ]["is_saveable"] = False
+                    geode_object_and_output_extensions = {
+                        "geode_object": geode_object,
+                        "output_extension": output_extension,
+                    }
+
+                geode_objects_and_output_extensions.append(
+                    geode_object_and_output_extensions
+                )
+            geode_objects_and_output_extensions = list(
+                set(geode_objects_and_output_extensions)
+                & set(file_geode_objects_and_output_extensions)
+            )
+
+    print(geode_objects_and_output_extensions)
     return flask.make_response(
         {"geode_objects_and_output_extensions": geode_objects_and_output_extensions},
         200,
