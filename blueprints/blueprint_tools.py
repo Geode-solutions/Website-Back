@@ -84,7 +84,6 @@ def upload_file():
 
     for file in files:
         filename = werkzeug.utils.secure_filename(os.path.basename(file.filename))
-        print(f"{filename=}")
         file.save(os.path.join(UPLOAD_FOLDER, filename))
     return flask.make_response({"message": "File uploaded"}, 201)
 
@@ -158,6 +157,33 @@ def missing_files():
     )
 
 
+with open("blueprints/tools_geographic_coordinate_systems.json", "r") as file:
+    tools_geographic_coordinate_systems_json = json.load(file)
+
+
+@tools_routes.route(
+    tools_geographic_coordinate_systems_json["route"],
+    methods=tools_geographic_coordinate_systems_json["methods"],
+)
+def geographic_coordinate_systems():
+    geode_functions.validate_request(
+        flask.request, tools_geographic_coordinate_systems_json
+    )
+    infos = geode_functions.geographic_coordinate_systems(
+        flask.request.json["input_geode_object"]
+    )
+    crs_list = []
+
+    for info in infos:
+        crs = {}
+        crs["name"] = info.name
+        crs["code"] = info.code
+        crs["authority"] = info.authority
+        crs_list.append(crs)
+
+    return flask.make_response({"crs_list": crs_list}, 200)
+
+
 with open("blueprints/tools_geode_objects_and_output_extensions.json", "r") as file:
     tools_geode_objects_and_output_extensions_json = json.load(file)
 
@@ -168,16 +194,13 @@ with open("blueprints/tools_geode_objects_and_output_extensions.json", "r") as f
 )
 def geode_objects_and_output_extensions():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
-
     geode_functions.validate_request(
         flask.request, tools_geode_objects_and_output_extensions_json
     )
-
     filenames = flask.request.json["filenames"]
     input_geode_object = flask.request.json["input_geode_object"]
     geode_objects_and_output_extensions = {}
 
-    print(f"{ flask.request.json=}")
     for index, filename in enumerate(filenames):
         data = geode_functions.load(
             input_geode_object, os.path.join(UPLOAD_FOLDER, filename)
@@ -185,21 +208,19 @@ def geode_objects_and_output_extensions():
         file_geode_objects_and_output_extensions = (
             geode_functions.geode_objects_output_extensions(input_geode_object, data)
         )
-        print(f"{file_geode_objects_and_output_extensions=}")
 
         if index == 0:
             geode_objects_and_output_extensions = (
                 file_geode_objects_and_output_extensions
             )
         else:
-            for geode_object, value in file_geode_objects_and_output_extensions:
-                for output_extension in value:
-                    if not output_extension.is_saveable:
+            for geode_object, value in file_geode_objects_and_output_extensions.items():
+                for output_extension, output_extension_value in value.items():
+                    if not output_extension_value["is_saveable"]:
                         geode_objects_and_output_extensions[geode_object][
                             output_extension
                         ]["is_saveable"] = False
 
-    print(geode_objects_and_output_extensions)
     return flask.make_response(
         {"geode_objects_and_output_extensions": geode_objects_and_output_extensions},
         200,

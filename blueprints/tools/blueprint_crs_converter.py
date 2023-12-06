@@ -35,35 +35,6 @@ def crs_converter_versions():
     )
 
 
-with open(
-    "blueprints/tools/crs_converter_geographic_coordinate_systems.json", "r"
-) as file:
-    crs_converter_geographic_coordinate_systems_json = json.load(file)
-
-
-@crs_converter_routes.route(
-    crs_converter_geographic_coordinate_systems_json["route"],
-    methods=crs_converter_geographic_coordinate_systems_json["methods"],
-)
-def crs_converter_geographic_coordinate_systems():
-    geode_functions.validate_request(
-        flask.request, crs_converter_geographic_coordinate_systems_json
-    )
-    infos = geode_functions.geographic_coordinate_systems(
-        flask.request.json["input_geode_object"]
-    )
-    crs_list = []
-
-    for info in infos:
-        crs = {}
-        crs["name"] = info.name
-        crs["code"] = info.code
-        crs["authority"] = info.authority
-        crs_list.append(crs)
-
-    return flask.make_response({"crs_list": crs_list}, 200)
-
-
 with open("blueprints/tools/crs_converter_convert_file.json", "r") as file:
     crs_converter_convert_file_json = json.load(file)
 
@@ -92,19 +63,10 @@ async def crs_converter_convert_file():
         flask.request.json["input_geode_object"], data, flask.request.json["output_crs"]
     )
 
-    geode_functions.save(
+    saved_files = geode_functions.save(
         flask.request.json["output_geode_object"],
         data,
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,
     )
-    response = flask.send_from_directory(
-        directory=UPLOAD_FOLDER,
-        path=new_file_name,
-        as_attachment=True,
-        mimetype="application/octet-binary",
-    )
-    response.headers["new-file-name"] = new_file_name
-    response.headers["Access-Control-Expose-Headers"] = "new-file-name"
-
-    return response
+    return geode_functions.send_file(UPLOAD_FOLDER, saved_files, new_file_name)
