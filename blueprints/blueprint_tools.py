@@ -84,6 +84,7 @@ def upload_file():
 
     for file in files:
         filename = werkzeug.utils.secure_filename(os.path.basename(file.filename))
+        print(f"{filename=}")
         file.save(os.path.join(UPLOAD_FOLDER, filename))
     return flask.make_response({"message": "File uploaded"}, 201)
 
