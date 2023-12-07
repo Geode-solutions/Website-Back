@@ -13,7 +13,7 @@ import blueprints.tools.blueprint_validity_checker as bp_validity_checker
 import blueprints.tools.blueprint_crs_converter as bp_crs_converter
 
 
-tools_routes = flask.Blueprint("crs_converter_routes", __name__)
+tools_routes = flask.Blueprint("tools_routes", __name__)
 flask_cors.CORS(tools_routes)
 
 
@@ -80,11 +80,9 @@ def upload_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     if not os.path.exists(UPLOAD_FOLDER):
         os.mkdir(UPLOAD_FOLDER)
-    files = flask.request.files.getlist("content")
-
-    for file in files:
-        filename = werkzeug.utils.secure_filename(os.path.basename(file.filename))
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
+    file = flask.request.files["file"]
+    filename = werkzeug.utils.secure_filename(os.path.basename(file.filename))
+    file.save(os.path.join(UPLOAD_FOLDER, filename))
     return flask.make_response({"message": "File uploaded"}, 201)
 
 
@@ -98,17 +96,11 @@ with open("blueprints/tools_allowed_objects.json", "r") as file:
 )
 def allowed_objects():
     geode_functions.validate_request(flask.request, tools_allowed_objects_json)
-    filenames = flask.request.json["filenames"]
-    for index, filename in enumerate(filenames):
-        file_extension = os.path.splitext(filename)[1][1:]
-        filename_allowed_objects = geode_functions.list_geode_objects(
-            file_extension, flask.request.json["key"]
-        )
-        if index == 0:
-            allowed_objects = filename_allowed_objects
-        else:
-            allowed_objects = list(set(allowed_objects) & set(filename_allowed_objects))
-
+    file_extension = os.path.splitext(flask.request.json["filename"])[1][1:]
+    allowed_objects = geode_functions.list_geode_objects(
+        file_extension, flask.request.json["key"]
+    )
+    print(f"{allowed_objects=}")
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
 
@@ -124,34 +116,25 @@ def missing_files():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     geode_functions.validate_request(flask.request, tools_missing_files_json)
 
-    filenames = flask.request.json["filenames"]
-    has_missing_files = False
-    mandatory_files_list = []
-    additional_files_list = []
+    missing_files = geode_functions.missing_files(
+        flask.request.json["input_geode_object"],
+        os.path.join(UPLOAD_FOLDER, flask.request.json["filename"]),
+    )
+    has_missing_files = missing_files.has_missing_files()
 
-    for index, filename in enumerate(filenames):
-        file_missing_files = geode_functions.missing_files(
-            flask.request.json["input_geode_object"],
-            os.path.join(UPLOAD_FOLDER, filename),
-        )
-        file_has_missing_files = file_missing_files.has_missing_files()
-        file_mandatory_files = file_missing_files.mandatory_files
-        file_additional_files = file_missing_files.additional_files
+    mandatory_files = []
+    for mandatory_file in missing_files.mandatory_files:
+        mandatory_files.append(os.path.basename(mandatory_file))
 
-        if file_has_missing_files:
-            has_missing_files = True
-
-        for mandatory_file in file_mandatory_files:
-            mandatory_files_list.append(os.path.basename(mandatory_file))
-
-        for additional_file in file_additional_files:
-            additional_files_list.append(os.path.basename(additional_file))
+    additional_files = []
+    for additional_file in missing_files.additional_files:
+        additional_files.append(os.path.basename(additional_file))
 
     return flask.make_response(
         {
             "has_missing_files": has_missing_files,
-            "mandatory_files": mandatory_files_list,
-            "additional_files": additional_files_list,
+            "mandatory_files": mandatory_files,
+            "additional_files": additional_files,
         },
         200,
     )
