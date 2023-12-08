@@ -180,29 +180,15 @@ def geode_objects_and_output_extensions():
     geode_functions.validate_request(
         flask.request, tools_geode_objects_and_output_extensions_json
     )
-    filenames = flask.request.json["filenames"]
-    input_geode_object = flask.request.json["input_geode_object"]
-    geode_objects_and_output_extensions = {}
-
-    for index, filename in enumerate(filenames):
-        data = geode_functions.load(
-            input_geode_object, os.path.join(UPLOAD_FOLDER, filename)
+    data = geode_functions.load(
+        flask.request.json["input_geode_object"],
+        os.path.join(UPLOAD_FOLDER, flask.request.json["filename"]),
+    )
+    geode_objects_and_output_extensions = (
+        geode_functions.geode_objects_output_extensions(
+            flask.request.json["input_geode_object"], data
         )
-        file_geode_objects_and_output_extensions = (
-            geode_functions.geode_objects_output_extensions(input_geode_object, data)
-        )
-
-        if index == 0:
-            geode_objects_and_output_extensions = (
-                file_geode_objects_and_output_extensions
-            )
-        else:
-            for geode_object, value in file_geode_objects_and_output_extensions.items():
-                for output_extension, output_extension_value in value.items():
-                    if not output_extension_value["is_saveable"]:
-                        geode_objects_and_output_extensions[geode_object][
-                            output_extension
-                        ]["is_saveable"] = False
+    )
 
     return flask.make_response(
         {"geode_objects_and_output_extensions": geode_objects_and_output_extensions},
