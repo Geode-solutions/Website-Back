@@ -100,7 +100,6 @@ def allowed_objects():
     allowed_objects = geode_functions.list_geode_objects(
         file_extension, flask.request.json["key"]
     )
-    print(f"{allowed_objects=}")
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
 
@@ -189,7 +188,6 @@ def geode_objects_and_output_extensions():
             flask.request.json["input_geode_object"], data
         )
     )
-
     return flask.make_response(
         {"geode_objects_and_output_extensions": geode_objects_and_output_extensions},
         200,
