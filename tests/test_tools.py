@@ -20,7 +20,7 @@ def test_allowed_objects(client):
 
     def get_full_data():
         return {
-            "filenames": ["corbi.og_brep"],
+            "filename": "corbi.og_brep",
             "key": None,
         }
 
@@ -43,7 +43,7 @@ def test_allowed_objects(client):
 def test_upload_file(client):
     response = client.put(
         f"{base_route}/upload_file",
-        data={"content": FileStorage(open("./tests/corbi.og_brep", "rb"))},
+        data={"file": FileStorage(open("./tests/corbi.og_brep", "rb"))},
     )
 
     assert response.status_code == 201
@@ -55,7 +55,7 @@ def test_missing_files(client):
     def get_full_data():
         return {
             "input_geode_object": "BRep",
-            "filenames": ["corbi.og_brep"],
+            "filename": "corbi.og_brep",
         }
 
     json = get_full_data()
@@ -107,7 +107,7 @@ def test_geode_objects_and_output_extensions(client):
     def get_full_data():
         return {
             "input_geode_object": "BRep",
-            "filenames": ["corbi.og_brep"],
+            "filename": "corbi.og_brep",
         }
 
     response = client.post(route, json=get_full_data())
