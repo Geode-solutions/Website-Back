@@ -6,8 +6,12 @@
   "properties": {
     "input_geode_object": {
       "type": "string"
+    },
+    "filename": {
+      "type": "string",
+      "not": { "type": "null" }
     }
   },
-  "required": ["input_geode_object"],
+  "required": ["input_geode_object", "filename"],
   "additionalProperties": false
 }

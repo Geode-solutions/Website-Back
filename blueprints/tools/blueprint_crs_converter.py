@@ -63,19 +63,10 @@ async def crs_converter_convert_file():
         flask.request.json["input_geode_object"], data, flask.request.json["output_crs"]
     )
 
-    geode_functions.save(
+    saved_files = geode_functions.save(
         flask.request.json["output_geode_object"],
         data,
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,
     )
-    response = flask.send_from_directory(
-        directory=UPLOAD_FOLDER,
-        path=new_file_name,
-        as_attachment=True,
-        mimetype="application/octet-binary",
-    )
-    response.headers["new-file-name"] = new_file_name
-    response.headers["Access-Control-Expose-Headers"] = "new-file-name"
-
-    return response
+    return geode_functions.send_file(UPLOAD_FOLDER, saved_files, new_file_name)

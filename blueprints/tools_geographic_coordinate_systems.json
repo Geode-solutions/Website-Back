@@ -1,5 +1,5 @@
 {
-  "$id": "/tools/crs_converter/geographic_coordinate_systems",
+  "$id": "/tools/geographic_coordinate_systems",
   "route": "/geographic_coordinate_systems",
   "methods": ["POST"],
   "type": "object",

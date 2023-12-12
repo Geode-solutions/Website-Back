@@ -24,7 +24,6 @@ def test_allowed_objects(client):
             "key": None,
         }
 
-    # Normal test with filename 'corbi.og_brep'
     response = client.post(route, json=get_full_data())
     assert response.status_code == 200
     allowed_objects = response.json["allowed_objects"]
@@ -44,7 +43,7 @@ def test_allowed_objects(client):
 def test_upload_file(client):
     response = client.put(
         f"{base_route}/upload_file",
-        data={"content": FileStorage(open("./tests/corbi.og_brep", "rb"))},
+        data={"file": FileStorage(open("./tests/corbi.og_brep", "rb"))},
     )
 
     assert response.status_code == 201
@@ -106,7 +105,10 @@ def test_geode_objects_and_output_extensions(client):
     route = f"{base_route}/geode_objects_and_output_extensions"
 
     def get_full_data():
-        return {"input_geode_object": "BRep"}
+        return {
+            "input_geode_object": "BRep",
+            "filename": "corbi.og_brep",
+        }
 
     response = client.post(route, json=get_full_data())
 
@@ -114,11 +116,12 @@ def test_geode_objects_and_output_extensions(client):
     geode_objects_and_output_extensions = response.json[
         "geode_objects_and_output_extensions"
     ]
-    assert type(geode_objects_and_output_extensions) is list
-    for geode_object_and_output_extensions in geode_objects_and_output_extensions:
-        assert type(geode_object_and_output_extensions) is dict
-        assert type(geode_object_and_output_extensions["geode_object"]) is str
-        assert type(geode_object_and_output_extensions["output_extensions"]) is list
+    assert type(geode_objects_and_output_extensions) is dict
+    for geode_object, values in geode_objects_and_output_extensions.items():
+        assert type(values) is dict
+        for output_extension, value in values.items():
+            assert type(value) is dict
+            assert type(value["is_saveable"]) is bool
 
     # Test without input_geode_object
     response = client.post(route, json={})
