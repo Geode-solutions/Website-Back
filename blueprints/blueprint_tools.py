@@ -11,6 +11,7 @@ import werkzeug
 import blueprints.tools.blueprint_file_converter as bp_file_converter
 import blueprints.tools.blueprint_validity_checker as bp_validity_checker
 import blueprints.tools.blueprint_crs_converter as bp_crs_converter
+from opengeodeweb_back.routes import blueprint_routes
 
 
 tools_routes = flask.Blueprint("tools_routes", __name__)
@@ -51,6 +52,7 @@ tools_routes.register_blueprint(
 )
 
 
+<<<<<<< Updated upstream
 with open("blueprints/tools_allowed_files.json", "r") as file:
     tools_allowed_files_json = json.load(file)
 
@@ -192,3 +194,10 @@ def geode_objects_and_output_extensions():
         {"geode_objects_and_output_extensions": geode_objects_and_output_extensions},
         200,
     )
+=======
+tools_routes.register_blueprint(
+    blueprint_routes.routes,
+    url_prefix="/",
+    name="blueprint_routes",
+)
+>>>>>>> Stashed changes
