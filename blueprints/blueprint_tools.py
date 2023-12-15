@@ -13,7 +13,7 @@ import blueprints.tools.blueprint_validity_checker as bp_validity_checker
 import blueprints.tools.blueprint_crs_converter as bp_crs_converter
 
 
-tools_routes = flask.Blueprint("crs_converter_routes", __name__)
+tools_routes = flask.Blueprint("tools_routes", __name__)
 flask_cors.CORS(tools_routes)
 
 
@@ -80,12 +80,9 @@ def upload_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     if not os.path.exists(UPLOAD_FOLDER):
         os.mkdir(UPLOAD_FOLDER)
-    files = flask.request.files.getlist("content")
-
-    for file in files:
-        filename = werkzeug.utils.secure_filename(os.path.basename(file.filename))
-        print(f"{filename=}")
-        file.save(os.path.join(UPLOAD_FOLDER, filename))
+    file = flask.request.files["file"]
+    filename = werkzeug.utils.secure_filename(os.path.basename(file.filename))
+    file.save(os.path.join(UPLOAD_FOLDER, filename))
     return flask.make_response({"message": "File uploaded"}, 201)
 
 
@@ -103,7 +100,6 @@ def allowed_objects():
     allowed_objects = geode_functions.list_geode_objects(
         file_extension, flask.request.json["key"]
     )
-
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
 
@@ -124,25 +120,50 @@ def missing_files():
         os.path.join(UPLOAD_FOLDER, flask.request.json["filename"]),
     )
     has_missing_files = missing_files.has_missing_files()
-    mandatory_files = missing_files.mandatory_files
-    additional_files = missing_files.additional_files
 
-    mandatory_files_list = []
-    for mandatory_file in mandatory_files:
-        mandatory_files_list.append(os.path.basename(mandatory_file))
+    mandatory_files = []
+    for mandatory_file in missing_files.mandatory_files:
+        mandatory_files.append(os.path.basename(mandatory_file))
 
-    additional_files_list = []
-    for additional_file in additional_files:
-        additional_files_list.append(os.path.basename(additional_file))
+    additional_files = []
+    for additional_file in missing_files.additional_files:
+        additional_files.append(os.path.basename(additional_file))
 
     return flask.make_response(
         {
             "has_missing_files": has_missing_files,
-            "mandatory_files": mandatory_files_list,
-            "additional_files": additional_files_list,
+            "mandatory_files": mandatory_files,
+            "additional_files": additional_files,
         },
         200,
     )
+
+
+with open("blueprints/tools_geographic_coordinate_systems.json", "r") as file:
+    tools_geographic_coordinate_systems_json = json.load(file)
+
+
+@tools_routes.route(
+    tools_geographic_coordinate_systems_json["route"],
+    methods=tools_geographic_coordinate_systems_json["methods"],
+)
+def geographic_coordinate_systems():
+    geode_functions.validate_request(
+        flask.request, tools_geographic_coordinate_systems_json
+    )
+    infos = geode_functions.geographic_coordinate_systems(
+        flask.request.json["input_geode_object"]
+    )
+    crs_list = []
+
+    for info in infos:
+        crs = {}
+        crs["name"] = info.name
+        crs["code"] = info.code
+        crs["authority"] = info.authority
+        crs_list.append(crs)
+
+    return flask.make_response({"crs_list": crs_list}, 200)
 
 
 with open("blueprints/tools_geode_objects_and_output_extensions.json", "r") as file:
@@ -154,18 +175,19 @@ with open("blueprints/tools_geode_objects_and_output_extensions.json", "r") as f
     methods=tools_geode_objects_and_output_extensions_json["methods"],
 )
 def geode_objects_and_output_extensions():
+    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     geode_functions.validate_request(
         flask.request, tools_geode_objects_and_output_extensions_json
     )
-    geode_objects_output_extensions = geode_functions.geode_objects_output_extensions(
-        flask.request.json["input_geode_object"]
+    data = geode_functions.load(
+        flask.request.json["input_geode_object"],
+        os.path.join(UPLOAD_FOLDER, flask.request.json["filename"]),
     )
     geode_objects_and_output_extensions = (
         geode_functions.geode_objects_output_extensions(
-            flask.request.json["input_geode_object"]
+            flask.request.json["input_geode_object"], data
         )
     )
-
     return flask.make_response(
         {"geode_objects_and_output_extensions": geode_objects_and_output_extensions},
         200,

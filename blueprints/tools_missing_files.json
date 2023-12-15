@@ -8,7 +8,8 @@
       "type": "string"
     },
     "filename": {
-      "type": "string"
+      "type": "string",
+      "not": { "type": "null" }
     }
   },
   "required": ["input_geode_object", "filename"],

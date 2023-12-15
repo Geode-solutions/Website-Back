@@ -14,33 +14,13 @@ def test_versions(client):
         assert type(version) is dict
 
 
-def test_geographic_coordinate_systems(client):
-    route = f"{base_route}/geographic_coordinate_systems"
-
-    # Normal test with geode_object 'BRep'
-    response = client.post(route, json={"input_geode_object": "BRep"})
-    assert response.status_code == 200
-    crs_list = response.json["crs_list"]
-    assert type(crs_list) is list
-    for crs in crs_list:
-        assert type(crs) is dict
-
-    # Test without geode_object
-    response = client.post(route, json={})
-    assert response.status_code == 400
-    error_message = response.json["description"]
-    assert (
-        error_message == "Validation error: 'input_geode_object' is a required property"
-    )
-
-
 def test_convert_file(client):
     route = f"{base_route}/convert_file"
 
     filename = "corbi.og_brep"
     response = client.put(
         "tools/upload_file",
-        data={"content": FileStorage(open(f"./tests/{filename}", "rb"))},
+        data={"file": FileStorage(open(f"./tests/{filename}", "rb"))},
     )
     assert response.status_code == 201
 
