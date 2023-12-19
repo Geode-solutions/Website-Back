@@ -101,11 +101,11 @@ def allowed_objects():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     geode_functions.validate_request(flask.request, tools_allowed_objects_json)
     file_absolute_path = os.path.join(UPLOAD_FOLDER, flask.request.json["filename"])
-    print(f"{file_absolute_path=}")
+    print(f"{file_absolute_path=}", flush=True)
     allowed_objects = geode_functions.list_geode_objects(
         file_absolute_path, flask.request.json["key"]
     )
-    print(f"{allowed_objects=}")
+    print(f"{allowed_objects=}", flush=True)
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
 
