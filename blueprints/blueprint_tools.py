@@ -95,10 +95,11 @@ with open("blueprints/tools_allowed_objects.json", "r") as file:
     methods=tools_allowed_objects_json["methods"],
 )
 def allowed_objects():
+    UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
     geode_functions.validate_request(flask.request, tools_allowed_objects_json)
-    file_extension = os.path.splitext(flask.request.json["filename"])[1][1:]
+    file_absolute_path = os.path.join(UPLOAD_FOLDER, flask.request.json["filename"])
     allowed_objects = geode_functions.list_geode_objects(
-        file_extension, flask.request.json["key"]
+        file_absolute_path, flask.request.json["key"]
     )
     return flask.make_response({"allowed_objects": allowed_objects}, 200)
 
