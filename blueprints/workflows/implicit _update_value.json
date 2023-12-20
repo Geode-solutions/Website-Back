@@ -1,0 +1,21 @@
+{
+  "$id": "/workflows/implicit/update_value",
+  "route": "/update_value",
+  "methods": [
+    "POST"
+  ],
+  "type": "object",
+  "properties": {
+    "point": {
+      "type": "number"
+    },
+    "value": {
+      "type": "number"
+    },
+    "required": [
+      "point",
+      "value"
+    ]
+  },
+  "additionalProperties": false
+}

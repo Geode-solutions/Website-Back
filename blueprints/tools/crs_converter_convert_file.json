@@ -1,7 +1,9 @@
 {
   "$id": "/tools/crs_converter/convert_file",
   "route": "/convert_file",
-  "methods": ["POST"],
+  "methods": [
+    "POST"
+  ],
   "type": "object",
   "properties": {
     "input_geode_object": {
@@ -23,7 +25,11 @@
           "type": "string"
         }
       },
-      "required": ["name", "code", "authority"],
+      "required": [
+        "name",
+        "code",
+        "authority"
+      ],
       "additionalProperties": false
     },
     "output_crs": {
@@ -39,7 +45,11 @@
           "type": "string"
         }
       },
-      "required": ["name", "code", "authority"],
+      "required": [
+        "name",
+        "code",
+        "authority"
+      ],
       "additionalProperties": false
     },
     "output_geode_object": {

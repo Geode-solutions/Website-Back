@@ -1,7 +1,9 @@
 {
   "$id": "/tools/validity_checker/inspect_file",
   "route": "/inspect_file",
-  "methods": ["POST"],
+  "methods": [
+    "POST"
+  ],
   "type": "object",
   "properties": {
     "input_geode_object": {
@@ -14,6 +16,10 @@
       "type": "string"
     }
   },
-  "required": ["input_geode_object", "filename", "test"],
+  "required": [
+    "input_geode_object",
+    "filename",
+    "test"
+  ],
   "additionalProperties": false
 }
