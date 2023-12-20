@@ -16,6 +16,9 @@ with open("blueprints/workflows/simplex_remesh.json", "r") as file:
 simplex_routes = flask.Blueprint("simplex_routes", __name__)
 flask_cors.CORS(simplex_routes)
 
+with open("blueprints/workflows/simplex_initialize.json", "r") as file:
+    simplex_initialize_json = json.load(file)
+
 
 @simplex_routes.route(
     simplex_initialize_json["route"], methods=simplex_initialize_json["methods"]
@@ -36,6 +39,10 @@ def initialize():
         },
         200,
     )
+
+
+with open("blueprints/workflows/simplex_remesh.json", "r") as file:
+    simplex_remesh_json = json.load(file)
 
 
 @simplex_routes.route(

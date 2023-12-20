@@ -9,17 +9,11 @@ import flask
 import flask_cors
 import json
 
-with open("blueprints/workflows/explicit_brep_stats.json") as file:
-    explicit_brep_stats_json = json.load(file)
+explicit_routes = flask.Blueprint("explicit_routes", __name__)
+flask_cors.CORS(explicit_routes)
 
 with open("blueprints/workflows/explicit_get_base_data.json") as file:
     explicit_get_base_data_json = json.load(file)
-
-with open("blueprints/workflows/explicit_remesh.json") as file:
-    explicit_remesh_json = json.load(file)
-
-explicit_routes = flask.Blueprint("explicit_routes", __name__)
-flask_cors.CORS(explicit_routes)
 
 
 @explicit_routes.route(
@@ -51,6 +45,10 @@ def sendBaseData():
         },
         200,
     )
+
+
+with open("blueprints/workflows/explicit_brep_stats.json") as file:
+    explicit_brep_stats_json = json.load(file)
 
 
 @explicit_routes.route(
@@ -97,12 +95,16 @@ def sendBRepStats():
     )
 
 
+with open("blueprints/workflows/explicit_remesh.json") as file:
+    explicit_remesh_json = json.load(file)
+
+
 @explicit_routes.route(
     explicit_remesh_json["route"], methods=explicit_remesh_json["methods"]
 )
 def remesh():
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    geode_functions.validate_request(flask.request, ["metric"])
+    geode_functions.validate_request(flask.request, explicit_remesh_json)
     min_metric = 50
     max_metric = 500
     brep = geode_functions.load(

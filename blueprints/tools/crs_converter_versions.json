@@ -1,9 +1,9 @@
 {
-    "$id": "/tools/crs_converter/versions",
-    "route": "/versions",
-    "methods": [
-        "GET"
-    ],
-    "type": "object",
-    "additionalProperties": false
+  "$id": "/tools/crs_converter/versions",
+  "route": "/versions",
+  "methods": [
+    "GET"
+  ],
+  "type": "object",
+  "additionalProperties": false
 }

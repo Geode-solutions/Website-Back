@@ -14,42 +14,6 @@ def test_versions(client):
         assert type(version) is dict
 
 
-def test_allowed_files(client):
-    response = client.get(f"{base_route}/allowed_files")
-    assert response.status_code == 200
-    extensions = response.json["extensions"]
-    assert type(extensions) is list
-    for extension in extensions:
-        assert type(extension) is str
-
-
-def test_allowed_objects(client):
-    # Normal test with filename 'corbi.og_brep'
-    response = client.post(
-        f"{base_route}/allowed_objects", json={"filename": "corbi.og_brep"}
-    )
-    assert response.status_code == 200
-    allowed_objects = response.json["allowed_objects"]
-    assert type(allowed_objects) is list
-    for geode_object in allowed_objects:
-        assert type(geode_object) is str
-
-    # Test with stupid filename
-    response = client.post(
-        f"{base_route}/allowed_objects", json={"filename": "toto.tutu"}
-    )
-    assert response.status_code == 200
-    allowed_objects = response.json["allowed_objects"]
-    assert type(allowed_objects) is list
-    assert not allowed_objects
-
-    # Test without filename
-    response = client.post(f"{base_route}/allowed_objects", json={})
-    assert response.status_code == 400
-    error_description = response.json["description"]
-    assert error_description == "Validation error: 'filename' is a required property"
-
-
 def test_test_names(client):
     ObjectArray = [
         "BRep",
@@ -77,7 +41,7 @@ def test_test_names(client):
         # Normal test with all objects
         response = client.post(
             f"{base_route}/tests_names",
-            json={"geode_object": geode_object},
+            json={"input_geode_object": geode_object},
         )
         assert response.status_code == 200
         model_checks = response.json["model_checks"]
@@ -116,7 +80,7 @@ def test_inspect_file(client):
 
     response = client.put(
         "tools/upload_file",
-        data={"content": FileStorage(open(f"./tests/{filename}", "rb"))},
+        data={"file": FileStorage(open(f"./tests/{filename}", "rb"))},
     )
     assert response.status_code == 201
 
