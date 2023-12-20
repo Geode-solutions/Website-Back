@@ -1,14 +1,28 @@
 # Standard library imports
 import json
 import os
-import shutil
-import zipfile
 
 # Third party imports
 import flask
 import flask_cors
 import werkzeug
 from opengeodeweb_back import geode_functions
+import json
+
+with open("blueprints/tools/crs_converter_allowed_files.json", "r") as file:
+    file_converter_allowed_files_json = json.load(file)
+
+with open("blueprints/tools/file_converter_allowed_objects.json", "r") as file:
+    file_converter_allowed_objects_json = json.load(file)
+
+with open("blueprints/tools/file_converter_convert_file.json", "r") as file:
+    file_converter_convert_file_json = json.load(file)
+
+with open("blueprints/tools/file_converter_output_file_extensions.json", "r") as file:
+    file_converter_output_file_extensions_json = json.load(file)
+
+with open("blueprints/tools/file_converter_versions.json", "r") as file:
+    file_converter_versions_json = json.load(file)
 
 file_converter_routes = flask.Blueprint("file_converter_routes", __name__)
 flask_cors.CORS(file_converter_routes)

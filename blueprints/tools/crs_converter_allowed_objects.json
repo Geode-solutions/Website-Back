@@ -1,9 +1,8 @@
 {
-    "$id": "/tools/upload_file",
-    "route": "/upload_file",
+    "$id": "/tools/crs_converter/allowed_objects",
+    "route": "/allowed_objects",
     "methods": [
-        "OPTIONS",
-        "PUT"
+        "POST"
     ],
     "type": "object",
     "properties": {
@@ -11,5 +10,8 @@
             "type": "string"
         }
     },
+    "required": [
+        "filename"
+    ],
     "additionalProperties": false
 }

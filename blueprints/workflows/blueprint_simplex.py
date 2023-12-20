@@ -7,6 +7,11 @@ import flask
 import flask_cors
 import json
 
+with open("blueprints/workflows/simplex_initialize.json", "r") as file:
+    simplex_initialize_json = json.load(file)
+
+with open("blueprints/workflows/simplex_remesh.json", "r") as file:
+    simplex_remesh_json = json.load(file)
 
 simplex_routes = flask.Blueprint("simplex_routes", __name__)
 flask_cors.CORS(simplex_routes)
