@@ -50,8 +50,6 @@ tools_routes.register_blueprint(
     url_prefix="/crs_converter",
     name="crs_converter_blueprint",
 )
-
-
 tools_routes.register_blueprint(
     blueprint_routes.routes,
     url_prefix="/",
