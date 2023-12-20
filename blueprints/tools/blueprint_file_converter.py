@@ -1,8 +1,6 @@
 # Standard library imports
 import json
 import os
-import shutil
-import zipfile
 
 # Third party imports
 import flask
