@@ -1,8 +1,0 @@
-{
-    "$id": "/tools/file_converter/allowed_objects",
-    "route": "/allowed_objects",
-    "methods": [
-        "GET"
-    ],
-    "type": "object"
-}
