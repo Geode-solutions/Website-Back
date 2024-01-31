@@ -150,8 +150,6 @@ def step1():
         og_geosciences.StructuralModel(brep), scalar_function_name
     )
     builder = og_geosciences.ImplicitStructuralModelBuilder(implicit_model)
-    for surface in implicit_model.surfaces():
-        builder.remove_surface(surface)
     geode_functions.save(
         "StructuralModel",
         implicit_model,
