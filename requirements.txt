@@ -54,7 +54,7 @@ geode-conversion==5.2.1
     #   geode-explicit
     #   geode-implicit
     #   opengeodeweb-back
-geode-explicit==4.4.2
+geode-explicit==4.4.3
     # via
     #   geode-implicit
     #   opengeodeweb-back
@@ -65,7 +65,7 @@ geode-numerics==4.3.0
     #   geode-implicit
     #   geode-simplex
     #   opengeodeweb-back
-geode-simplex==6.5.0
+geode-simplex==6.5.1
     # via opengeodeweb-back
 geode-viewables==2.2.0
     # via opengeodeweb-back
@@ -92,7 +92,7 @@ markupsafe==2.1.4
     #   jinja2
     #   opengeodeweb-back
     #   werkzeug
-opengeode-core==14.13.1
+opengeode-core==14.13.2
     # via
     #   geode-background
     #   geode-common
@@ -128,7 +128,7 @@ opengeode-io==6.4.0
     #   geode-viewables
     #   opengeode-geosciencesio
     #   opengeodeweb-back
-opengeodeweb-back==3.3.0
+opengeodeweb-back==3.3.1
     # via -r requirements.in
 python-dotenv==1.0.1
     # via -r requirements.in
