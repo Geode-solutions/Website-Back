@@ -11,7 +11,6 @@ import werkzeug
 import blueprints.tools.blueprint_file_converter as bp_file_converter
 import blueprints.tools.blueprint_validity_checker as bp_validity_checker
 import blueprints.tools.blueprint_crs_converter as bp_crs_converter
-from opengeodeweb_back.routes import blueprint_routes
 
 
 tools_routes = flask.Blueprint("tools_routes", __name__)
@@ -49,9 +48,4 @@ tools_routes.register_blueprint(
     bp_crs_converter.crs_converter_routes,
     url_prefix="/crs_converter",
     name="crs_converter_blueprint",
-)
-tools_routes.register_blueprint(
-    blueprint_routes.routes,
-    url_prefix="/",
-    name="blueprint_routes",
 )

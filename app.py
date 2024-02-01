@@ -12,6 +12,7 @@ import blueprints.blueprint_workflows as bp_workflows
 import blueprints.blueprint_ID as bp_ID
 
 from opengeodeweb_back import geode_functions
+from opengeodeweb_back.routes import blueprint_routes
 
 from werkzeug.exceptions import HTTPException
 
@@ -72,6 +73,12 @@ TIME_FOLDER = app.config.get("TIME_FOLDER")
 MINUTES_BEFORE_TIMEOUT = float(app.config.get("MINUTES_BEFORE_TIMEOUT"))
 SECONDS_BETWEEN_SHUTDOWNS = float(app.config.get("SECONDS_BETWEEN_SHUTDOWNS"))
 
+
+app.register_blueprint(
+    blueprint_routes.routes,
+    url_prefix="/opengeodeweb_back",
+    name="opengeodeweb_back",
+)
 app.register_blueprint(
     bp_tools.tools_routes, url_prefix=f"/tools", name="tools_blueprint"
 )
