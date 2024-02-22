@@ -27,10 +27,10 @@ def initialize():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     brep = geode_functions.load(
-        "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
+        "StructuralModel", os.path.join(WORKFLOWS_DATA_FOLDER, "corbi.og_strm")
     )
     viewable_file_name = geode_functions.save_viewable(
-        "BRep", brep, os.path.abspath(DATA_FOLDER), "simplex_brep"
+        "BRep", brep, DATA_FOLDER, "simplex_brep"
     )
     return flask.make_response(
         {
@@ -55,7 +55,7 @@ def remesh():
     min_metric = 10
     max_metric = 300
     brep = geode_functions.load(
-        "StructuralModel", os.path.abspath(WORKFLOWS_DATA_FOLDER + "corbi.og_strm")
+        "StructuralModel", os.path.join(WORKFLOWS_DATA_FOLDER, "corbi.og_strm")
     )
     brep_metric = geode_simplex.BRepMetricConstraints(brep)
     metric = float(flask.request.json["metric"])
@@ -87,7 +87,7 @@ def remesh():
     metric = brep_metric.build_metric()
     brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, metric)
     viewable_file_name = geode_functions.save_viewable(
-        "BRep", brep_remeshed, os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
+        "BRep", brep_remeshed, DATA_FOLDER, "remeshed_simplex_brep"
     )
     return flask.make_response(
         {

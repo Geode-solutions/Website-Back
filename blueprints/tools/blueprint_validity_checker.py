@@ -66,7 +66,7 @@ def validity_checker_inspect_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
-    file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
+    file_path = os.path.join(UPLOAD_FOLDER, secure_filename)
     data = geode_functions.load(flask.request.json["input_geode_object"], file_path)
     inspector = geode_functions.inspector(
         flask.request.json["input_geode_object"], data

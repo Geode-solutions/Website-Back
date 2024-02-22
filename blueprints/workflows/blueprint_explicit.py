@@ -23,18 +23,19 @@ def sendBaseData():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     model_A1 = geode_functions.load(
-        "BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "model_A1.og_brep")
+        "BRep", os.path.join(WORKFLOWS_DATA_FOLDER, "model_A1.og_brep")
     )
+
     topo = geode_functions.load(
         "TriangulatedSurface3D",
-        os.path.abspath(WORKFLOWS_DATA_FOLDER + "topo_good.og_tsf3d"),
+        os.path.join(WORKFLOWS_DATA_FOLDER, "topo_good.og_tsf3d"),
     )
 
     viewable_1 = geode_functions.save_viewable(
-        "BRep", model_A1, os.path.abspath(DATA_FOLDER), "model_A1"
+        "BRep", model_A1, DATA_FOLDER, "model_A1"
     )
     viewable_2 = geode_functions.save_viewable(
-        "TriangulatedSurface3D", topo, os.path.abspath(DATA_FOLDER), "topo"
+        "TriangulatedSurface3D", topo, DATA_FOLDER, "topo"
     )
     return flask.make_response(
         {
@@ -58,11 +59,11 @@ def sendBRepStats():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     model_A1 = geode_functions.load(
-        "BRep", os.path.abspath(WORKFLOWS_DATA_FOLDER + "model_A1.og_brep")
+        "BRep", os.path.join(WORKFLOWS_DATA_FOLDER, "model_A1.og_brep")
     )
     topo = geode_functions.load(
         "TriangulatedSurface3D",
-        os.path.abspath(WORKFLOWS_DATA_FOLDER + "topo_good.og_tsf3d"),
+        os.path.join(WORKFLOWS_DATA_FOLDER, "topo_good.og_tsf3d"),
     )
     bbox = model_A1.bounding_box()
     bbox.add_box(topo.bounding_box())
@@ -76,11 +77,9 @@ def sendBRepStats():
     nb_lines = brep_explicit.nb_lines()
     nb_surfaces = brep_explicit.nb_surfaces()
     nb_blocks = brep_explicit.nb_blocks()
-    geode_functions.save(
-        "BRep", brep_explicit, os.path.abspath(DATA_FOLDER), "explicit_brep.og_brep"
-    )
+    geode_functions.save("BRep", brep_explicit, DATA_FOLDER, "explicit_brep.og_brep")
     viewable_file_name = geode_functions.save_viewable(
-        "BRep", brep_explicit, os.path.abspath(DATA_FOLDER), "explicit_brep"
+        "BRep", brep_explicit, DATA_FOLDER, "explicit_brep"
     )
     return flask.make_response(
         {
@@ -103,18 +102,19 @@ with open("blueprints/workflows/explicit_remesh.json") as file:
     explicit_remesh_json["route"], methods=explicit_remesh_json["methods"]
 )
 def remesh():
+    WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     geode_functions.validate_request(flask.request, explicit_remesh_json)
     min_metric = 50
     max_metric = 500
     brep = geode_functions.load(
-        "BRep", os.path.abspath(DATA_FOLDER + "explicit_brep.og_brep")
+        "BRep", os.path.join(WORKFLOWS_DATA_FOLDER, "explicit_brep.og_brep")
     )
     metric = float(flask.request.json["metric"])
     brep_metric = geode_common.ConstantMetric3D(metric)
     brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, brep_metric)
     viewable_file_name = geode_functions.save_viewable(
-        "BRep", brep_remeshed, os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
+        "BRep", brep_remeshed, DATA_FOLDER, "remeshed_simplex_brep"
     )
     return flask.make_response(
         {

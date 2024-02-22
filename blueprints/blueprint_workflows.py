@@ -16,19 +16,13 @@ flask_cors.CORS(workflows_routes)
 
 @workflows_routes.before_request
 def before_request():
-    geode_functions.create_lock_file(
-        os.path.abspath(flask.current_app.config["LOCK_FOLDER"])
-    )
+    geode_functions.create_lock_file(flask.current_app.config["LOCK_FOLDER"])
 
 
 @workflows_routes.teardown_request
 def teardown_request(exception):
-    geode_functions.remove_lock_file(
-        os.path.abspath(flask.current_app.config["LOCK_FOLDER"])
-    )
-    geode_functions.create_time_file(
-        os.path.abspath(flask.current_app.config["TIME_FOLDER"])
-    )
+    geode_functions.remove_lock_file(flask.current_app.config["LOCK_FOLDER"])
+    geode_functions.create_time_file(flask.current_app.config["TIME_FOLDER"])
 
 
 workflows_routes.register_blueprint(

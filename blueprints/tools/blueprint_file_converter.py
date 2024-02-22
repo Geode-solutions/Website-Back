@@ -49,7 +49,7 @@ async def file_converter_convert_file():
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
-    file_path = os.path.abspath(os.path.join(UPLOAD_FOLDER, secure_filename))
+    file_path = os.path.join(UPLOAD_FOLDER, secure_filename)
     data = geode_functions.load(flask.request.json["input_geode_object"], file_path)
     strict_file_name = os.path.splitext(secure_filename)[0]
     new_file_name = strict_file_name + "." + flask.request.json["output_extension"]
@@ -57,7 +57,7 @@ async def file_converter_convert_file():
     saved_files = geode_functions.save(
         flask.request.json["output_geode_object"],
         data,
-        os.path.abspath(UPLOAD_FOLDER),
+        UPLOAD_FOLDER,
         new_file_name,
     )
     return geode_functions.send_file(UPLOAD_FOLDER, saved_files, new_file_name)

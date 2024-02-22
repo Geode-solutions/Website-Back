@@ -106,7 +106,7 @@ def handle_exception(e):
     return response
 
 
-@app.route("/website/createbackend", methods=["POST"])
+@app.route("/createbackend", methods=["POST"])
 def create_backend():
     return flask.make_response({"ID": str("123456")}, 200)
 

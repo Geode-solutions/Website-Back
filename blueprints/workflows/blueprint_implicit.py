@@ -25,7 +25,7 @@ def step0():
     WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     constraints = "["
     data_constraints = geode_numerics.DataPointsManager3D()
-    constraint_file = WORKFLOWS_DATA_FOLDER + "data_constraints.og_pts3d"
+    constraint_file = os.path.join(WORKFLOWS_DATA_FOLDER, "data_constraints.og_pts3d")
     data_constraints.load_data_points(constraint_file)
     for i in range(data_constraints.nb_data_points()):
         constraint = []
@@ -38,10 +38,10 @@ def step0():
     constraints = constraints[: len(constraints) - 1] + "]"
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     data_constraints.save_data_points_manager(
-        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d")
+        os.path.join(DATA_FOLDER, "implicit_points.og_pts3d")
     )
     data_constraints.save_data_points_manager(
-        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.vtp")
+        os.path.join(DATA_FOLDER, "implicit_points.vtp")
     )
     curve = og.EdgedCurve3D.create()
     curve_builder = og.EdgedCurveBuilder3D.create(curve)
@@ -66,9 +66,7 @@ def step0():
     curve_builder.create_edge_with_vertices(1, 5)
     curve_builder.create_edge_with_vertices(2, 6)
     curve_builder.create_edge_with_vertices(3, 7)
-    og.save_edged_curve3D(
-        curve, os.path.join(os.path.abspath(DATA_FOLDER), "implicit_box.vtp")
-    )
+    og.save_edged_curve3D(curve, os.path.join(DATA_FOLDER, "implicit_box.vtp"))
     return flask.make_response(
         {
             "constraints": constraints,
@@ -95,17 +93,16 @@ def update_value():
     value = float(flask.request.json["value"])
 
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
+    WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     data_constraints = geode_numerics.DataPointsManager3D()
-    constraint_file = os.path.join(
-        os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d"
-    )
+    constraint_file = os.path.join(DATA_FOLDER, "implicit_points.og_pts3d")
     data_constraints.load_data_points(constraint_file)
     data_constraints.change_data_point_value(point, value)
     data_constraints.save_data_points_manager(
-        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d")
+        os.path.join(DATA_FOLDER, "implicit_points.og_pts3d")
     )
     data_constraints.save_data_points_manager(
-        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.vtp")
+        os.path.join(DATA_FOLDER, "implicit_points.vtp")
     )
     return flask.make_response(
         {
@@ -126,11 +123,11 @@ def step1():
         flask.request,
         step1_json,
     )
+    WORKFLOWS_DATA_FOLDER = flask.current_app.config["WORKFLOWS_DATA_FOLDER"]
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     data_constraints = geode_numerics.DataPointsManager3D()
-    constraint_file = os.path.join(
-        os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d"
-    )
+    constraint_file = os.path.join(WORKFLOWS_DATA_FOLDER, "implicit_points.og_pts3d")
+    print(constraint_file)
     data_constraints.load_data_points(constraint_file)
     bbox = og.BoundingBox3D()
     bbox.add_point(og.Point3D([0, 0, 0]))
@@ -153,13 +150,13 @@ def step1():
     geode_functions.save(
         "StructuralModel",
         implicit_model,
-        os.path.abspath(DATA_FOLDER),
+        DATA_FOLDER,
         "implicit.og_strm",
     )
     viewable_file_name = geode_functions.save_viewable(
         "StructuralModel",
         implicit_model,
-        os.path.abspath(DATA_FOLDER),
+        DATA_FOLDER,
         "implicit_structural_model",
     )
     return flask.make_response(
@@ -181,7 +178,7 @@ def step2():
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     implicit_model = og_geosciences.ImplicitStructuralModel(
         geode_functions.load(
-            "StructuralModel", os.path.abspath(DATA_FOLDER + "implicit.og_strm")
+            "StructuralModel", os.path.join(DATA_FOLDER, "implicit.og_strm")
         )
     )
 
@@ -191,13 +188,13 @@ def step2():
     geode_functions.save(
         "CrossSection",
         extracted_cross_section,
-        os.path.abspath(DATA_FOLDER),
+        DATA_FOLDER,
         "cross_section.og_xsctn",
     )
     viewable_file_name = geode_functions.save_viewable(
         "CrossSection",
         extracted_cross_section,
-        os.path.abspath(DATA_FOLDER),
+        DATA_FOLDER,
         "implicit_cross_section",
     )
     return flask.make_response(
@@ -218,7 +215,7 @@ def step3():
     geode_functions.validate_request(flask.request, step3_json)
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
-        "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")
+        "CrossSection", os.path.join(DATA_FOLDER, "cross_section.og_xsctn")
     )
     metric = float(flask.request.json["metric"])
     sharp_section = geode_conversion.add_section_sharp_features(
@@ -231,7 +228,7 @@ def step3():
     viewable_file_name = geode_functions.save_viewable(
         "Section",
         remeshed_section,
-        os.path.abspath(DATA_FOLDER),
+        DATA_FOLDER,
         "implicit_remeshed_section",
     )
     return flask.make_response(
