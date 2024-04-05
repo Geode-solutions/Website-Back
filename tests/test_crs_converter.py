@@ -19,7 +19,7 @@ def test_convert_file(client):
 
     filename = "corbi.og_brep"
     response = client.put(
-        "tools/upload_file",
+        "opengeodeweb_back/upload_file",
         data={"file": FileStorage(open(f"./tests/{filename}", "rb"))},
     )
     assert response.status_code == 201
