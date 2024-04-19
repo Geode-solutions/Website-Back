@@ -12,6 +12,7 @@ import blueprints.blueprint_workflows as bp_workflows
 import blueprints.blueprint_ID as bp_ID
 
 from opengeodeweb_back import geode_functions
+from opengeodeweb_back.routes import blueprint_routes
 
 from werkzeug.exceptions import HTTPException
 
@@ -78,7 +79,14 @@ app.register_blueprint(
 app.register_blueprint(
     bp_workflows.workflows_routes, url_prefix=f"/workflows", name="workflows_blueprint"
 )
-app.register_blueprint(bp_ID.ID_routes, url_prefix=f"/", name="ID_blueprint")
+app.register_blueprint(
+    blueprint_routes.routes,
+    url_prefix="/opengeodeweb_back",
+    name="blueprint_routes",
+)
+
+app.register_blueprint(bp_ID.ID_routes, url_prefix="/", name="ID_blueprint")
+
 
 if FLASK_DEBUG == False:
     geode_functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
@@ -99,7 +107,7 @@ def handle_exception(e):
     return response
 
 
-@app.route("/website/createbackend", methods=["POST"])
+@app.route("/createbackend", methods=["POST"])
 def create_backend():
     return flask.make_response({"ID": str("123456")}, 200)
 

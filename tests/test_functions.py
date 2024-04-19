@@ -7,7 +7,7 @@ def test_root(client):
 
 
 def test_createbackend(client):
-    response = client.post("/website/createbackend")
+    response = client.post("/createbackend")
     assert response.status_code == 200
     ID = response.json["ID"]
     assert ID == "123456"
