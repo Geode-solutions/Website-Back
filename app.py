@@ -13,6 +13,7 @@ import blueprints.blueprint_ID as bp_ID
 
 from opengeodeweb_back import geode_functions
 from opengeodeweb_back.routes import blueprint_routes
+from opengeodeweb_back.geode_functions import handle_exception
 
 from werkzeug.exceptions import HTTPException
 
@@ -94,17 +95,8 @@ flask_cors.CORS(app, origins=ORIGINS)
 
 
 @app.errorhandler(HTTPException)
-def handle_exception(e):
-    response = e.get_response()
-    response.data = flask.json.dumps(
-        {
-            "code": e.code,
-            "name": e.name,
-            "description": e.description,
-        }
-    )
-    response.content_type = "application/json"
-    return response
+def errorhandler(e):
+    return handle_exception(e)
 
 
 @app.route("/createbackend", methods=["POST"])
