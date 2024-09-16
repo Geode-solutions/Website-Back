@@ -6,7 +6,7 @@ import os
 import flask
 import flask_cors
 import werkzeug
-from opengeodeweb_back import geode_functions
+from opengeodeweb_back import geode_functions, utils_functions
 import json
 
 crs_converter_routes = flask.Blueprint("crs_converter_routes", __name__)
@@ -21,7 +21,7 @@ with open("blueprints/tools/crs_converter_versions.json", "r") as file:
     crs_converter_versions_json["route"], methods=crs_converter_versions_json["methods"]
 )
 def crs_converter_versions():
-    geode_functions.validate_request(flask.request, crs_converter_versions_json)
+    utils_functions.validate_request(flask.request, crs_converter_versions_json)
     list_packages = [
         "OpenGeode-core",
         "OpenGeode-IO",
@@ -29,7 +29,7 @@ def crs_converter_versions():
         "OpenGeode-GeosciencesIO",
     ]
     return flask.make_response(
-        {"versions": geode_functions.versions(list_packages)}, 200
+        {"versions": utils_functions.versions(list_packages)}, 200
     )
 
 
@@ -42,7 +42,7 @@ with open("blueprints/tools/crs_converter_convert_file.json", "r") as file:
     methods=crs_converter_convert_file_json["methods"],
 )
 async def crs_converter_convert_file():
-    geode_functions.validate_request(
+    utils_functions.validate_request(
         flask.request,
         crs_converter_convert_file_json,
     )
@@ -67,4 +67,4 @@ async def crs_converter_convert_file():
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,
     )
-    return geode_functions.send_file(UPLOAD_FOLDER, saved_files, new_file_name)
+    return utils_functions.send_file(UPLOAD_FOLDER, saved_files, new_file_name)

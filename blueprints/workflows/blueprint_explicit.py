@@ -4,7 +4,7 @@ import opengeode_io as og_io
 import geode_explicit
 import geode_common
 import geode_simplex
-from opengeodeweb_back import geode_functions, geode_objects
+from opengeodeweb_back import geode_functions, utils_functions
 import flask
 import flask_cors
 import json
@@ -104,7 +104,7 @@ with open("blueprints/workflows/explicit_remesh.json") as file:
 )
 def remesh():
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    geode_functions.validate_request(flask.request, explicit_remesh_json)
+    utils_functions.validate_request(flask.request, explicit_remesh_json)
     min_metric = 50
     max_metric = 500
     brep = geode_functions.load(
@@ -112,7 +112,7 @@ def remesh():
     )
     metric = float(flask.request.json["metric"])
     brep_metric = geode_common.ConstantMetric3D(metric)
-    brep_remeshed, _ = geode_simplex.simplex_remesh_brep(brep, brep_metric)
+    brep_remeshed, _ = geode_simplex.remesh_brep(brep, brep_metric)
     viewable_file_name = geode_functions.save_viewable(
         "BRep", brep_remeshed, os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
     )

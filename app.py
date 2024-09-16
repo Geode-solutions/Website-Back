@@ -13,7 +13,7 @@ import blueprints.blueprint_ID as bp_ID
 
 from opengeodeweb_back import geode_functions
 from opengeodeweb_back.routes import blueprint_routes
-from opengeodeweb_back.geode_functions import handle_exception
+from opengeodeweb_back.utils_functions import handle_exception
 
 from werkzeug.exceptions import HTTPException
 

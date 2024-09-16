@@ -6,7 +6,7 @@ import os
 import flask
 import flask_cors
 import werkzeug
-from opengeodeweb_back import geode_functions
+from opengeodeweb_back import geode_functions, utils_functions
 import json
 
 
@@ -23,7 +23,7 @@ with open("blueprints/tools/file_converter_versions.json", "r") as file:
     methods=file_converter_versions_json["methods"],
 )
 def file_converter_versions():
-    geode_functions.validate_request(flask.request, file_converter_versions_json)
+    utils_functions.validate_request(flask.request, file_converter_versions_json)
     list_packages = [
         "OpenGeode-core",
         "OpenGeode-IO",
@@ -32,7 +32,7 @@ def file_converter_versions():
     ]
 
     return flask.make_response(
-        {"versions": geode_functions.versions(list_packages)}, 200
+        {"versions": utils_functions.versions(list_packages)}, 200
     )
 
 
@@ -45,7 +45,7 @@ with open("blueprints/tools/file_converter_convert_file.json", "r") as file:
     methods=file_converter_convert_file_json["methods"],
 )
 async def file_converter_convert_file():
-    geode_functions.validate_request(flask.request, file_converter_convert_file_json)
+    utils_functions.validate_request(flask.request, file_converter_convert_file_json)
     UPLOAD_FOLDER = flask.current_app.config["UPLOAD_FOLDER"]
 
     secure_filename = werkzeug.utils.secure_filename(flask.request.json["filename"])
@@ -60,4 +60,4 @@ async def file_converter_convert_file():
         os.path.abspath(UPLOAD_FOLDER),
         new_file_name,
     )
-    return geode_functions.send_file(UPLOAD_FOLDER, saved_files, new_file_name)
+    return utils_functions.send_file(UPLOAD_FOLDER, saved_files, new_file_name)
