@@ -11,9 +11,8 @@ import blueprints.blueprint_tools as bp_tools
 import blueprints.blueprint_workflows as bp_workflows
 import blueprints.blueprint_ID as bp_ID
 
-from opengeodeweb_back import geode_functions
 from opengeodeweb_back.routes import blueprint_routes
-from opengeodeweb_back.utils_functions import handle_exception
+from opengeodeweb_back.utils_functions import handle_exception, set_interval
 
 from werkzeug.exceptions import HTTPException
 
@@ -90,7 +89,7 @@ app.register_blueprint(bp_ID.ID_routes, url_prefix="/", name="ID_blueprint")
 
 
 if FLASK_DEBUG == False:
-    geode_functions.set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
+    set_interval(kill_task, SECONDS_BETWEEN_SHUTDOWNS)
 flask_cors.CORS(app, origins=ORIGINS)
 
 
