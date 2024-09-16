@@ -225,7 +225,7 @@ def step3():
         extracted_cross_section, 120
     )
     constant_metric = geode_common.ConstantMetric2D(metric)
-    remeshed_section, _ = geode_simplex.remesh_section(
+    remeshed_section, _ = geode_simplex.section_simplex_remesh(
         sharp_section, constant_metric
     )
     viewable_file_name = geode_functions.save_viewable(

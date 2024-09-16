@@ -85,7 +85,7 @@ def remesh():
         )
 
     metric = brep_metric.build_metric()
-    brep_remeshed, _ = geode_simplex.remesh_brep(brep, metric)
+    brep_remeshed, _ = geode_simplex.brep_simplex_remesh(brep, metric)
     viewable_file_name = geode_functions.save_viewable(
         "BRep", brep_remeshed, os.path.abspath(DATA_FOLDER), "remeshed_simplex_brep"
     )
