@@ -19,13 +19,12 @@ flask_cors.CORS(tools_routes)
 
 @tools_routes.before_request
 def before_request():
-    utils_functions.increment_request_counter(flask.current_app)
+    utils_functions.before_request(flask.current_app)
 
 
 @tools_routes.teardown_request
 def teardown_request(exception):
-    utils_functions.decrement_request_counter(flask.current_app)
-    utils_functions.update_last_request_time(flask.current_app)
+    utils_functions.teardown_request(flask.current_app)
 
 
 tools_routes.register_blueprint(
