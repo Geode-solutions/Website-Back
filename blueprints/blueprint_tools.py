@@ -21,6 +21,7 @@ flask_cors.CORS(tools_routes)
 def before_request():
     utils_functions.increment_request_counter(flask.current_app)
 
+
 @tools_routes.teardown_request
 def teardown_request(exception):
     utils_functions.decrement_request_counter(flask.current_app)
