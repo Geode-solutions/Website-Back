@@ -4,7 +4,7 @@
 # Third party imports
 import flask
 import flask_cors
-from opengeodeweb_back import geode_functions
+from opengeodeweb_back import geode_functions, utils_functions
 import json
 
 validity_checker_routes = flask.Blueprint("validity_checker_routes", __name__)
@@ -20,7 +20,7 @@ with open("blueprints/tools/validity_checker_versions.json", "r") as file:
     methods=validity_checker_versions_json["methods"],
 )
 def validity_checker_versions():
-    geode_functions.validate_request(flask.request, validity_checker_versions_json)
+    utils_functions.validate_request(flask.request, validity_checker_versions_json)
     list_packages = [
         "OpenGeode-core",
         "OpenGeode-IO",
@@ -29,5 +29,5 @@ def validity_checker_versions():
         "OpenGeode-Inspector",
     ]
     return flask.make_response(
-        {"versions": geode_functions.versions(list_packages)}, 200
+        {"versions": utils_functions.versions(list_packages)}, 200
     )

@@ -10,7 +10,7 @@ import geode_numerics
 import geode_implicit
 import geode_simplex
 import geode_conversion
-from opengeodeweb_back import geode_functions, geode_objects
+from opengeodeweb_back import geode_functions, utils_functions
 
 
 implicit_routes = flask.Blueprint("implicit_routes", __name__)
@@ -87,7 +87,7 @@ with open("blueprints/workflows/implicit_update_value.json", "r") as file:
 
 @implicit_routes.route(update_value_json["route"], methods=update_value_json["methods"])
 def update_value():
-    geode_functions.validate_request(
+    utils_functions.validate_request(
         flask.request,
         update_value_json,
     )
@@ -122,7 +122,7 @@ with open("blueprints/workflows/implicit_step1.json", "r") as file:
 
 @implicit_routes.route(step1_json["route"], methods=step1_json["methods"])
 def step1():
-    geode_functions.validate_request(
+    utils_functions.validate_request(
         flask.request,
         step1_json,
     )
@@ -177,7 +177,7 @@ with open("blueprints/workflows/implicit_step2.json", "r") as file:
 
 @implicit_routes.route(step2_json["route"], methods=step2_json["methods"])
 def step2():
-    geode_functions.validate_request(flask.request, step2_json)
+    utils_functions.validate_request(flask.request, step2_json)
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     implicit_model = og_geosciences.ImplicitStructuralModel(
         geode_functions.load(
@@ -215,7 +215,7 @@ with open("blueprints/workflows/implicit_step3.json", "r") as file:
 
 @implicit_routes.route(step3_json["route"], methods=step3_json["methods"])
 def step3():
-    geode_functions.validate_request(flask.request, step3_json)
+    utils_functions.validate_request(flask.request, step3_json)
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
     extracted_cross_section = geode_functions.load(
         "CrossSection", os.path.abspath(DATA_FOLDER + "cross_section.og_xsctn")
@@ -225,7 +225,7 @@ def step3():
         extracted_cross_section, 120
     )
     constant_metric = geode_common.ConstantMetric2D(metric)
-    remeshed_section, _ = geode_simplex.simplex_remesh_section(
+    remeshed_section, _ = geode_simplex.section_simplex_remesh(
         sharp_section, constant_metric
     )
     viewable_file_name = geode_functions.save_viewable(
