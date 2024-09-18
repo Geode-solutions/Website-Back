@@ -2,4 +2,4 @@ python-dotenv
 Flask[async]
 Flask-Cors
 Werkzeug
-OpenGeodeWeb-Back
+OpengeodeWeb-Back

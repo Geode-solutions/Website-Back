@@ -4,7 +4,7 @@ import os
 # Third party imports
 import flask
 import flask_cors
-from opengeodeweb_back import geode_functions, geode_objects
+from opengeodeweb_back import utils_functions
 
 import blueprints.workflows.blueprint_implicit as bp_implicit
 import blueprints.workflows.blueprint_simplex as bp_simplex
@@ -16,19 +16,12 @@ flask_cors.CORS(workflows_routes)
 
 @workflows_routes.before_request
 def before_request():
-    geode_functions.create_lock_file(
-        os.path.abspath(flask.current_app.config["LOCK_FOLDER"])
-    )
+    utils_functions.before_request(flask.current_app)
 
 
 @workflows_routes.teardown_request
 def teardown_request(exception):
-    geode_functions.remove_lock_file(
-        os.path.abspath(flask.current_app.config["LOCK_FOLDER"])
-    )
-    geode_functions.create_time_file(
-        os.path.abspath(flask.current_app.config["TIME_FOLDER"])
-    )
+    utils_functions.teardown_request(flask.current_app)
 
 
 workflows_routes.register_blueprint(
