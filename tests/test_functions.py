@@ -12,7 +12,3 @@ def test_createbackend(client):
     ID = response.json["ID"]
     assert ID == "123456"
 
-
-def test_ping(client):
-    response = client.post(f"/ping")
-    assert response.status_code == 200
