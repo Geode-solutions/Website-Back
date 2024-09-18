@@ -17,4 +17,3 @@ flask_cors.CORS(ID_routes)
 @ID_routes.route(ID_healthcheck_json["route"], methods=ID_healthcheck_json["methods"])
 def root():
     return flask.make_response({"message": "healthy"}, 200)
-
