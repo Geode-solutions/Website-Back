@@ -37,18 +37,8 @@ def step0():
         constraints += str(constraint) + ","
     constraints = constraints[: len(constraints) - 1] + "]"
     DATA_FOLDER = flask.current_app.config["DATA_FOLDER"]
-    og.save_string(
-        constraints,
-        os.path.join(os.path.abspath(DATA_FOLDER), "data_constraints.og_pts3d"),
-    )
-    og.save_point_set3D(
-        data_constraints.data_points(),
-        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d"),
-    )
-    og.save_point_set3D(
-        data_constraints.data_points(),
-        os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.vtp"),
-    )
+    og.save_point_set3D(data_constraints.data_points(), os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.og_pts3d"))
+    og.save_point_set3D(data_constraints.data_points(), os.path.join(os.path.abspath(DATA_FOLDER), "implicit_points.vtp"))
     curve = og.EdgedCurve3D.create()
     curve_builder = og.EdgedCurveBuilder3D.create(curve)
     pts_value = 40
